@@ -29,7 +29,7 @@ This ensures traceability and aligns with course grading expectations.
 Create a branch from `main` for each piece of work using the following
 prefixes:
 
-- `feature/<short-description>` -- new dashboard components or features
+- `feature/<short-description>` - new dashboard components or features
 - `fix/<short-description>` - bug fixes
 - `docs/<short-description>` - documentation updates
 - `test/<short-description>` - testing-related updates
@@ -82,7 +82,7 @@ documentation
 1.  Clone the repository:
 
     ``` bash
-    git clone <repository-url>
+    git clone git@github.com:UBC-MDS/DSCI-532_2026_9_burnout-checkup.git
     cd burnout_checkup
     ```
 
