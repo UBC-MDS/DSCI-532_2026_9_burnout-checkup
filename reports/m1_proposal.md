@@ -31,4 +31,5 @@ The second dataset contains our target variables related to employee performance
 The two datasets are linked using the shared `Employee_ID` field, allowing employee-level integration of workload, AI usage, productivity, and burnout indicators.
 
 ## References
+
 Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx
