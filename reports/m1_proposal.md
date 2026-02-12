@@ -54,6 +54,26 @@ As an **HR analytics manager**, I want to compare burnout risk and productivity 
 
 As an **HR analytics manager**, I want to analyze burnout risk across job roles and experience levels in order to identify teams or career stages that may be disproportionately affected by AI-related work pressure.
 
+### Jobs to Be Done
+
+#### JTBD 1:
+
+**Situation:** When reviewing employee well-being and productivity reports…
+**Motivation:** …I want to distinguish burnout driven by excessive workload from burnout potentially associated with AI tool usage…
+**Outcome:** …so I can make informed decisions about AI adoption policies without misattributing burnout to the wrong causes.
+
+#### JTBD 2:
+
+**Situation:** When investigating an increase in reported burnout or stress levels within specific teams…
+**Motivation:** …I want to assess whether high AI usage combined with deadline pressure and task complexity is contributing to elevated burnout risk…
+**Outcome:** …so I can design targeted interventions such as workload rebalancing, additional AI training, or revised performance expectations.
+
+#### JTBD 3:
+
+**Situation:** When evaluating the impact of AI tools on employee productivity…
+**Motivation:** …I want to understand whether productivity gains are occurring alongside increases in burnout risk…
+**Outcome:** …so I can ensure that productivity improvements are sustainable and do not come at the expense of employee well-being.
+
 ## References
 
 Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx
