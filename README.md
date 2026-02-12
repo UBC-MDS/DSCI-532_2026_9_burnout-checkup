@@ -1,1 +1,3 @@
 # DSCI-532_2026_9_burnout-checkup
+
+**Burnout Checkup** is an **interactive dashboard** designed to **explore the relationship between AI tool usage, workload characteristics, and employee burnout risk**. The app enables users to examine how different workload patterns; including meetings, manual work, and task complexity, interact with AI adoption and influence employee well-being outcomes. By supporting workload-controlled comparisons and subgroup exploration, the dashboard helps managers and people analytics teams identify potential burnout risk patterns and make more informed, data-driven decisions. **Predictive burnout risk indicators** are included as a complementary decision-support layer to surface high-risk scenarios.
