@@ -40,6 +40,20 @@ When Monica logs into our AI & Burnout app, she is presented with an overview of
 
 Through this exploration, Monica may observe that employees with moderate AI usage and balanced workloads tend to report lower burnout risk, while high AI usage combined with high deadline pressure is associated with elevated burnout levels. By examining productivity metrics alongside burnout indicators, Monica can identify scenarios where productivity gains coincide with increased burnout, suggesting potentially unsustainable work practices. Monica may recommend targeted interventions such as workload rebalancing, additional training time for AI tools, or revised productivity expectations to ensure that AI adoption supports employee well-being rather than undermines it.
 
+### User Stories
+
+#### User Story 1
+
+As an **HR analytics manager**, I want to filter employees by AI usage intensity and workload level in order to compare burnout risk across employees with similar workloads.
+
+#### User Story 2
+
+As an **HR analytics manager**, I want to compare burnout risk and productivity between employees with low, moderate, and high AI tool usage in order to identify whether AI adoption is associated with reduced or increased burnout.
+
+#### User Story 3
+
+As an **HR analytics manager**, I want to analyze burnout risk across job roles and experience levels in order to identify teams or career stages that may be disproportionately affected by AI-related work pressure.
+
 ## References
 
 Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx
