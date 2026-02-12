@@ -30,6 +30,50 @@ The second dataset contains our target variables related to employee performance
 
 The two datasets are linked using the shared `Employee_ID` field, allowing employee-level integration of workload, AI usage, productivity, and burnout indicators.
 
+## Section 3: Research Questions & Usage Scenarios
+
+### Usage Scenario
+
+Monica is an HR analytics manager at a mid-sized organization that has recently expanded the use of AI tools across multiple teams. While leadership expects AI adoption to improve productivity, Monica is concerned about rising reports of employee stress and burnout. Monica wants to understand whether AI tool usage is associated with lower or higher burnout risk when controlling for workload, in order to inform responsible AI deployment and workforce planning decisions.
+
+When Monica logs into our AI & Burnout app, she is presented with an overview of key variables related to AI usage, workload, productivity, and burnout across the organization. Monica can explore the distribution of burnout risk across different levels of AI tool usage and compare employees with similar workload profiles. Interactive filters allow Monica to isolate specific job roles, experience levels, or workload intensity bands to conduct comparisons.
+
+Through this exploration, Monica may observe that employees with moderate AI usage and balanced workloads tend to report lower burnout risk, while high AI usage combined with high deadline pressure is associated with elevated burnout levels. By examining productivity metrics alongside burnout indicators, Monica can identify scenarios where productivity gains coincide with increased burnout, suggesting potentially unsustainable work practices. Monica may recommend targeted interventions such as workload rebalancing, additional training time for AI tools, or revised productivity expectations to ensure that AI adoption supports employee well-being rather than undermines it.
+
+### User Stories
+
+#### User Story 1
+
+As an **HR analytics manager**, I want to filter employees by AI usage intensity and workload level in order to compare burnout risk across employees with similar workloads.
+
+#### User Story 2
+
+As an **HR analytics manager**, I want to compare burnout risk and productivity between employees with low, moderate, and high AI tool usage in order to identify whether AI adoption is associated with reduced or increased burnout.
+
+#### User Story 3
+
+As an **HR analytics manager**, I want to analyze burnout risk across job roles and experience levels in order to identify teams or career stages that may be disproportionately affected by AI-related work pressure.
+
+### Jobs to Be Done
+
+#### JTBD 1:
+
+**Situation:** When reviewing employee well-being and productivity reports…
+**Motivation:** …I want to distinguish burnout driven by excessive workload from burnout potentially associated with AI tool usage…
+**Outcome:** …so I can make informed decisions about AI adoption policies without misattributing burnout to the wrong causes.
+
+#### JTBD 2:
+
+**Situation:** When investigating an increase in reported burnout or stress levels within specific teams…
+**Motivation:** …I want to assess whether high AI usage combined with deadline pressure and task complexity is contributing to elevated burnout risk…
+**Outcome:** …so I can design targeted interventions such as workload rebalancing, additional AI training, or revised performance expectations.
+
+#### JTBD 3:
+
+**Situation:** When evaluating the impact of AI tools on employee productivity…
+**Motivation:** …I want to understand whether productivity gains are occurring alongside increases in burnout risk…
+**Outcome:** …so I can ensure that productivity improvements are sustainable and do not come at the expense of employee well-being.
+
 ## References
 
 Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx
