@@ -9,7 +9,7 @@ Burnout is widespread among full-time workers, with nearly two-thirds reporting 
 
 The rapid adoption of AI tools in the workplace has transformed how employees approach tasks, collaboration, and productivity expectations. While AI has the potential to improve efficieny and reduce the time spent in minor tasks, concerns about the increased usage of AI are increasing since they can also contribute to employee burnout, rather than alleviate it.
 
-To address this challenge, we propose bulding an interactive data visualization app that allows HR leaders and people analytics teams to explore the relationship between AI usage and employee burnout levels across different degrees of AI adoption under different work conditions. This will help understand whether AI is acting as a protective factor or a risk factor for employees.
+To address this challenge, we propose bulding an interactive data visualization app that allows HR leaders and people analytics teams to explore the relationship between AI usage and employee burnout levels across different degrees of AI adoption under different work conditions. This will enable HR leaders to compare burnout risk across different AI usage intensities and workload conditions, supporting evidence-based decisions around AI deployment and workforce planning.
 
 ## Section 2: Description of the Data
 
@@ -23,7 +23,7 @@ The first dataset contains 15 variables describing employee characteristics and 
 - Work pressure and task demands (e.g., `deadline_pressure_level`, `task_complexity_score`)
 - Work quality and well-being indicators (e.g., `error_rate_percent`, `work_life_balance_score`, `burnout_risk_score`)
 
-The second dataset contains our target variables related to employee performance and well-being, including:
+The second dataset contains our outcome variables related to employee performance and well-being, including:
 
 - Productivity outcomes (e.g., `productivity_score`)
 - Burnout classification (e.g., `burnout_risk_level`)
@@ -48,7 +48,7 @@ As an **HR analytics manager**, I want to filter employees by AI usage intensity
 
 #### User Story 2
 
-As an **HR analytics manager**, I want to compare burnout risk and productivity between employees with low, moderate, and high AI tool usage in order to identify whether AI adoption is associated with reduced or increased burnout.
+As an **HR analytics manager**, I want to compare burnout risk and productivity across AI usage levels relative to company-wide baselines (overall % high burnout, overall average productivity), so that I can determine whether AI adoption is associated with improved outcomes or elevated burnout risk.
 
 #### User Story 3
 
