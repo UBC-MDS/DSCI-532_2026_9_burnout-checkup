@@ -76,4 +76,4 @@ As an **HR analytics manager**, I want to analyze burnout risk across job roles 
 
 ## References
 
-Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.asp
+Wigert, B., and Agrawal, S. (2018). [Employee burnout, part 1: The 5 main causes](https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx)
