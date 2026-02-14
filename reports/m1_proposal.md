@@ -86,8 +86,6 @@ This finding supports the need for comparative filters in the dashboard. By allo
 
 ## Section 5: App Sketch & Description
 
-### Sketch
-
 ![Dashboard](../img/sketch.png "App Sketch")
 
 This dashboard examines the relationship between AI tool usage, workload, productivity, and employee burnout using a workplace productivity dataset. The landing view displays four summary metrics (average burnout risk, productivity score, work-life balance, and deviation from the company median) that update based on selected filters.
