@@ -74,117 +74,33 @@ As an **HR analytics manager**, I want to analyze burnout risk across job roles 
 **Motivation:** …I want to understand whether productivity gains are occurring alongside increases in burnout risk…
 **Outcome:** …so I can ensure that productivity improvements are sustainable and do not come at the expense of employee well-being.
 
-Perfect — let’s write a clean, rubric-aligned **Section 5: App Sketch & Description** that is concise, clear, and explicitly tied to decision-support (which graders care about).
+## Section 4: Exploratory Data Analysis
 
-You can paste this directly into `reports/m1_proposal.md`.
+To address User Story 3 (Productivity vs Burnout Trade-off), we analyzed the relationship between productivity scores and burnout risk across different levels of AI usage.
 
----
+Analysis:
+We first created a scatter plot showing productivity scores on the x-axis and burnout risk scores on the y-axis, with vertical and horizontal dashed lines indicating company-wide mean scores for both. This visualization allows us to identify whether employees with higher productivity are also experiencing elevated burnout risk. Points are color-coded by AI usage intensity to examine whether higher AI adoption clusters in specific regions of the chart. The visualization reveals that employees with higher AI usage tend to cluster in the high-productivity region. However, a large portion of these employees also fall above the average burnout score. This suggests that while AI usage may be associated with productivity gains, it may also associate with increased burnout risk.
+
+Reflection:
+This finding supports the need for comparative filters in the dashboard. By allowing HR leaders to isolate specific AI usage levels or productivity bands, they can assess whether productivity gains are sustainable or associated with elevated burnout risk. This directly supports evidence-based decision-making around AI deployment policies and workload management strategies.
 
 ## Section 5: App Sketch & Description
 
 ### Sketch
 
-![Sketch](../img/sketch.png)
+![Dashboard](../img/sketch.png "App Sketch")
 
-The sketch illustrates the dashboard layout, including a left-hand filter panel, four key performance indicators (KPIs) displayed across the top, and four analytical visualizations arranged in a two-by-two grid below.
+This dashboard explores the relationship between AI tool usage, workload, productivity, and employee burnout using a workplace productivity dataset. The landing interface presents four key summary metrics (average burnout risk, productivity score, work-life balance, and deviation from company median) that update dynamically based on selected filters.
 
-### Description
+Users can filter employees by job role, experience level, AI usage intensity, manual work hours, task automation percentage, and deadline pressure. These filters allow HR managers to isolate comparable employee segments and examine whether burnout patterns differ across varying levels of AI adoption and work demands.
 
-#### Overall Layout
+The main visualizations include:
+(1) a scatter plot of AI usage versus burnout risk with reference lines for company baselines,
+(2) a grouped bar chart comparing burnout risk across job roles with optional predicted overlays,
+(3) a breakdown of weekly work hour composition, and
+(4) a productivity versus burnout quadrant view to identify potentially unsustainable high-productivity/high-burnout scenarios.
 
-The dashboard follows a **comparison-driven decision-support design**:
-
-- **Left Sidebar:** Interactive filters to subset employees.
-- **Top Row (4 KPIs):** At-a-glance summary metrics.
-- **Main Panel (4 Visualizations):** Analytical comparisons supporting HR decisions.
-
-This layout enables rapid monitoring at the top and deeper exploration below.
-
-#### Sidebar (Filters)
-
-The sidebar allows users to subset employees by:
-
-- Employee ID
-- Job Role
-- Experience (years)
-- Weekly AI Usage (hours)
-- Manual Work Hours
-- Tasks Automated (%)
-- Deadline Pressure (Low, Medium, High)
-- Optional: Show Predicted Risk Overlay
-
-These filters allow HR managers to isolate comparable employee segments (e.g., high AI usage developers under high deadline pressure).
-
-#### KPI Row (Top-Level Metrics)
-
-The four KPIs summarize the filtered subset:
-
-1. **Avg Burnout Risk Score**
-   Average burnout score for selected employees.
-
-2. **Avg Productivity Score**
-   Average productivity score for selected employees.
-
-3. **Burnout vs Median (%)**
-   Percentage difference between filtered burnout score and the company-wide median baseline.
-
-4. **Avg Work-Life Balance Score**
-   Average work-life balance score for selected employees.
-
-These metrics provide immediate context before deeper exploration.
-
-#### Main Visualizations
-
-##### 1. AI Usage vs Burnout
-
-Scatter plot showing AI usage (hrs/week) versus burnout risk score.
-
-- Points grouped by deadline pressure level.
-- Median burnout reference line included.
-- Optional predicted risk overlay.
-
-Supports analysis of whether higher AI usage correlates with increased or reduced burnout under varying pressure levels.
-
-##### 2. Burnout Risk by Job Role
-
-Grouped bar chart comparing burnout risk scores across job roles.
-
-- Observed values always shown.
-- Predicted values optionally overlaid.
-
-Supports role-level risk comparison and responsible AI deployment decisions.
-
-##### 3. Weekly Work Hours Breakdown
-
-Pie or stacked bar chart displaying time allocation across:
-
-- Manual work
-- Meetings
-- Collaboration
-- Deep work
-
-Supports workload composition analysis.
-
-##### 4. Productivity vs Burnout (Quadrant View)
-
-Scatter plot of productivity score versus burnout risk score.
-
-- Grouped by AI usage level.
-- Reference lines create performance–risk quadrants.
-
-Helps identify high-productivity/high-burnout scenarios that may be unsustainable.
-
-#### Interaction Design
-
-- Filters dynamically update all KPIs and visualizations.
-- Reference lines provide company-wide baselines for comparison.
-- The predicted risk overlay allows optional model-based insight without replacing observed data.
-
-This design supports HR leaders in distinguishing:
-
-- Workload-driven burnout,
-- AI-associated burnout,
-- Sustainable productivity patterns.
+Together, these interactive components enable users to distinguish workload-driven burnout from AI-associated burnout and support evidence-based workforce planning decisions.
 
 ## References
 
