@@ -74,6 +74,17 @@ As an **HR analytics manager**, I want to analyze burnout risk across job roles 
 **Motivation:** …I want to understand whether productivity gains are occurring alongside increases in burnout risk…
 **Outcome:** …so I can ensure that productivity improvements are sustainable and do not come at the expense of employee well-being.
 
+## Section 4: Exploratory Data Analysis
+
+To address User Story 3 (Productivity vs Burnout Trade-off), we analyzed the relationship between productivity scores and burnout risk across different levels of AI usage.
+
+Analysis:
+We first created a scatter plot showing productivity scores on the x-axis and burnout risk scores on the y-axis, with vertical and horizontal dashed lines indicating company-wide mean scores for both. This visualization allows us to identify whether employees with higher productivity are also experiencing elevated burnout risk. Points are color-coded by AI usage intensity to examine whether higher AI adoption clusters in specific regions of the chart. The visualization reveals that employees with higher AI usage tend to cluster in the high-productivity region. However, a large portion of these employees also fall above the average burnout score. This suggests that while AI usage may be associated with productivity gains, it may also associate with increased burnout risk.
+
+Reflection:
+This finding supports the need for comparative filters in the dashboard. By allowing HR leaders to isolate specific AI usage levels or productivity bands, they can assess whether productivity gains are sustainable or associated with elevated burnout risk. This directly supports evidence-based decision-making around AI deployment policies and workload management strategies.
+
+
 ## References
 
 Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx
