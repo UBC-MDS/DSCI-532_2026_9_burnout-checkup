@@ -1,2 +1,5 @@
 environment.pinned*
 pin_env_versions.py
+*pycache*
+*scrap*
+*.log

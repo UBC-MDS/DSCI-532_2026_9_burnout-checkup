@@ -56,19 +56,19 @@ As an **HR analytics manager**, I want to analyze burnout risk across job roles 
 
 ### Jobs to Be Done
 
-#### JTBD 1:
+#### JTBD 1
 
 **Situation:** When reviewing employee well-being and productivity reports…
 **Motivation:** …I want to distinguish burnout driven by excessive workload from burnout potentially associated with AI tool usage…
 **Outcome:** …so I can make informed decisions about AI adoption policies without misattributing burnout to the wrong causes.
 
-#### JTBD 2:
+#### JTBD 2
 
 **Situation:** When investigating an increase in reported burnout or stress levels within specific teams…
 **Motivation:** …I want to assess whether high AI usage combined with deadline pressure and task complexity is contributing to elevated burnout risk…
 **Outcome:** …so I can design targeted interventions such as workload rebalancing, additional AI training, or revised performance expectations.
 
-#### JTBD 3:
+#### JTBD 3
 
 **Situation:** When evaluating the impact of AI tools on employee productivity…
 **Motivation:** …I want to understand whether productivity gains are occurring alongside increases in burnout risk…
@@ -84,7 +84,14 @@ We first created a scatter plot showing productivity scores on the x-axis and bu
 Reflection:
 This finding supports the need for comparative filters in the dashboard. By allowing HR leaders to isolate specific AI usage levels or productivity bands, they can assess whether productivity gains are sustainable or associated with elevated burnout risk. This directly supports evidence-based decision-making around AI deployment policies and workload management strategies.
 
+## Section 5: App Sketch & Description
+
+![Dashboard](../img/sketch.png "App Sketch")
+
+This dashboard examines the relationship between AI tool usage, workload, productivity, and employee burnout using a workplace productivity dataset. The landing view displays four summary metrics (average burnout risk, productivity score, work-life balance, and deviation from the company median) that update based on selected filters.
+
+Users can filter employees by job role, experience, AI usage, manual work hours, task automation, and deadline pressure. The main visualizations include a scatter plot of AI usage versus burnout, a grouped bar chart comparing burnout across roles (with optional predicted overlays), a breakdown of weekly work hours, and a productivity-versus-burnout quadrant view. These components allow HR managers to compare employee segments and assess whether AI adoption is associated with sustainable productivity or elevated burnout risk.
 
 ## References
 
-Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx
+Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. <https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx>
