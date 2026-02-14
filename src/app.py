@@ -109,16 +109,10 @@ app_ui = ui.page_fluid(
                 ),
                 ui.card(
                     ui.card_header("Burnout Risk Score Prediction"),
-                    ui.input_radio_buttons(
-                        "observed_pred",
-                        "Display mode",
-                        choices=["Observed", "Predicted"],
-                        selected="Observed",
-                        inline=True,
-                    ),
                     ui.p(
-                        "Grouped bar chart comparing burnout risk scores across job roles, with side-by-side "
-                        "Observed and Predicted values based on the selected display mode."
+                        "Grouped bar chart showing observed burnout risk scores across job roles. "
+                        "Predicted burnout scores may be overlaid to assess divergence between "
+                        "observed and model-estimated risk."
                     ),
                 ),
                 col_widths=(6, 6),
