@@ -1,0 +1,13 @@
+# requirements.txt (runtime)
+Python==3.11.14
+shiny==1.4.0
+pandas==3.0.0
+numpy==2.4.2
+matplotlib==3.10.8
+plotly==6.5.2
+pyarrow==23.0.0
+openpyxl==3.1.5
+scikit-learn==1.8.0
+python-dotenv==1.2.1
+seaborn==0.13.2
+websockets==16.0
