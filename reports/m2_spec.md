@@ -104,8 +104,28 @@ flowchart TD
 
 ## 2.4 Calculation Details
 
-For each @reactive.calc in your diagram, briefly describe:
+### filtered_df (@reactive.calc)
 
-Which inputs it depends on.
-What transformation it performs (e.g., "filters rows to the selected year range and region(s)").
-Which outputs consume it.
+**Depends on:**
+
+- `job_role`
+- `ai_band`
+- `experience_years`
+- `ai_tool_usage_hours_per_week`
+- `manual_work_hours_per_week`
+- `tasks_automated_percent`
+- `deadline_pressure_level`
+
+**Transformation:**
+Filters the full dataset to retain only observations matching the selected input criteria by the user.
+
+**Consumed by:**
+
+- `avg_burnout`
+- `avg_productivity`
+- `burnout_vs_median`
+- `avg_wlb`
+- `plot_ai_vs_burnout`
+- `plot_burnout_by_role`
+- `plot_hours_breakdown`
+- `plot_prod_vs_burnout`
