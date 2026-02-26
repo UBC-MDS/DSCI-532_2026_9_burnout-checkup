@@ -1,0 +1,59 @@
+# App Specification
+
+## 2.1 Updated Job Stories
+
+| #   | Job Story                       | Status         | Notes                         |
+| --- | ------------------------------- | -------------- | ----------------------------- |
+| 1   | **When** reviewing employee well-being and productivity reports, **I want to** separate burnout caused by workload from burnout potentially associated with AI usage, **so I can** make informed AI adoption decisions without misattributing the root cause of burnout. | ✅ Implemented | Pending |
+| 2   | **When** investigating increased burnout within specific teams, **I want to** analyze how AI usage interacts with deadline pressure, **so I can** design targeted interventions such as workload adjustments or AI training. | 🔄 Revised | Changed focus from *task complexity and deadline pressure* to just *deadline pressure* because it is a more directly actionable and interpretable driver of burnout. |
+| 3   | **When** evaluating the impact of AI tools on productivity, **I want to** compare productivity gains against changes in burnout risk, **so I can** ensure performance improvements are sustainable and do not harm employee well-being. | ✅ Implemented | Pending |
+
+## 2.2 Component Inventory
+
+| ID                | Type          | Shiny widget / renderer | Depends on                   | Job story  |
+| ------------------| ------------- | ----------------------- | ---------------------------- | ---------- |
+| `job_role`        | Input         | `ui.input_selectize()`  | —                            | #1, #2     |
+| `ai_band`         | Input         | `ui.input_selectize()`  | —                            | #1, #3     |
+| `experience_years`| Input         | `ui.input_slider()`     | —                            | #1         |
+| `ai_tool_usage_hours_per_week`    | Input         | `ui.input_slider()`     | —            | #1, #3     |
+| `manual_work_hours_per_week`      | Input         | `ui.input_slider()`     | —            | #1         |
+| `tasks_automated_percent`         | Input         | `ui.input_slider()`     | —            | #1         |
+| `deadline_pressure_level`         | Input         | `ui.input_checkbox_group()`| —         | #1, #2     |
+| `reset_btn`       | Input         | `ui.input_action_button()` | -                         | #1, #2, #3 |
+| `filtered_df`     | Reactive calc | `@reactive.calc`        | all inputs above             | #1, #2, #3 |
+| `_reset_filters`  | Reactive effect | `@reactive.effect` + `@reactive.event(input.reset_btn)`| `reset_btn`  | #1, #2, #3 |
+| `avg_burnout`     | Output        | `@render.text`                | `filtered_df`                | #1       |
+| `avg_productivity`| Output        |` @render.text`                | `filtered_df`                | #1, #3   |
+| `burnout_vs_median`   | Output    | `@render.text`                | `filtered_df`, baselines     | #1       |
+| `avg_wlb`             | Output    | `@render.text`                | `filtered_df`                | #1       |
+| `plot_ai_vs_burnout`  | Output    | `@render_altair`              | `filtered_df`, baselines     | #1, #2   |
+| `plot_burnout_by_role`| Output    | `@render_altair`              | `filtered_df`                | #2       |
+| `plot_hours_breakdown`| Output    | `@render_altair`              | `filtered_df`                | #1       |
+| `plot_prod_vs_burnout`| Output    | `@render_altair`              | `filtered_df`, baselines     | #3       |
+
+
+## 2.3 Reactivity Diagram
+
+Draw your planned reactive graph as a Mermaid flowchart using the notation from Lecture 3:
+
+[/Input/] (Parallelogram) (or [Input] Rectangle) = reactive input
+Hexagon {{Name}} = @reactive.calc expression
+Stadium ([Name]) (or Circle) = rendered output
+Example:
+
+```mermaid
+flowchart TD
+  A[/input_year/] --> F{{filtered_df}}
+  B[/input_region/] --> F
+  F --> P1([plot_trend])
+  F --> P2([tbl_summary])
+  C[/input_color/] --> P3([plot_scatter])
+```
+
+## 2.4 Calculation Details
+
+For each @reactive.calc in your diagram, briefly describe:
+
+Which inputs it depends on.
+What transformation it performs (e.g., "filters rows to the selected year range and region(s)").
+Which outputs consume it.
