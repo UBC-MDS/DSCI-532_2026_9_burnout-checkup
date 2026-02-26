@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### What's Changed
 
 - Removed *Employee ID* from the app sketch/skeleton and switched for *AI usage* (low, moderate, high)
+- Changed focus from *task complexity and deadline pressure* to just *deadline pressure* in **job story 2** 
 
 ## [0.1.0]
 
