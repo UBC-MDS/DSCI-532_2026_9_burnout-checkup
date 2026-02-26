@@ -34,22 +34,6 @@
 
 ## 2.3 Reactivity Diagram
 
-Draw your planned reactive graph as a Mermaid flowchart using the notation from Lecture 3:
-
-[/Input/] (Parallelogram) (or [Input] Rectangle) = reactive input
-Hexagon {{Name}} = @reactive.calc expression
-Stadium ([Name]) (or Circle) = rendered output
-Example:
-
-```mermaid
-flowchart TD
-  A[/input_year/] --> F{{filtered_df}}
-  B[/input_region/] --> F
-  F --> P1([plot_trend])
-  F --> P2([tbl_summary])
-  C[/input_color/] --> P3([plot_scatter])
-```
-
 ```mermaid
 flowchart TD
 
