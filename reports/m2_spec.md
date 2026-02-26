@@ -21,7 +21,7 @@
 | `deadline_pressure_level`         | Input         | `ui.input_checkbox_group()`| —         | #1, #2     |
 | `reset_btn`       | Input         | `ui.input_action_button()` | -                         | #1, #2, #3 |
 | `filtered_df`     | Reactive calc | `@reactive.calc`        | all inputs above             | #1, #2, #3 |
-| `_reset_filters`  | Reactive effect | `@reactive.effect` + `@reactive.event(input.reset_btn)`| `reset_btn` | #1, #2, #3 |
+| `_reset_filters`  | Reactive effect | `@reactive.effect` + `@reactive.event(input.reset_btn)`| `reset_btn`  | #1, #2, #3 |
 | `avg_burnout`     | Output        | `@render.text`                | `filtered_df`                | #1       |
 | `avg_productivity`| Output        |` @render.text`                | `filtered_df`                | #1, #3   |
 | `burnout_vs_median`   | Output    | `@render.text`                | `filtered_df`, baselines     | #1       |
