@@ -50,6 +50,74 @@ flowchart TD
   C[/input_color/] --> P3([plot_scatter])
 ```
 
+```mermaid
+flowchart TD
+
+  %% -------------------
+  %% Inputs
+  %% -------------------
+  job_role[/job_role/]
+  ai_band[/ai_band/]
+  experience_years[/experience_years/]
+  ai_tool_usage_hours_per_week[/ai_tool_usage_hours_per_week/]
+  manual_work_hours_per_week[/manual_work_hours_per_week/]
+  tasks_automated_percent[/tasks_automated_percent/]
+  deadline_pressure_level[/deadline_pressure_level/]
+  reset_btn[/reset_btn/]
+
+  %% -------------------
+  %% Reactives
+  %% -------------------
+  filtered_df{{filtered_df}}
+  baselines{{baselines}}
+  reset_effect{{_reset_filters}}
+
+  %% Input -> filtered_df
+  job_role --> filtered_df
+  ai_band --> filtered_df
+  experience_years --> filtered_df
+  ai_tool_usage_hours_per_week --> filtered_df
+  manual_work_hours_per_week --> filtered_df
+  tasks_automated_percent --> filtered_df
+  deadline_pressure_level --> filtered_df
+
+  %% Reset button
+  reset_btn --> reset_effect
+
+  %% -------------------
+  %% Outputs (text)
+  %% -------------------
+  avg_burnout([avg_burnout])
+  avg_productivity([avg_productivity])
+  burnout_vs_median([burnout_vs_median])
+  avg_wlb([avg_wlb])
+
+  %% -------------------
+  %% Outputs (plots)
+  %% -------------------
+  plot_ai_vs_burnout([plot_ai_vs_burnout])
+  plot_burnout_by_role([plot_burnout_by_role])
+  plot_hours_breakdown([plot_hours_breakdown])
+  plot_prod_vs_burnout([plot_prod_vs_burnout])
+
+  %% filtered_df dependencies
+  filtered_df --> avg_burnout
+  filtered_df --> avg_productivity
+  filtered_df --> avg_wlb
+  filtered_df --> plot_burnout_by_role
+  filtered_df --> plot_hours_breakdown
+
+  %% filtered_df + baselines dependencies
+  filtered_df --> burnout_vs_median
+  baselines --> burnout_vs_median
+
+  filtered_df --> plot_ai_vs_burnout
+  baselines --> plot_ai_vs_burnout
+
+  filtered_df --> plot_prod_vs_burnout
+  baselines --> plot_prod_vs_burnout
+```
+
 ## 2.4 Calculation Details
 
 For each @reactive.calc in your diagram, briefly describe:
