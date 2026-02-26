@@ -2,8 +2,8 @@ from shiny import App, ui, render
 import pandas as pd
 
 # Read our data
-features = pd.read_csv("../data/raw/ai_productivity_features.csv")
-targets = pd.read_csv("../data/raw/ai_productivity_targets.csv")
+features = pd.read_csv("data/raw/ai_productivity_features.csv")
+targets = pd.read_csv("data/raw/ai_productivity_targets.csv")
 df = features.merge(
     targets, on="Employee_ID"
 )  # merge features and targets in a single df
@@ -22,8 +22,8 @@ df["ai_band"] = pd.qcut(
     df["ai_tool_usage_hours_per_week"], q=3, labels=["Low", "Medium", "High"]
 )
 
-# Input variables for filters
-employee_choices = ["All"] + sorted(df["Employee_ID"].astype(str).unique().tolist())
+# Input variables' options for filters
+# employee_choices = ["All"] + sorted(df["Employee_ID"].astype(str).unique().tolist())
 job_role_choices = ["All"] + sorted(df["job_role"].dropna().unique().tolist())
 ai_band_choices = ["All"] + sorted(df["ai_band"].dropna().astype(str).unique().tolist())
 deadline_choices = sorted(df["deadline_pressure_level"].dropna().unique().tolist())
@@ -61,39 +61,51 @@ app_ui = ui.page_fluid(
             ui.hr(),
             ui.h6("Job Role:"),
             ui.input_selectize(
-                "employee_id",
+                "job_role",
                 None,
-                choices=["All"],  # TODO: populate from data
+                choices=job_role_choices,
                 selected="All",
             ),
             ui.br(),
             ui.h6("AI Usage:"),
             ui.input_selectize(
-                "job_role",
+                "ai_band",
                 None,
-                choices=["All"],  # TODO: populate from data
+                choices=ai_band_choices,
                 selected=["All"],
                 multiple=True,
             ),
             ui.br(),
             ui.h6("Experience (years):"),
-            ui.input_slider("experience", None, min=0, max=30, value=(0, 30)),
+            ui.input_slider(
+                "experience", None, min=exp_min, max=exp_max, value=(exp_min, exp_max)
+            ),
             ui.br(),
             ui.h6("Weekly AI Usage:"),
-            ui.input_slider("ai_usage", None, min=0, max=40, value=(0, 40)),
+            ui.input_slider(
+                "ai_usage", None, min=ai_min, max=ai_max, value=(ai_min, ai_max)
+            ),
             ui.br(),
             ui.h6("Manual Work Hours:"),
-            ui.input_slider("manual_hours", None, min=0, max=60, value=(0, 60)),
+            ui.input_slider(
+                "manual_hours", None, min=man_min, max=man_max, value=(man_min, man_max)
+            ),
             ui.br(),
             ui.h6("Tasks Automated:"),
-            ui.input_slider("tasks_automated", None, min=0, max=100, value=(0, 100)),
+            ui.input_slider(
+                "tasks_automated",
+                None,
+                min=task_min,
+                max=task_max,
+                value=(task_min, task_max),
+            ),
             ui.br(),
             ui.h6("Deadline Pressure:"),
             ui.input_checkbox_group(
                 "deadline_pressure",
                 None,
-                choices=["Low", "Medium", "High"],
-                selected=["Low", "Medium", "High"],
+                choices=deadline_choices,
+                selected=deadline_choices,
                 inline=True,
             ),
             ui.hr(),
