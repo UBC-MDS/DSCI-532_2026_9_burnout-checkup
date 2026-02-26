@@ -1,19 +1,65 @@
 from shiny import App, ui, render
+import pandas as pd
+
+# Read our data
+features = pd.read_csv("../data/raw/ai_productivity_features.csv")
+targets = pd.read_csv("../data/raw/ai_productivity_targets.csv")
+df = features.merge(
+    targets, on="Employee_ID"
+)  # merge features and targets in a single df
+
+# Preprocessing taken from EDA file
+df["workload_score"] = (
+    df["manual_work_hours_per_week"]
+    + df["meeting_hours_per_week"]
+    + df["deadline_pressure_level"].map({"Low": 1, "Medium": 2, "High": 3})
+)
+
+df["workload_band"] = pd.qcut(
+    df["workload_score"], q=3, labels=["Low", "Medium", "High"]
+)
+df["ai_band"] = pd.qcut(
+    df["ai_tool_usage_hours_per_week"], q=3, labels=["Low", "Medium", "High"]
+)
+
+# Input variables for filters
+employee_choices = ["All"] + sorted(df["Employee_ID"].astype(str).unique().tolist())
+job_role_choices = ["All"] + sorted(df["job_role"].dropna().unique().tolist())
+ai_band_choices = ["All"] + sorted(df["ai_band"].dropna().astype(str).unique().tolist())
+deadline_choices = sorted(df["deadline_pressure_level"].dropna().unique().tolist())
+
+# Slider ranges
+exp_min, exp_max = int(df["experience_years"].min()), int(df["experience_years"].max())
+ai_min, ai_max = int(df["ai_tool_usage_hours_per_week"].min()), int(
+    df["ai_tool_usage_hours_per_week"].max()
+)
+man_min, man_max = int(df["manual_work_hours_per_week"].min()), int(
+    df["manual_work_hours_per_week"].max()
+)
+task_min, task_max = int(df["tasks_automated_percent"].min()), int(
+    df["tasks_automated_percent"].max()
+)
+
+# Burnout median for reference in plots
+company_median_burnout = float(df["burnout_risk_score"].median())
+
 
 # -------------------------
 # UI
 # -------------------------
 app_ui = ui.page_fluid(
-    ui.tags.style("""
+    ui.tags.style(
+        """
         .bslib-sidebar-layout > .sidebar > .sidebar-content {
             gap: 0 !important;
         }
-        """),
+        """
+    ),
     ui.layout_sidebar(
         ui.sidebar(
             ui.h3("AI Usage &\nBurnout Checkup"),
             ui.hr(),
-            ui.h6("Employee ID:"),
+            ui.h6("Job Role:"),
             ui.input_selectize(
                 "employee_id",
                 None,
@@ -21,7 +67,7 @@ app_ui = ui.page_fluid(
                 selected="All",
             ),
             ui.br(),
-            ui.h6("Job Role:"),
+            ui.h6("AI Usage:"),
             ui.input_selectize(
                 "job_role",
                 None,
@@ -53,7 +99,6 @@ app_ui = ui.page_fluid(
             ui.hr(),
             ui.input_checkbox("show_pred", "Show Predicted Risk Overlay", value=True),
             ui.input_checkbox("show_debug", "Show debug panel", value=False),
-
             width=320,
         ),
         # -------------------------
@@ -135,16 +180,17 @@ app_ui = ui.page_fluid(
                     ),
                 ),
                 col_widths=(6, 6),
-
             ),
             ui.br(),
             ui.panel_conditional(
                 "input.show_debug",
                 ui.card(
-                    ui.card_header("Development utility: echoes filter values to validate reactivity"),
+                    ui.card_header(
+                        "Development utility: echoes filter values to validate reactivity"
+                    ),
                     ui.output_text_verbatim("debug_filters"),
-                )
-            )            
+                ),
+            ),
         ),
     ),
 )
