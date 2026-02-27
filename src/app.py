@@ -3,9 +3,8 @@ from sklearn import base
 from shiny import App, ui, render, reactive
 from shinywidgets import output_widget, render_widget
 import pandas as pd
-import altair as alt
 
-from constants.paths import FEATURES_PATH, TARGETS_PATH
+from src.constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
