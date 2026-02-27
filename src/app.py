@@ -5,7 +5,7 @@ from shinywidgets import output_widget, render_widget
 import pandas as pd
 import altair as alt
 
-from constants.paths import FEATURES_PATH, TARGETS_PATH
+from src.constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
@@ -126,43 +126,39 @@ app_ui = ui.page_fluid(
         ui.div(
             # KPI ROW (4 KPIs)
             ui.layout_columns(
+                # Average burnout risk score for the filtered employees.
                 ui.card(
                     ui.card_header("Avg Burnout Risk Score"),
                     ui.h2(ui.output_text("kpi_avg_burnout")),
-                    ui.p(
-                        ui.em("Average burnout risk score for the filtered employees.")
-                    ),
                 ),
                 ui.card(
                     ui.card_header("Avg Productivity Score"),
                     ui.h2(ui.output_text("kpi_avg_productivity")),
-                    ui.p(
-                        ui.em("Average productivity score for the filtered employees.")
-                    ),
+                    # ui.p(
+                    #     ui.em("Average productivity score for the filtered employees.")
+                    # ),
                 ),
                 ui.card(
                     ui.card_header("Burnout vs Median (%)"),
                     ui.h2(ui.output_text("kpi_burnout_vs_median")),
                     ui.p(
-                        ui.em(
-                            "Percentage difference between filtered burnout score and company median."
-                        )
+                        # ui.em(
+                        #     "Percentage difference between filtered burnout score and company median."
+                        # )
                     ),
                 ),
                 ui.card(
                     ui.card_header("Avg Work-Life Balance Score"),
                     ui.h2(ui.output_text("kpi_avg_wlb")),
                     ui.p(
-                        ui.em(
-                            "Average work-life balance score for the filtered employees."
-                        )
+                        # ui.em(
+                        #     "Average work-life balance score for the filtered employees."
+                        # )
                     ),
                 ),
                 col_widths=(3, 3, 3, 3),
             ),
-            
             ui.br(),
-            
             # 4 PANELS (2 x 2)
             # Row 1: AI vs Burnout scatter, Burnout by Role bar
             ui.layout_columns(
@@ -172,14 +168,12 @@ app_ui = ui.page_fluid(
                 ),
                 ui.card(
                     ui.card_header("Burnout Risk by Job Role"),
-                    ui.p(ui.em("Observed values are shown; prediction overlay is planned for a later milestone.")),
+                    # ui.p(ui.em("Observed values are shown; prediction overlay is planned for a later milestone.")),
                     output_widget("plot_burnout_by_role"),
                 ),
                 col_widths=(6, 6),
             ),
-            
             ui.br(),
-            
             # Row 2: Weekly hours breakdown, Productivity vs Burnout scatter
             ui.layout_columns(
                 ui.card(
@@ -192,15 +186,11 @@ app_ui = ui.page_fluid(
                 ),
                 col_widths=(6, 6),
             ),
-
             ui.br(),
-            
             ui.panel_conditional(
                 "input.show_debug",
                 ui.card(
-                    ui.card_header(
-                        "Debug (reactive inputs + filtered row count)"
-                    ),
+                    ui.card_header("Debug (reactive inputs + filtered row count)"),
                     ui.output_text_verbatim("debug_filters"),
                 ),
             ),
@@ -223,13 +213,13 @@ def server(input, output, session):
 
         # AI band (multi)
 
-        # Ranges      
+        # Ranges
 
-        # Deadline pressure (multi)    
+        # Deadline pressure (multi)
 
         return d
 
-    # KPIs 
+    # KPIs
     def _safe_mean(series: pd.Series) -> float | None:
         if series.empty:
             return None
@@ -264,10 +254,12 @@ def server(input, output, session):
         if m is None or BASELINE_MEDIAN_BURNOUT == 0:
             return "—"
         pct = (m - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT * 100.0
-        arrow = "▲" if pct > 0 else ("▼" if pct < 0 else "•")
-        return f"{arrow}{abs(pct):.1f}%"
+        direction = "Up " if pct > 0 else ("Down " if pct < 0 else "No change ")
+        return f"{direction}{abs(pct):.1f}%"
 
-    # ---- Plots (Altair) ----
+        return f"{direction}{abs(pct):.1f}%"
+
+    # Plots (Altair)
     def _empty_chart(message: str):
         base_chart = (
             alt.Chart(pd.DataFrame({"text": [message]}))
@@ -344,35 +336,48 @@ def server(input, output, session):
     def plot_hours_breakdown():
         d = filtered_df()
         if d.empty:
-            return ui.HTML(altair_to_html(_empty_chart("No data for current filters.")))
+            return _empty_chart("No data for current filters.")
 
-        # Convert focus hours/day to approximate weekly focus hours (5-day workweek assumption for prototype)
+        # Convert focus hours/day to approximate weekly focus hours (5-day workweek assumption)
         weekly_focus = d["focus_hours_per_day"] * 5.0
 
         breakdown = pd.DataFrame(
             {
-                "category": ["Manual", "Meetings", "Collaboration", "Focus (approx)"],
+                "category": ["Meetings", "Collaboration", "Deep work", "Manual work"],
                 "hours": [
-                    float(d["manual_work_hours_per_week"].mean()),
                     float(d["meeting_hours_per_week"].mean()),
                     float(d["collaboration_hours_per_week"].mean()),
                     float(weekly_focus.mean()),
+                    float(d["manual_work_hours_per_week"].mean()),
                 ],
             }
         )
 
-        chart = (
+        total = breakdown["hours"].sum()
+        if total <= 0:
+            return _empty_chart("No hours available for current filters.")
+
+        breakdown["pct"] = breakdown["hours"] / total
+        breakdown["pct_label"] = (breakdown["pct"] * 100).round(0).astype(int).astype(
+            str
+        ) + "%"
+
+        pie = (
             alt.Chart(breakdown)
-            .mark_bar()
+            .mark_arc()
             .encode(
-                x=alt.X("hours:Q", title="Avg hours per week"),
-                y=alt.Y("category:N", sort="-x", title=None),
-                tooltip=["category:N", alt.Tooltip("hours:Q", format=".1f")],
+                theta=alt.Theta("hours:Q", title=None),
+                color=alt.Color("category:N", title=None),
+                tooltip=[
+                    alt.Tooltip("category:N", title="Category"),
+                    alt.Tooltip("hours:Q", title="Avg hours/week", format=".1f"),
+                    alt.Tooltip("pct:Q", title="Share", format=".0%"),
+                ],
             )
             .properties(height=260)
         )
 
-        return alt.JupyterChart(chart)
+        return alt.JupyterChart(pie)
 
     @output
     @render_widget
