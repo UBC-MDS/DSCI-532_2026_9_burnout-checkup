@@ -257,8 +257,6 @@ def server(input, output, session):
         direction = "Up " if pct > 0 else ("Down " if pct < 0 else "No change ")
         return f"{direction}{abs(pct):.1f}%"
 
-        return f"{direction}{abs(pct):.1f}%"
-
     # Plots (Altair)
     def _empty_chart(message: str):
         base_chart = (
