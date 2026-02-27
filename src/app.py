@@ -259,10 +259,7 @@ def server(input, output, session):
     @output
     @render.text
     def kpi_avg_burnout():
-        d = filtered_df()
-        if len(d) == 0:
-            return "N/A"
-        return round(d["burnout_risk_score"].mean(), 2)
+        return "x.x"
 
     @output
     @render.text
