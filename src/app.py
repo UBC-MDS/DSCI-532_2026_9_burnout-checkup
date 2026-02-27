@@ -114,6 +114,8 @@ app_ui = ui.page_fluid(
             ui.hr(),
             ui.input_checkbox("show_pred", "Show Predicted Risk Overlay", value=True),
             ui.input_checkbox("show_debug", "Show debug panel", value=False),
+            ui.br(),
+            ui.input_action_button("reset_btn", "Reset Filters"),
             width=320,
         ),
         # -------------------------
