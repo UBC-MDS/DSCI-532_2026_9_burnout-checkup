@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "burnout-checkup"
+version = "0.1.0"
+description = "Interactive dashboard for exploring AI tool usage, workload, and burnout risk."
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["src"]
