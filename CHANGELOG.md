@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated paths.py constants to reference `ai_productivity_features.csv` and `ai_productivity_targets.csv`.
 - Replaced outdated features.csv and targets.csv constants.
 - Ensured data loading is now fully centralized and consistent across the project.
+- Updated data file paths in `constants/paths.py` and app.py to reflect new raw dataset filenames.
+- Added outputs for all charts using `render_widget` instead of `render.ui` for improved rendering consistency.
+- Added `src/__init__.py` to make src a package and resolve import errors in app.py.
 
 ## [0.1.0]
 
