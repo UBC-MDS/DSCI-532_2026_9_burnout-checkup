@@ -1,6 +1,7 @@
 from shiny import App, ui, render
 import pandas as pd
-from constants.paths import FEATURES_PATH, TARGETS_PATH
+
+from src.constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
