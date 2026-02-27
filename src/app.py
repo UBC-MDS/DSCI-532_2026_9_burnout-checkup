@@ -2,7 +2,7 @@ from shiny import App, ui, render
 import pandas as pd
 from shiny import reactive
 
-from src.constants.paths import FEATURES_PATH, TARGETS_PATH
+from constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
@@ -259,7 +259,10 @@ def server(input, output, session):
     @output
     @render.text
     def kpi_avg_burnout():
-        return "x.x"
+        d = filtered_df()
+        if len(d) == 0:
+            return "N/A"
+        return round(d["burnout_risk_score"].mean(), 2)
 
     @output
     @render.text
