@@ -1,5 +1,6 @@
 from shiny import App, ui, render
 import pandas as pd
+from shiny import reactive
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
 
@@ -214,6 +215,47 @@ app_ui = ui.page_fluid(
 # Server
 # -------------------------
 def server(input, output, session):
+    @reactive.calc
+    def filtered_df():
+        d = df.copy()
+
+        # job role
+        if input.job_role() != "All":
+            d = d[d["job_role"] == input.job_role()]
+
+        # ai band
+        if "All" not in input.ai_band():
+            d = d[d["ai_band"].astype(str).isin(input.ai_band())]
+
+        # experience
+        d = d[
+            (d["experience_years"] >= input.experience()[0]) &
+            (d["experience_years"] <= input.experience()[1])
+        ]
+
+        # ai usage
+        d = d[
+            (d["ai_tool_usage_hours_per_week"] >= input.ai_usage()[0]) &
+            (d["ai_tool_usage_hours_per_week"] <= input.ai_usage()[1])
+        ]
+
+        # manual hours
+        d = d[
+            (d["manual_work_hours_per_week"] >= input.manual_hours()[0]) &
+            (d["manual_work_hours_per_week"] <= input.manual_hours()[1])
+        ]
+
+        # tasks automated
+        d = d[
+            (d["tasks_automated_percent"] >= input.tasks_automated()[0]) &
+            (d["tasks_automated_percent"] <= input.tasks_automated()[1])
+        ]
+
+        # deadline pressure
+        d = d[d["deadline_pressure_level"].isin(input.deadline_pressure())]
+
+        return d
+
     @output
     @render.text
     def kpi_avg_burnout():
