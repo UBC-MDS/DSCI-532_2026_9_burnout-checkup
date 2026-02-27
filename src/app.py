@@ -217,6 +217,27 @@ app_ui = ui.page_fluid(
 # Server
 # -------------------------
 def server(input, output, session):
+    @reactive.effect
+    @reactive.event(input.reset_btn)
+    def _reset_filters():
+
+        # Reset selectize inputs
+        ui.update_selectize("job_role", selected="All")
+        ui.update_selectize("ai_band", selected=["All"])
+
+        # Reset sliders
+        ui.update_slider("experience", value=(exp_min, exp_max))
+        ui.update_slider("ai_usage", value=(ai_min, ai_max))
+        ui.update_slider("manual_hours", value=(man_min, man_max))
+        ui.update_slider("tasks_automated", value=(task_min, task_max))
+
+        # Reset checkbox group
+        ui.update_checkbox_group("deadline_pressure", selected=deadline_choices)
+
+        # Reset checkboxes
+        ui.update_checkbox("show_pred", value=True)
+        ui.update_checkbox("show_debug", value=False)
+    
     @reactive.calc
     def filtered_df():
         d = df.copy()
