@@ -8,8 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### What's Changed
 
-- Removed *Employee ID* from the app sketch/skeleton and switched for *AI usage* (low, moderate, high)
+- Removed *Employee ID* from the app `sketch/skeleton` and switched for *AI usage* (low, moderate, high)
 - Changed focus from *task complexity and deadline pressure* to just *deadline pressure* in **job story 2** 
+- Updated app.py to read `feature/target` data using centralized `FEATURES_PATH` and `TARGETS_PATH` constants.
+- Removed hardcoded CSV paths previously used in app.py.
+- Updated paths.py constants to reference `ai_productivity_features.csv` and `ai_productivity_targets.csv`.
+- Replaced outdated features.csv and targets.csv constants.
+- Ensured data loading is now fully centralized and consistent across the project.
 
 ## [0.1.0]
 
