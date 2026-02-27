@@ -8,5 +8,5 @@ DATA_RAW_DIR = PROJECT_ROOT / "data" / "raw"
 IMG_DIR = PROJECT_ROOT / "img"
 REPORTS_DIR = PROJECT_ROOT / "reports"
 
-FEATURES_PATH = DATA_RAW_DIR / "features.csv"
-TARGETS_PATH = DATA_RAW_DIR / "targets.csv"
+FEATURES_PATH = DATA_RAW_DIR / "ai_productivity_features.csv"
+TARGETS_PATH = DATA_RAW_DIR / "ai_productivity_targets.csv"

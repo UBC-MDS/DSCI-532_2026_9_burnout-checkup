@@ -1,9 +1,10 @@
 from shiny import App, ui, render
 import pandas as pd
+from constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
-features = pd.read_csv("data/raw/ai_productivity_features.csv")
-targets = pd.read_csv("data/raw/ai_productivity_targets.csv")
+features = pd.read_csv(FEATURES_PATH)
+targets = pd.read_csv(TARGETS_PATH)
 df = features.merge(
     targets, on="Employee_ID"
 )  # merge features and targets in a single df
