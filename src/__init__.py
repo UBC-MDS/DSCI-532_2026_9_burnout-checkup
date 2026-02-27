@@ -1,0 +1,1 @@
+"""burnout_checkup Shiny app package."""
