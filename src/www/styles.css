@@ -11,6 +11,8 @@
     --accent-1: #C45A1A;       /* strong burnt orange */
     --accent-2: #E38D53;       /* soft orange accent */
     --border-soft: #E6E6E6;    /* softer neutral border for white cards */
+    --bs-primary: #4A2C18 !important;   /* deep brown */
+    --bs-form-check-bg: #4A2C18 !important;
 }
 
 /* --------------------------------------------
@@ -93,8 +95,59 @@ html, body {
 /* -------------------------------------------
    Checkboxes
 ------------------------------------------- */
-input[type="checkbox"] {
-    accent-color: var(--text-dark);
+/* 1) Regular bootstrap checkboxes */
+.bslib-sidebar-layout .form-check-input:checked,
+.bslib-sidebar-layout input[type="checkbox"]:checked {
+  background-color: var(--text-dark) !important;
+  border-color: var(--text-dark) !important;
+}
+
+.bslib-sidebar-layout .form-check-input:focus,
+.bslib-sidebar-layout input[type="checkbox"]:focus {
+  border-color: var(--text-dark) !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 44, 24, 0.25) !important;
+}
+
+/* 2) Checkbox group rendered as Bootstrap "button checks" */
+.bslib-sidebar-layout .btn-check:checked + .btn,
+.bslib-sidebar-layout .btn-check:checked + .btn-outline-primary,
+.bslib-sidebar-layout .btn-check:active + .btn,
+.bslib-sidebar-layout .btn-check:active + .btn-outline-primary {
+  background-color: var(--text-dark) !important;
+  border-color: var(--text-dark) !important;
+  color: #fff !important;
+}
+
+/* When not checked: keep them neutral/brown border */
+.bslib-sidebar-layout .btn-outline-primary {
+  color: var(--text-dark) !important;
+  border-color: rgba(74, 44, 24, 0.45) !important;
+  background: transparent !important;
+}
+
+/* Hover state */
+.bslib-sidebar-layout .btn-outline-primary:hover {
+  background-color: rgba(74, 44, 24, 0.10) !important;
+  border-color: var(--text-dark) !important;
+}
+
+/* Focus ring for the button-style checks */
+.bslib-sidebar-layout .btn-check:focus + .btn,
+.bslib-sidebar-layout .btn-outline-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(74, 44, 24, 0.25) !important;
+}
+
+/* -------------------------------------------
+   Stronger Sidebar-Specific Override
+------------------------------------------- */
+
+.bslib-sidebar-layout input[type="checkbox"] {
+    accent-color: var(--text-dark) !important;
+}
+
+.bslib-sidebar-layout .form-check-input:checked {
+    background-color: var(--text-dark) !important;
+    border-color: var(--text-dark) !important;
 }
 
 /* -------------------------------------------
