@@ -8,6 +8,7 @@ import pandas as pd
 import altair as alt
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
+from pathlib import Path
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
@@ -53,18 +54,27 @@ task_min, task_max = int(df["tasks_automated_percent"].min()), int(
 BASELINE_MEDIAN_BURNOUT = float(df["burnout_risk_score"].median())
 BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
 BASELINE_MEDIAN_WLB = float(df["work_life_balance_score"].median())
+BASELINE_HIGH_BURNOUT = (
+    (df["burnout_risk_level"] == "High").mean()
+)
 
 # -------------------------
 # UI
 # -------------------------
 app_ui = ui.page_fluid(
-    ui.include_css("src/www/styles.css"),
+    ui.include_css(Path(__file__).parent / "www" / "styles.css"),
     ui.tags.style(
         """
         .bslib-sidebar-layout > .sidebar > .sidebar-content {
             gap: 0 !important;
         }
         """
+    ),
+    ui.tags.head(
+        ui.tags.link(
+            rel="stylesheet",
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
+        )
     ),
     ui.layout_sidebar(
         ui.sidebar(
@@ -162,10 +172,12 @@ app_ui = ui.page_fluid(
                 #         # )
                 #     ),
                 # ),
+                # These boxes are ordered this way because the first two are key KPIs and are both lower the better,
+                # while the last two are higher the better.
                 ui.output_ui("burnout_box"),
+                ui.output_ui("high_burnout_perc_box"),
                 ui.output_ui("productivity_box"),
                 ui.output_ui("wlb_box"),
-                ui.output_ui("burnout_vs_box"),
                 col_widths=(3, 3, 3, 3),
             ),
             ui.br(),
@@ -275,8 +287,9 @@ def server(input, output, session):
 
         return d
     
+    # Comparison helper for KPIs, returns theme and badge text based on how current value compares to baseline.
     def compare(current, baseline, higher_is_better=True):
-        if baseline == 0 or current is None:
+        if baseline == 0 or current is None or pd.isna(current):
             return dict(theme="secondary", badge="no data")
 
         pct = (current - baseline) / abs(baseline) * 100
@@ -284,7 +297,7 @@ def server(input, output, session):
 
         # small change treated as stable
         if abs_pct < 1:
-            return dict(theme="secondary", badge="≈ same as company")
+            return dict(theme="secondary", badge="≈ same as company mean")
 
         is_good = (pct > 0) if higher_is_better else (pct < 0)
 
@@ -293,12 +306,12 @@ def server(input, output, session):
         elif is_good:
             theme = "info"
         elif abs_pct >= 5:
-            theme = "danger"
-        else:
             theme = "warning"
+        else:
+            theme = "danger"
 
-        sign = "+" if pct >= 0 else ""
-        badge = f"{sign}{pct:.1f}% vs company median"
+        arrow = "▲" if pct > 0 else "▼"
+        badge = f"{arrow}{abs_pct:.1f}% vs company median"
 
         return dict(theme=theme, badge=badge)
 
@@ -307,22 +320,6 @@ def server(input, output, session):
         if series.empty:
             return None
         return float(series.mean())
-
-    @render.ui
-    def burnout_box():
-        d = filtered_df()
-        val = _safe_mean(d["burnout_risk_score"])
-        if val is None:
-            return ui.value_box("Avg Burnout Risk", "—", theme="secondary")
-
-        cmp = compare(val, BASELINE_MEDIAN_BURNOUT, higher_is_better=False)
-
-        return ui.value_box(
-            "Avg Burnout Risk",
-            f"{val:.2f}",
-            ui.tags.div(cmp["badge"], class_="small"),
-            theme=cmp["theme"],
-        )
     
     @render.ui
     def productivity_box():
@@ -341,6 +338,38 @@ def server(input, output, session):
         )
     
     @render.ui
+    def high_burnout_perc_box():
+        d = filtered_df()
+        if d.empty:
+            return ui.value_box("High Burnout %", "—", theme="secondary")
+
+        pct = (d["burnout_risk_level"] == "High").mean()
+        cmp = compare(pct, BASELINE_HIGH_BURNOUT, higher_is_better=False)
+
+        return ui.value_box(
+            "High Burnout %",
+            f"{pct*100:.1f}%",
+            ui.tags.div(cmp["badge"], class_="small"),
+            theme=cmp["theme"],
+        )
+    
+    @render.ui
+    def burnout_box():
+        d = filtered_df()
+        val = _safe_mean(d["burnout_risk_score"])
+        if val is None:
+            return ui.value_box("Avg Burnout Risk", "—", theme="secondary")
+
+        cmp = compare(val, BASELINE_MEDIAN_BURNOUT, higher_is_better=False)
+
+        return ui.value_box(
+            "Avg Burnout Risk",
+            f"{val:.2f}",
+            ui.tags.div(cmp["badge"], class_="small"),
+            theme=cmp["theme"],
+        )
+          
+    @render.ui
     def wlb_box():
         d = filtered_df()
         val = _safe_mean(d["work_life_balance_score"])
@@ -355,10 +384,10 @@ def server(input, output, session):
             ui.tags.div(cmp["badge"], class_="small"),
             theme=cmp["theme"],
         )
-        
-    @render.ui
-    def burnout_vs_box():
-        return ui.value_box("Placeholder", "—", theme="secondary")
+
+    
+    
+    # changed card to value box, keeping old code for reference.
     # @output
     # @render.text
     # def kpi_avg_burnout():

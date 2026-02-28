@@ -53,12 +53,12 @@ html, body {
 }
 
 .value-box-title {
-    font-size: 1.2rem !important;
-    font-weight: 600 !important;
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
 }
 
-.value-box-subtitle {
-    font-size: 1.2rem !important;
+.small {
+    font-size: 1.1rem !important;
 }
 
 /* -------------------------------------------
