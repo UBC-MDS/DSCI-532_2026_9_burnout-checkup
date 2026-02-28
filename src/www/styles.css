@@ -98,6 +98,72 @@ input[type="checkbox"] {
 }
 
 /* -------------------------------------------
+   Sliders (ION Range Slider)
+   This removes the blue and makes them brown
+------------------------------------------- */
+
+/* Track */
+.irs--shiny .irs-line,
+.irs .irs-line {
+    background: rgba(74, 44, 24, 0.22) !important;
+    border: none !important;
+    height: 4px !important;
+}
+
+/* Selected range bar */
+.irs--shiny .irs-bar,
+.irs .irs-bar {
+    background: var(--accent-1) !important;
+    border: none !important;
+    height: 4px !important;
+}
+
+/* Handles */
+.irs--shiny .irs-handle,
+.irs .irs-handle {
+    background: var(--accent-2) !important;
+    border: 2px solid var(--accent-1) !important;
+    box-shadow: none !important;
+}
+
+.irs--shiny .irs-handle:hover,
+.irs .irs-handle:hover {
+    background: var(--accent-1) !important;
+    border-color: var(--accent-1) !important;
+}
+
+/* Value bubbles */
+.irs--shiny .irs-from,
+.irs--shiny .irs-to,
+.irs--shiny .irs-single,
+.irs .irs-from,
+.irs .irs-to,
+.irs .irs-single {
+    background: var(--accent-1) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+}
+
+.irs--shiny .irs-from:before,
+.irs--shiny .irs-to:before,
+.irs--shiny .irs-single:before,
+.irs .irs-from:before,
+.irs .irs-to:before,
+.irs .irs-single:before {
+    border-top-color: var(--text-dark) !important;
+}
+
+/* Min/Max labels */
+.irs--shiny .irs-min,
+.irs--shiny .irs-max,
+.irs .irs-min,
+.irs .irs-max {
+    color: rgba(74, 44, 24, 0.7) !important;
+    background: transparent !important;
+}
+
+
+/* -------------------------------------------
    Quadrant Plot Containers (cards)
    =------------------------------------------ */
 .card, .bslib-card {
