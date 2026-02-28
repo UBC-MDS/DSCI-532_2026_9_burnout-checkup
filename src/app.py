@@ -57,7 +57,7 @@ BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
 # UI
 # -------------------------
 app_ui = ui.page_fluid(
-    # ui.include_css("src/www/styles.css"),
+    ui.include_css("src/www/styles.css"),
     ui.tags.style(
         """
         .bslib-sidebar-layout > .sidebar > .sidebar-content {

@@ -1,0 +1,94 @@
+/* -------------------------------------------
+   Global Theme Variables
+   (Palette kept for future reuse)
+   ------------------------------------------- */
+:root {
+    --bg-main: #FFFFFF;        /* main page background = white */
+    --bg-card: #FFFFFF;        /* plot/card background = white */
+    --bg-sidebar: #F4C9A7;     /* sidebar background = peach */
+    --text-dark: #4A2C18;      /* deep brown text (kept) */
+    --accent-1: #C45A1A;       /* strong burnt orange */
+    --accent-2: #E38D53;       /* soft orange accent */
+    --border-soft: #E6E6E6;    /* softer neutral border for white cards */
+}
+
+/* --------------------------------------------
+   Global Page Background
+   -------------------------------------------- */
+html, body {
+    height: 100%;
+    background-color: var(--bg-main) !important; /* white */
+    color: var(--text-dark);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Make sure all main wrappers stay white */
+.bslib-page,
+.bslib-page .bslib-page-layout,
+.bslib-page .bslib-page-fill,
+.page-fluid,
+.container-fluid,
+.bslib-sidebar-layout,
+.bslib-sidebar-layout > .main,
+.bslib-sidebar-layout > .main .main-content {
+    background-color: var(--bg-main) !important; /* white */
+}
+
+/* -------------------------------------------
+   Sidebar (peach)
+   ------------------------------------------- */
+.bslib-sidebar-layout > .sidebar {
+    background-color: var(--bg-sidebar) !important; /* peach */
+    border-right: 1px solid rgba(0,0,0,0.06);
+}
+
+/* -------------------------------------------
+   Quadrant Plot Containers (cards)
+   =------------------------------------------ */
+.card, .bslib-card {
+    background-color: var(--bg-card) !important; /* white */
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    padding: 1rem;
+}
+
+/* Plot/card headers */
+.card .card-header,
+.bslib-card .card-header {
+    background-color: transparent !important;
+    color: var(--text-dark);
+    font-weight: 600;
+    border-bottom: none;
+}
+
+/* -------------------------------------------------------
+   Altair/Vega embeds
+   - Keep embeds transparent so they inherit the card's white
+----------------------------------------------------------- */
+.vega-embed,
+.vega-embed .chart-wrapper,
+.vega-embed details,
+.vega-embed .vega-actions {
+    background-color: transparent !important;
+    border-radius: 10px;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Some renderers add a background on the SVG; neutralize it */
+.vega-embed svg {
+    background-color: transparent !important;
+}
+
+/* Optional: remove the default chart frame stroke */
+.vega-embed .mark-group.role-frame,
+.vega-embed .mark-group.frame {
+    stroke: transparent !important;
+}
+
+/* -------------------------------------------
+   Utility
+-------------------------------------------*/
+.text-accent {
+    color: var(--accent-1);
+}
