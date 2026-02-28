@@ -10,3 +10,6 @@ scikit-learn==1.8.0
 python-dotenv==1.2.1
 seaborn==0.13.2
 websockets==16.0
+shinywidgets==0.7.1
+altair==6.0.0
+anywidget==0.9.21
