@@ -3,9 +3,10 @@ from sklearn import base
 from shiny import App, ui, render, reactive
 from shinywidgets import output_widget, render_widget
 import pandas as pd
+from shiny import reactive
 import altair as alt
 
-from src.constants.paths import FEATURES_PATH, TARGETS_PATH
+from constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
@@ -118,6 +119,8 @@ app_ui = ui.page_fluid(
             ui.hr(),
             ui.input_checkbox("show_pred", "Show Predicted Risk Overlay", value=True),
             ui.input_checkbox("show_debug", "Show debug panel", value=False),
+            ui.br(),
+            ui.input_action_button("reset_btn", "Reset Filters"),
             width=320,
         ),
         # -------------------------
@@ -203,22 +206,68 @@ app_ui = ui.page_fluid(
 # Server
 # -------------------------
 def server(input, output, session):
+    @reactive.effect
+    @reactive.event(input.reset_btn)
+    def _reset_filters():
 
-    # Shared reactive calc (depends on MANY inputs; consumed by multiple outputs)
+        # Reset selectize inputs
+        ui.update_selectize("job_role", selected="All")
+        ui.update_selectize("ai_band", selected=["All"])
+
+        # Reset sliders
+        ui.update_slider("experience", value=(exp_min, exp_max))
+        ui.update_slider("ai_usage", value=(ai_min, ai_max))
+        ui.update_slider("manual_hours", value=(man_min, man_max))
+        ui.update_slider("tasks_automated", value=(task_min, task_max))
+
+        # Reset checkbox group
+        ui.update_checkbox_group("deadline_pressure", selected=deadline_choices)
+
+        # Reset checkboxes
+        ui.update_checkbox("show_pred", value=True)
+        ui.update_checkbox("show_debug", value=False)
+    
     @reactive.calc
-    def filtered_df() -> pd.DataFrame:
+    def filtered_df():
         d = df.copy()
 
-        # Job role
+        # job role
+        if input.job_role() != "All":
+            d = d[d["job_role"] == input.job_role()]
 
-        # AI band (multi)
+        # ai band
+        if "All" not in input.ai_band():
+            d = d[d["ai_band"].astype(str).isin(input.ai_band())]
 
-        # Ranges
+        # experience
+        d = d[
+            (d["experience_years"] >= input.experience()[0]) &
+            (d["experience_years"] <= input.experience()[1])
+        ]
 
-        # Deadline pressure (multi)
+        # ai usage
+        d = d[
+            (d["ai_tool_usage_hours_per_week"] >= input.ai_usage()[0]) &
+            (d["ai_tool_usage_hours_per_week"] <= input.ai_usage()[1])
+        ]
+
+        # manual hours
+        d = d[
+            (d["manual_work_hours_per_week"] >= input.manual_hours()[0]) &
+            (d["manual_work_hours_per_week"] <= input.manual_hours()[1])
+        ]
+
+        # tasks automated
+        d = d[
+            (d["tasks_automated_percent"] >= input.tasks_automated()[0]) &
+            (d["tasks_automated_percent"] <= input.tasks_automated()[1])
+        ]
+
+        # deadline pressure
+        d = d[d["deadline_pressure_level"].isin(input.deadline_pressure())]
 
         return d
-
+    
     # KPIs
     def _safe_mean(series: pd.Series) -> float | None:
         if series.empty:
