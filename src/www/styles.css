@@ -64,6 +64,31 @@ html, body {
     opacity: 1 !important;
 }
 
+/* -------------------------------------------
+   Selectize Inputs (Dropdowns)
+------------------------------------------- */
+.selectize-control .selectize-input {
+    background: #fff !important;
+    border: 1px solid rgba(74, 44, 24, 0.25) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.selectize-control .selectize-input.focus {
+    border-color: var(--accent-1) !important;
+    box-shadow: 0 0 0 0.2rem rgba(196, 90, 26, 0.18) !important;
+}
+
+.selectize-control.single .selectize-input:after {
+    border-color: var(--text-dark) transparent transparent transparent !important;
+}
+
+/* Multi-select pills */
+.selectize-control.multi .selectize-input > div {
+    background: rgba(196, 90, 26, 0.10) !important;
+    color: var(--text-dark) !important;
+    border: 1px solid rgba(196, 90, 26, 0.25) !important;
+}
 
 /* -------------------------------------------
    Quadrant Plot Containers (cards)
