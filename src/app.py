@@ -1,4 +1,5 @@
-from sklearn import base
+# src/app.py
+# Main Shiny app file defining the UI and server logic. Reads data, sets up reactive
 
 from shiny import App, ui, render, reactive
 from shinywidgets import output_widget, render_altair
