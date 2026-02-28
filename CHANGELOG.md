@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Implemented `filtered_df()` as the `@reactive.calc` object to manage all filtering logic.
 - Added `reset_btn` and implemented `_reset_filters()` using `@reactive.effect` and `@reactive.event` to reset all filters to default values.
 - updated `README.md` for potential users and contributors.
+- Implemented styling in KPIs: added badges and coloring to improve readability
 
 ## [0.1.0]
 
