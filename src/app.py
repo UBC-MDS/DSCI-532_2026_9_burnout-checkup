@@ -250,12 +250,17 @@ def server(input, output, session):
     @render.text
     def kpi_burnout_vs_median():
         d = filtered_df()
-        m = _safe_mean(d["burnout_risk_score"])
-        if m is None or BASELINE_MEDIAN_BURNOUT == 0:
+        med = float(d["burnout_risk_score"].median()) if d is not None and len(d) else None
+        if med is None or BASELINE_MEDIAN_BURNOUT == 0:
             return "—"
-        pct = (m - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT * 100.0
-        direction = "Up " if pct > 0 else ("Down " if pct < 0 else "No change ")
-        return f"{direction}{abs(pct):.1f}%"
+        pct = (med - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT * 100.0
+        if pct > 0:
+            arrow = "▲"
+        elif pct < 0:
+            arrow = "▼"
+        else:
+            arrow = "→"
+        return f"{arrow} {abs(pct):.1f}%"
 
     # Plots (Altair)
     def _empty_chart(message: str):
