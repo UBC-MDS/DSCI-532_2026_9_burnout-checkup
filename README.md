@@ -18,7 +18,7 @@ https://mara-sanchez1-burnout-checkup-dev.share.connect.posit.cloud
 
 Below is a short demonstration of the dashboard:
 
-*placeholder for demo*
+![demo of dashboard](img/demo.gif)
 
 ---
 
