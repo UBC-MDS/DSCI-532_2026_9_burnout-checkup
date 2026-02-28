@@ -64,13 +64,57 @@ BASELINE_HIGH_BURNOUT = (
 # -------------------------
 app_ui = ui.page_fluid(
     ui.include_css(Path(__file__).parent / "www" / "styles.css"),
-    ui.tags.style(
-        """
-        .bslib-sidebar-layout > .sidebar > .sidebar-content {
+    ui.tags.style(f"""
+        .bslib-sidebar-layout > .sidebar > .sidebar-content {{
             gap: 0 !important;
-        }
-        """
-    ),
+        }}
+        
+        .kpi-grid {{
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }}
+
+        .kpi-card {{
+            background: {COLORS["card_bg"]};
+            border-radius: 12px;
+            padding: 16px 18px;
+            box-shadow: 0 2px 0 rgba(90,45,12,0.25);
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }}
+
+        .kpi-title {{
+            font-size: 18px;
+            font-weight: 700;
+            color: {COLORS["dark_brown"]};
+            margin-bottom: 6px;
+        }}
+
+        .kpi-value {{
+            font-size: 56px;
+            line-height: 1;
+            font-weight: 800;
+            color: {COLORS["dark_brown"]};
+        }}
+
+        .kpi-sub {{
+            min-height: 20px;
+            margin-top: 6px;
+            font-size: 14px;
+            font-weight: 700;
+        }}
+
+        .kpi-sub.up {{
+            color: {COLORS["alert_red"]};
+        }}
+
+        .kpi-sub.down {{
+            color: {COLORS["medium_brown"]};
+        }}    
+    """),
     ui.tags.head(
         ui.tags.link(
             rel="stylesheet",
@@ -180,6 +224,7 @@ app_ui = ui.page_fluid(
                 ui.output_ui("productivity_box"),
                 ui.output_ui("wlb_box"),
                 col_widths=(3, 3, 3, 3),
+                class_="kpi-grid",
             ),
             ui.br(),
             # 4 PANELS (2 x 2)
@@ -316,12 +361,21 @@ def server(input, output, session):
 
         return dict(theme=theme, badge=badge)
 
-    # KPIs
+    # KPIs    
+    def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
+        return ui.div(
+            ui.div(title, class_="kpi-title"),
+            ui.div(value, class_="kpi-value"),
+            # Always render this div to keep consistent height
+            ui.div(sub, class_=f"kpi-sub {sub_class}"),
+            class_="kpi-card",
+        )
+
     def _safe_mean(series: pd.Series) -> float | None:
         if series.empty:
             return None
         return float(series.mean())
-    
+
     def _safe_median(series: pd.Series) -> float | None:
         if series.empty:
             return None
@@ -334,16 +388,32 @@ def server(input, output, session):
     def productivity_box():
         d = filtered_df()
         val = _safe_median(d["productivity_score"])
+        # if val is None:
+        #     return ui.value_box("Median Productivity", "—", theme="secondary")
+
+        # cmp = compare(val, BASELINE_MEDIAN_PRODUCTIVITY, higher_is_better=True)
+
+        # return ui.value_box(
+        #     "Median Productivity",
+        #     f"{val:.1f}",
+        #     ui.tags.div(cmp["badge"], class_="small"),
+        #     theme=cmp["theme"],
+        # )
+
         if val is None:
-            return ui.value_box("Median Productivity", "—", theme="secondary")
+            return kpi_card("Avg Productivity Score", "—")
 
-        cmp = compare(val, BASELINE_MEDIAN_PRODUCTIVITY, higher_is_better=True)
+        diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
 
-        return ui.value_box(
-            "Median Productivity",
+        # Higher productivity is GOOD
+        sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
+
+        return kpi_card(
+            "Avg Productivity Score",
             f"{val:.1f}",
-            ui.tags.div(cmp["badge"], class_="small"),
-            theme=cmp["theme"],
+            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
+            sub_class,
         )
     
     # percentage of employees in the filtered set that are at high risk of burnout, 
@@ -351,51 +421,83 @@ def server(input, output, session):
     @render.ui
     def high_burnout_perc_box():
         d = filtered_df()
+        # if d.empty:
+        #     return ui.value_box("High Burnout %", "—", theme="secondary")
+
+        # pct = (d["burnout_risk_level"] == "High").mean()
+        # cmp = compare(pct, BASELINE_HIGH_BURNOUT, higher_is_better=False)
+
+        # return ui.value_box(
+        #     "High Burnout %",
+        #     f"{pct*100:.1f}%",
+        #     ui.tags.div(cmp["badge"], class_="small"),
+        #     theme=cmp["theme"],
+        # )
         if d.empty:
-            return ui.value_box("High Burnout %", "—", theme="secondary")
+            return kpi_card("High Burnout %", "—")
 
         pct = (d["burnout_risk_level"] == "High").mean()
-        cmp = compare(pct, BASELINE_HIGH_BURNOUT, higher_is_better=False)
+        diff = (pct - BASELINE_HIGH_BURNOUT) / BASELINE_HIGH_BURNOUT
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
 
-        return ui.value_box(
+        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
+
+        return kpi_card(
             "High Burnout %",
             f"{pct*100:.1f}%",
-            ui.tags.div(cmp["badge"], class_="small"),
-            theme=cmp["theme"],
+            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
+            sub_class,
         )
     
     @render.ui
     def burnout_box():
         d = filtered_df()
         val = _safe_median(d["burnout_risk_score"])
+        # if val is None:
+        #     return ui.value_box("Median Burnout Risk", "—", theme="secondary")
+
+        # cmp = compare(val, BASELINE_MEDIAN_BURNOUT, higher_is_better=False)
+
+        # return ui.value_box(
+        #     "Median Burnout Risk",
+        #     f"{val:.2f}",
+        #     ui.tags.div(cmp["badge"], class_="small"),
+        #     theme=cmp["theme"],
+        # )
         if val is None:
-            return ui.value_box("Median Burnout Risk", "—", theme="secondary")
+            return kpi_card("Avg Productivity Score", "—")
 
-        cmp = compare(val, BASELINE_MEDIAN_BURNOUT, higher_is_better=False)
-
-        return ui.value_box(
-            "Median Burnout Risk",
-            f"{val:.2f}",
-            ui.tags.div(cmp["badge"], class_="small"),
-            theme=cmp["theme"],
-        )
+        return kpi_card("Avg Productivity Score", f"{val:.1f}")
           
     @render.ui
     def wlb_box():
         d = filtered_df()
         val = _safe_median(d["work_life_balance_score"])
+        # if val is None:
+        #     return ui.value_box("Median Work-Life Balance", "—", theme="secondary")
+
+        # cmp = compare(val, BASELINE_MEDIAN_WLB, higher_is_better=True)
+
+        # return ui.value_box(
+        #     "Median Work-Life Balance",
+        #     f"{val:.2f}",
+        #     ui.tags.div(cmp["badge"], class_="small"),
+        #     theme=cmp["theme"],
+        # )
         if val is None:
-            return ui.value_box("Median Work-Life Balance", "—", theme="secondary")
+            return kpi_card("Avg Work-Life Balance Score", "—")
 
-        cmp = compare(val, BASELINE_MEDIAN_WLB, higher_is_better=True)
+        diff = (val - BASELINE_MEDIAN_WLB) / BASELINE_MEDIAN_WLB
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
 
-        return ui.value_box(
-            "Median Work-Life Balance",
-            f"{val:.2f}",
-            ui.tags.div(cmp["badge"], class_="small"),
-            theme=cmp["theme"],
+        sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
+
+        return kpi_card(
+            "Avg Work-Life Balance Score",
+            f"{val:.1f}",
+            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
+            sub_class,
         )
-
     
     
     # changed card to value box, keeping old code for reference.
