@@ -392,7 +392,6 @@ def server(input, output, session):
         val = _safe_median(d["work_life_balance_score"])
         if val is None:
             return kpi_card("Median Work-Life Balance Score", "—")
-            return kpi_card("Median Work-Life Balance Score", "—")
 
         diff = (val - BASELINE_MEDIAN_WLB) / BASELINE_MEDIAN_WLB
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
@@ -400,7 +399,6 @@ def server(input, output, session):
         sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
 
         return kpi_card(
-            "Median Work-Life Balance Score",
             "Median Work-Life Balance Score",
             f"{val:.1f}",
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
