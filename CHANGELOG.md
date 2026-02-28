@@ -23,6 +23,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - updated `README.md` for potential users and contributors.
 - Implemented styling in KPIs: added badges and coloring to improve readability
 
+### Changes
+1. Switch comparison between mean and company median to median vs. median
+   Our data is slightly skewed, with many value for `burnout_risk_score` at or very close to 10. After discussion, we decided that it's not very reasonable to compare mean and company median(baseline), so we changed all KPIs to median
+2. Implement % high risk score card
+   Since comparison between group median and company median is already implemented in each value box, the original `burnout_vs_median` is redundant. We have decided to change this card to % of high burnout risk employees in a group, which would make it easier to track by managers.
+
 ## [0.1.0]
 
 ### What's Changed
