@@ -6,7 +6,7 @@ import pandas as pd
 from shiny import reactive
 import altair as alt
 
-from constants.paths import FEATURES_PATH, TARGETS_PATH
+from src.constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
@@ -56,6 +56,7 @@ BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
 # UI
 # -------------------------
 app_ui = ui.page_fluid(
+    # ui.include_css("src/www/styles.css"),
     ui.tags.style(
         """
         .bslib-sidebar-layout > .sidebar > .sidebar-content {
