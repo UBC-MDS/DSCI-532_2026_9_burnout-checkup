@@ -22,10 +22,10 @@
 | `reset_btn`       | Input         | `ui.input_action_button()` | -                         | #1, #2, #3 |
 | `filtered_df`     | Reactive calc | `@reactive.calc`        | all inputs above             | #1, #2, #3 |
 | `_reset_filters`  | Reactive effect | `@reactive.effect` + `@reactive.event(input.reset_btn)`| `reset_btn`  | #1, #2, #3 |
-| `avg_burnout`     | Output        | `@render.text`                | `filtered_df`                | #1       |
-| `avg_productivity`| Output        |` @render.text`                | `filtered_df`                | #1, #3   |
-| `burnout_vs_median`   | Output    | `@render.text`                | `filtered_df`, baselines     | #1       |
-| `avg_wlb`             | Output    | `@render.text`                | `filtered_df`                | #1       |
+| `burnout_box`     | Output        | `@render.ui`                | `filtered_df`, baselines              | #1       |
+| `productivity_box`| Output        |` @render.ui`                | `filtered_df`, baselines               | #1, #3   |
+| `high_burnout_perc_box`   | Output    | `@render.ui`                | `filtered_df`, baselines     | #1       |
+| `wlb_box`             | Output    | `@render.ui`                | `filtered_df` , baselines               | #1       |
 | `plot_ai_vs_burnout`  | Output    | `@render_altair`              | `filtered_df`, baselines     | #1, #2   |
 | `plot_burnout_by_role`| Output    | `@render_altair`              | `filtered_df`                | #2       |
 | `plot_hours_breakdown`| Output    | `@render_altair`              | `filtered_df`                | #1       |
@@ -53,7 +53,6 @@ flowchart TD
   %% Reactives
   %% -------------------
   filtered_df{{filtered_df}}
-  baselines{{baselines}}
   reset_effect{{_reset_filters}}
 
   %% Input -> filtered_df
@@ -69,12 +68,12 @@ flowchart TD
   reset_btn --> reset_effect
 
   %% -------------------
-  %% Outputs (text)
+  %% Outputs (ui)
   %% -------------------
-  avg_burnout([avg_burnout])
-  avg_productivity([avg_productivity])
-  burnout_vs_median([burnout_vs_median])
-  avg_wlb([avg_wlb])
+  burnout_box([burnout_box])
+  productivity_box([productivity_box])
+  high_burnout_perc_box([high_burnout_perc_box])
+  wlb_box([wlb_box])
 
   %% -------------------
   %% Outputs (plots)
@@ -85,15 +84,21 @@ flowchart TD
   plot_prod_vs_burnout([plot_prod_vs_burnout])
 
   %% filtered_df dependencies
-  filtered_df --> avg_burnout
-  filtered_df --> avg_productivity
-  filtered_df --> avg_wlb
   filtered_df --> plot_burnout_by_role
   filtered_df --> plot_hours_breakdown
 
   %% filtered_df + baselines dependencies
-  filtered_df --> burnout_vs_median
-  baselines --> burnout_vs_median
+  filtered_df --> burnout_box
+  baselines --> burnout_box
+
+  filtered_df --> productivity_box
+  baselines --> productivity_box
+
+  filtered_df --> high_burnout_perc_box
+  baselines --> high_burnout_perc_box
+
+  filtered_df --> wlb_box
+  baselines --> wlb_box
 
   filtered_df --> plot_ai_vs_burnout
   baselines --> plot_ai_vs_burnout
@@ -121,10 +126,10 @@ Filters the full dataset to retain only observations matching the selected input
 
 **Consumed by:**
 
-- `avg_burnout`
-- `avg_productivity`
-- `burnout_vs_median`
-- `avg_wlb`
+- `burnout_box`
+- `productivity_box`
+- `high_burnout_perc_box`
+- `wlb_box`
 - `plot_ai_vs_burnout`
 - `plot_burnout_by_role`
 - `plot_hours_breakdown`
