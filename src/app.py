@@ -33,7 +33,6 @@ df["ai_band"] = pd.qcut(
 )
 
 # Input variables' options for filters
-# employee_choices = ["All"] + sorted(df["Employee_ID"].astype(str).unique().tolist())
 job_role_choices = ["All"] + sorted(df["job_role"].dropna().unique().tolist())
 ai_band_choices = ["All"] + sorted(df["ai_band"].dropna().astype(str).unique().tolist())
 deadline_choices = sorted(df["deadline_pressure_level"].dropna().unique().tolist())
@@ -187,36 +186,7 @@ app_ui = ui.page_fluid(
         ui.div(
             # KPI ROW (4 KPIs)
             ui.layout_columns(
-                # # Average burnout risk score for the filtered employees.
-                # ui.card(
-                #     ui.card_header("Avg Burnout Risk Score"),
-                #     ui.h2(ui.output_text("kpi_avg_burnout")),
-                # ),
-                # ui.card(
-                #     ui.card_header("Avg Productivity Score"),
-                #     ui.h2(ui.output_text("kpi_avg_productivity")),
-                #     # ui.p(
-                #     #     ui.em("Average productivity score for the filtered employees.")
-                #     # ),
-                # ),
-                # ui.card(
-                #     ui.card_header("Burnout vs Median (%)"),
-                #     ui.h2(ui.output_text("kpi_burnout_vs_median")),
-                #     ui.p(
-                #         # ui.em(
-                #         #     "Percentage difference between filtered burnout score and company median."
-                #         # )
-                #     ),
-                # ),
-                # ui.card(
-                #     ui.card_header("Avg Work-Life Balance Score"),
-                #     ui.h2(ui.output_text("kpi_avg_wlb")),
-                #     ui.p(
-                #         # ui.em(
-                #         #     "Average work-life balance score for the filtered employees."
-                #         # )
-                #     ),
-                # ),
+                # Average burnout risk score for the filtered employees.
                 # These boxes are ordered this way because the first two are key KPIs and are both lower the better,
                 # while the last two are higher the better.
                 ui.output_ui("burnout_box"),
@@ -294,7 +264,7 @@ def server(input, output, session):
     
     @reactive.calc
     def filtered_df():
-        d = df.copy()
+        d = df
 
         # job role
         if input.job_role() != "All":
@@ -332,34 +302,6 @@ def server(input, output, session):
         d = d[d["deadline_pressure_level"].isin(input.deadline_pressure())]
 
         return d
-    
-    # Comparison helper for KPIs, returns theme and badge text based on how current value compares to baseline.
-    def compare(current, baseline, higher_is_better=True):
-        if baseline == 0 or current is None or pd.isna(current):
-            return dict(theme="secondary", badge="no data")
-
-        pct = (current - baseline) / abs(baseline) * 100
-        abs_pct = abs(pct)
-
-        # small change treated as stable
-        if abs_pct < 1:
-            return dict(theme="secondary", badge="≈ same as company baseline")
-
-        is_good = (pct > 0) if higher_is_better else (pct < 0)
-
-        if is_good and abs_pct >= 5:
-            theme = "success"
-        elif is_good:
-            theme = "info"
-        elif abs_pct >= 5:
-            theme = "warning"
-        else:
-            theme = "danger"
-
-        arrow = "▲" if pct > 0 else "▼"
-        badge = f"{arrow}{abs_pct:.1f}% vs company median"
-
-        return dict(theme=theme, badge=badge)
 
     # KPIs    
     def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
@@ -388,20 +330,9 @@ def server(input, output, session):
     def productivity_box():
         d = filtered_df()
         val = _safe_median(d["productivity_score"])
-        # if val is None:
-        #     return ui.value_box("Median Productivity", "—", theme="secondary")
-
-        # cmp = compare(val, BASELINE_MEDIAN_PRODUCTIVITY, higher_is_better=True)
-
-        # return ui.value_box(
-        #     "Median Productivity",
-        #     f"{val:.1f}",
-        #     ui.tags.div(cmp["badge"], class_="small"),
-        #     theme=cmp["theme"],
-        # )
 
         if val is None:
-            return kpi_card("Avg Productivity Score", "—")
+            return kpi_card("Median Productivity", "—")
 
         diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
@@ -410,7 +341,7 @@ def server(input, output, session):
         sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
 
         return kpi_card(
-            "Avg Productivity Score",
+            "Median Productivity",
             f"{val:.1f}",
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
             sub_class,
@@ -421,18 +352,6 @@ def server(input, output, session):
     @render.ui
     def high_burnout_perc_box():
         d = filtered_df()
-        # if d.empty:
-        #     return ui.value_box("High Burnout %", "—", theme="secondary")
-
-        # pct = (d["burnout_risk_level"] == "High").mean()
-        # cmp = compare(pct, BASELINE_HIGH_BURNOUT, higher_is_better=False)
-
-        # return ui.value_box(
-        #     "High Burnout %",
-        #     f"{pct*100:.1f}%",
-        #     ui.tags.div(cmp["badge"], class_="small"),
-        #     theme=cmp["theme"],
-        # )
         if d.empty:
             return kpi_card("High Burnout %", "—")
 
@@ -453,39 +372,26 @@ def server(input, output, session):
     def burnout_box():
         d = filtered_df()
         val = _safe_median(d["burnout_risk_score"])
-        # if val is None:
-        #     return ui.value_box("Median Burnout Risk", "—", theme="secondary")
-
-        # cmp = compare(val, BASELINE_MEDIAN_BURNOUT, higher_is_better=False)
-
-        # return ui.value_box(
-        #     "Median Burnout Risk",
-        #     f"{val:.2f}",
-        #     ui.tags.div(cmp["badge"], class_="small"),
-        #     theme=cmp["theme"],
-        # )
         if val is None:
-            return kpi_card("Avg Productivity Score", "—")
+            return kpi_card("Median Productivity", "—")
 
-        return kpi_card("Avg Productivity Score", f"{val:.1f}")
+        diff = (val - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
+        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
+
+        return kpi_card(
+            "Median Burnout Risk Score",
+            f"{val:.1f}",
+            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
+            sub_class,
+        )
           
     @render.ui
     def wlb_box():
         d = filtered_df()
         val = _safe_median(d["work_life_balance_score"])
-        # if val is None:
-        #     return ui.value_box("Median Work-Life Balance", "—", theme="secondary")
-
-        # cmp = compare(val, BASELINE_MEDIAN_WLB, higher_is_better=True)
-
-        # return ui.value_box(
-        #     "Median Work-Life Balance",
-        #     f"{val:.2f}",
-        #     ui.tags.div(cmp["badge"], class_="small"),
-        #     theme=cmp["theme"],
-        # )
         if val is None:
-            return kpi_card("Avg Work-Life Balance Score", "—")
+            return kpi_card("Median Work-Life Balance Score", "—")
 
         diff = (val - BASELINE_MEDIAN_WLB) / BASELINE_MEDIAN_WLB
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
@@ -493,50 +399,11 @@ def server(input, output, session):
         sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
 
         return kpi_card(
-            "Avg Work-Life Balance Score",
+            "Median Work-Life Balance Score",
             f"{val:.1f}",
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
             sub_class,
         )
-    
-    
-    # changed card to value box, keeping old code for reference.
-    # @output
-    # @render.text
-    # def kpi_avg_burnout():
-    #     d = filtered_df()
-    #     m = _safe_mean(d["burnout_risk_score"])
-    #     return "—" if m is None else f"{m:.2f}"
-
-    # @output
-    # @render.text
-    # def kpi_avg_productivity():
-    #     d = filtered_df()
-    #     m = _safe_mean(d["productivity_score"])
-    #     return "—" if m is None else f"{m:.1f}"
-
-    # @output
-    # @render.text
-    # def kpi_avg_wlb():
-    #     d = filtered_df()
-    #     m = _safe_mean(d["work_life_balance_score"])
-    #     return "—" if m is None else f"{m:.2f}"
-
-    # @output
-    # @render.text
-    # def kpi_burnout_vs_median():
-    #     d = filtered_df()
-    #     med = float(d["burnout_risk_score"].median()) if d is not None and len(d) else None
-    #     if med is None or BASELINE_MEDIAN_BURNOUT == 0:
-    #         return "—"
-    #     pct = (med - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT * 100.0
-    #     if pct > 0:
-    #         arrow = "▲"
-    #     elif pct < 0:
-    #         arrow = "▼"
-    #     else:
-    #         arrow = "→"
-    #     return f"{arrow} {abs(pct):.1f}%"
 
     # Plots (Altair)
     def _empty_chart(message: str) -> alt.Chart:
@@ -562,7 +429,6 @@ def server(input, output, session):
                     "ai_tool_usage_hours_per_week:Q", title="AI tool usage (hrs/week)"
                 ),
                 y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
-                # color=alt.Color("deadline_pressure_level:N", title="Deadline pressure"),
                 color=alt.Color(
                     "deadline_pressure_level:N",
                     title="Deadline pressure",
@@ -650,7 +516,6 @@ def server(input, output, session):
             .mark_arc()
             .encode(
                 theta=alt.Theta("hours:Q", title=None),
-                # color=alt.Color("category:N", title=None),
                 color=alt.Color(
                     "category:N",
                     title=None,
@@ -688,7 +553,6 @@ def server(input, output, session):
             .encode(
                 x=alt.X("productivity_score:Q", title="Productivity score"),
                 y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
-                # color=alt.Color("ai_band:N", title="AI usage band"),
                 color=alt.Color(
                     "ai_band:N",
                     title="AI usage band",
@@ -733,11 +597,5 @@ def server(input, output, session):
             f"show_pred={input.show_pred()}\n"
             f"filtered_rows={len(d)}"
         )
-
-
-# def altair_to_html(chart: alt.Chart) -> str:
-#     # Shiny for Python can render HTML; this is a simple, dependency-light way to embed Altair.
-#     return chart.to_html()
-
 
 app = App(app_ui, server)
