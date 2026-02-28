@@ -1,7 +1,7 @@
-/* ============================================
+/* -------------------------------------------
    Global Theme Variables
    (Palette kept for future reuse)
-   ============================================ */
+   ------------------------------------------- */
 :root {
     --bg-main: #FFFFFF;        /* main page background = white */
     --bg-card: #FFFFFF;        /* plot/card background = white */
@@ -12,9 +12,9 @@
     --border-soft: #E6E6E6;    /* softer neutral border for white cards */
 }
 
-/* ============================================
+/* --------------------------------------------
    Global Page Background
-   ============================================ */
+   -------------------------------------------- */
 html, body {
     height: 100%;
     background-color: var(--bg-main) !important; /* white */
@@ -34,17 +34,17 @@ html, body {
     background-color: var(--bg-main) !important; /* white */
 }
 
-/* ============================================
+/* -------------------------------------------
    Sidebar (peach)
-   ============================================ */
+   ------------------------------------------- */
 .bslib-sidebar-layout > .sidebar {
     background-color: var(--bg-sidebar) !important; /* peach */
     border-right: 1px solid rgba(0,0,0,0.06);
 }
 
-/* ============================================
+/* -------------------------------------------
    Quadrant Plot Containers (cards)
-   ============================================ */
+   =------------------------------------------ */
 .card, .bslib-card {
     background-color: var(--bg-card) !important; /* white */
     border-radius: 12px;
@@ -61,10 +61,10 @@ html, body {
     border-bottom: none;
 }
 
-/* ============================================
+/* -------------------------------------------------------
    Altair/Vega embeds
    - Keep embeds transparent so they inherit the card's white
-   ============================================ */
+----------------------------------------------------------- */
 .vega-embed,
 .vega-embed .chart-wrapper,
 .vega-embed details,
@@ -86,9 +86,9 @@ html, body {
     stroke: transparent !important;
 }
 
-/* ============================================
+/* -------------------------------------------
    Utility
-   ============================================ */
+-------------------------------------------*/
 .text-accent {
     color: var(--accent-1);
 }
