@@ -39,3 +39,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added EDA plots and explanations  
 - Added App Sketch, Section 5 Description, and Paths Module  
 - Created initial Shiny app skeleton
+
+- Replace render_widget with
+- render_altair for all charts
+- Remove invalid alt.JupyterChart usage
+- Standardize plots to return native alt.Chart objects
+- Remove HTML conversion (to_html) path and unused helper
+- Fix _empty_chart to return a valid Altair chart
+- Remove unused sklearn.base import

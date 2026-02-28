@@ -1,12 +1,13 @@
-from sklearn import base
+# src/app.py
+# Main Shiny app file defining the UI and server logic. Reads data, sets up reactive
 
 from shiny import App, ui, render, reactive
-from shinywidgets import output_widget, render_widget
+from shinywidgets import output_widget, render_altair
+
 import pandas as pd
-from shiny import reactive
 import altair as alt
 
-from constants.paths import FEATURES_PATH, TARGETS_PATH
+from src.constants.paths import FEATURES_PATH, TARGETS_PATH
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
@@ -56,6 +57,7 @@ BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
 # UI
 # -------------------------
 app_ui = ui.page_fluid(
+    # ui.include_css("src/www/styles.css"),
     ui.tags.style(
         """
         .bslib-sidebar-layout > .sidebar > .sidebar-content {
@@ -312,21 +314,20 @@ def server(input, output, session):
         return f"{arrow} {abs(pct):.1f}%"
 
     # Plots (Altair)
-    def _empty_chart(message: str):
-        base_chart = (
+    def _empty_chart(message: str) -> alt.Chart:
+        return (
             alt.Chart(pd.DataFrame({"text": [message]}))
             .mark_text(align="center", baseline="middle", size=14)
             .encode(text="text:N")
             .properties(height=260)
         )
-        return alt.JupyterChart(base_chart)
 
     @output
-    @render_widget
+    @render_altair
     def plot_ai_vs_burnout():
         d = filtered_df()
         if d.empty:
-            return ui.HTML(altair_to_html(_empty_chart("No data for current filters.")))
+            return _empty_chart("No data for current filters.")
 
         chart = (
             alt.Chart(d)
@@ -354,14 +355,14 @@ def server(input, output, session):
             .encode(y="y:Q")
         )
 
-        return alt.JupyterChart(chart + median_line)
+        return chart + median_line
 
     @output
-    @render_widget
+    @render_altair
     def plot_burnout_by_role():
         d = filtered_df()
         if d.empty:
-            return ui.HTML(altair_to_html(_empty_chart("No data for current filters.")))
+            return _empty_chart("No data for current filters.")
 
         # mean burnout by role
         summary = (
@@ -381,10 +382,10 @@ def server(input, output, session):
             )
             .properties(height=260)
         )
-        return alt.JupyterChart(chart)
+        return chart
 
     @output
-    @render_widget
+    @render_altair
     def plot_hours_breakdown():
         d = filtered_df()
         if d.empty:
@@ -429,14 +430,14 @@ def server(input, output, session):
             .properties(height=260)
         )
 
-        return alt.JupyterChart(pie)
+        return pie
 
     @output
-    @render_widget
+    @render_altair
     def plot_prod_vs_burnout():
         d = filtered_df()
         if d.empty:
-            return ui.HTML(altair_to_html(_empty_chart("No data for current filters.")))
+            return _empty_chart("No data for current filters.")
 
         chart = (
             alt.Chart(d)
@@ -466,7 +467,7 @@ def server(input, output, session):
             .encode(y="y:Q")
         )
 
-        return alt.JupyterChart(chart + vline + hline)
+        return chart + vline + hline
 
     # Debug panel
     @output
@@ -486,9 +487,9 @@ def server(input, output, session):
         )
 
 
-def altair_to_html(chart: alt.Chart) -> str:
-    # Shiny for Python can render HTML; this is a simple, dependency-light way to embed Altair.
-    return chart.to_html()
+# def altair_to_html(chart: alt.Chart) -> str:
+#     # Shiny for Python can render HTML; this is a simple, dependency-light way to embed Altair.
+#     return chart.to_html()
 
 
 app = App(app_ui, server)
