@@ -18,6 +18,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated data file paths in `constants/paths.py` and app.py to reflect new raw dataset filenames.
 - Added outputs for all charts using `render_widget` instead of `render.ui` for improved rendering consistency.
 - Added `src/__init__.py` to make src a package and resolve import errors in app.py.
+- Implemented `filtered_df()` as the `@reactive.calc` object to manage all filtering logic.
+- Added `reset_btn` and implemented `_reset_filters()` using `@reactive.effect` and `@reactive.event` to reset all filters to default values.
+- updated `README.md` for potential users and contributors.
+- Implemented styling in KPIs: added badges and coloring to improve readability
+
+### Changes
+1. Switch comparison between mean and company median to median vs. median
+   Our data is slightly skewed, with many value for `burnout_risk_score` at or very close to 10. After discussion, we decided that it's not very reasonable to compare mean and company median(baseline), so we changed all KPIs to median
+2. Implement % high risk score card
+   Since comparison between group median and company median is already implemented in each value box, the original `burnout_vs_median` is redundant. We have decided to change this card to % of high burnout risk employees in a group, which would make it easier to track by managers.
 
 ## [0.1.0]
 

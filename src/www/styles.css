@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700;800&display=swap');
 /* -------------------------------------------
    Global Theme Variables
    (Palette kept for future reuse)
@@ -10,16 +11,19 @@
     --accent-1: #C45A1A;       /* strong burnt orange */
     --accent-2: #E38D53;       /* soft orange accent */
     --border-soft: #E6E6E6;    /* softer neutral border for white cards */
+    --bs-primary: #4A2C18 !important;   /* deep brown */
+    --bs-form-check-bg: #4A2C18 !important;
 }
 
 /* --------------------------------------------
    Global Page Background
    -------------------------------------------- */
+   
 html, body {
     height: 100%;
     background-color: var(--bg-main) !important; /* white */
     color: var(--text-dark);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Quicksand', sans-serif;
 }
 
 /* Make sure all main wrappers stay white */
@@ -39,14 +43,228 @@ html, body {
    ------------------------------------------- */
 .bslib-sidebar-layout > .sidebar {
     background-color: var(--bg-sidebar) !important; /* peach */
-    border-right: 1px solid rgba(0,0,0,0.06);
+    border-right: 1px solid rgb(255, 255, 255);
+}
+
+/* Sidebar title */
+.bslib-sidebar-layout > .sidebar h3 {
+    font-weight: 1000;
+    line-height: 1.05;
+    margin-bottom: 0.75rem;
+}
+
+/* Section labels */
+.bslib-sidebar-layout > .sidebar h6 {
+    font-weight: 700;
+    margin-bottom: 0.35rem;
+}
+
+/* Sidebar divider */
+.bslib-sidebar-layout > .sidebar hr {
+    border: none !important;
+    border-top: 2px solid rgba(74, 44, 24, 0.35) !important;
+    opacity: 1 !important;
+}
+
+/* -------------------------------------------
+   Selectize Inputs (Dropdowns)
+------------------------------------------- */
+.selectize-control .selectize-input {
+    background: #fff !important;
+    border: 1px solid rgba(74, 44, 24, 0.25) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+}
+
+.selectize-control .selectize-input.focus {
+    border-color: var(--accent-1) !important;
+    box-shadow: 0 0 0 0.2rem rgba(196, 90, 26, 0.18) !important;
+}
+
+.selectize-control.single .selectize-input:after {
+    border-color: var(--text-dark) transparent transparent transparent !important;
+}
+
+/* Multi-select pills */
+.selectize-control.multi .selectize-input > div {
+    background: rgba(196, 90, 26, 0.10) !important;
+    color: var(--text-dark) !important;
+    border: 1px solid rgba(196, 90, 26, 0.25) !important;
+}
+
+/* -------------------------------------------
+   Checkboxes
+------------------------------------------- */
+/* 1) Regular bootstrap checkboxes */
+.bslib-sidebar-layout .form-check-input:checked,
+.bslib-sidebar-layout input[type="checkbox"]:checked {
+  background-color: var(--text-dark) !important;
+  border-color: var(--text-dark) !important;
+}
+
+.bslib-sidebar-layout .form-check-input:focus,
+.bslib-sidebar-layout input[type="checkbox"]:focus {
+  border-color: var(--text-dark) !important;
+  box-shadow: 0 0 0 0.2rem rgba(74, 44, 24, 0.25) !important;
+}
+
+/* 2) Checkbox group rendered as Bootstrap "button checks" */
+.bslib-sidebar-layout .btn-check:checked + .btn,
+.bslib-sidebar-layout .btn-check:checked + .btn-outline-primary,
+.bslib-sidebar-layout .btn-check:active + .btn,
+.bslib-sidebar-layout .btn-check:active + .btn-outline-primary {
+  background-color: var(--text-dark) !important;
+  border-color: var(--text-dark) !important;
+  color: #fff !important;
+}
+
+/* When not checked: keep them neutral/brown border */
+.bslib-sidebar-layout .btn-outline-primary {
+  color: var(--text-dark) !important;
+  border-color: rgba(74, 44, 24, 0.45) !important;
+  background: transparent !important;
+}
+
+/* Hover state */
+.bslib-sidebar-layout .btn-outline-primary:hover {
+  background-color: rgba(74, 44, 24, 0.10) !important;
+  border-color: var(--text-dark) !important;
+}
+
+/* Focus ring for the button-style checks */
+.bslib-sidebar-layout .btn-check:focus + .btn,
+.bslib-sidebar-layout .btn-outline-primary:focus {
+  box-shadow: 0 0 0 0.2rem rgba(74, 44, 24, 0.25) !important;
+}
+
+/* -------------------------------------------
+   Stronger Sidebar-Specific Override
+------------------------------------------- */
+
+.bslib-sidebar-layout input[type="checkbox"] {
+    accent-color: var(--text-dark) !important;
+}
+
+.bslib-sidebar-layout .form-check-input:checked {
+    background-color: var(--text-dark) !important;
+    border-color: var(--text-dark) !important;
+}
+
+/* -------------------------------------------
+   Sliders
+------------------------------------------- */
+
+/* Track */
+.irs--shiny .irs-line,
+.irs .irs-line {
+    background: rgba(74, 44, 24, 0.22) !important;
+    border: none !important;
+    height: 4px !important;
+}
+
+/* Selected range bar */
+.irs--shiny .irs-bar,
+.irs .irs-bar {
+    background: var(--accent-1) !important;
+    border: none !important;
+    height: 4px !important;
+}
+
+/* Handles */
+.irs--shiny .irs-handle,
+.irs .irs-handle {
+    background: var(--accent-2) !important;
+    border: 2px solid var(--accent-1) !important;
+    box-shadow: none !important;
+}
+
+.irs--shiny .irs-handle:hover,
+.irs .irs-handle:hover {
+    background: var(--accent-1) !important;
+    border-color: var(--accent-1) !important;
+}
+
+/* Value bubbles */
+.irs--shiny .irs-from,
+.irs--shiny .irs-to,
+.irs--shiny .irs-single,
+.irs .irs-from,
+.irs .irs-to,
+.irs .irs-single {
+    background: var(--accent-1) !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+}
+
+.irs--shiny .irs-from:before,
+.irs--shiny .irs-to:before,
+.irs--shiny .irs-single:before,
+.irs .irs-from:before,
+.irs .irs-to:before,
+.irs .irs-single:before {
+    border-top-color: var(--text-dark) !important;
+}
+
+/* Min/Max labels */
+.irs--shiny .irs-min,
+.irs--shiny .irs-max,
+.irs .irs-min,
+.irs .irs-max {
+    color: rgba(74, 44, 24, 0.7) !important;
+    background: transparent !important;
+}
+
+/* --------------------------------------------
+   Reset Filters Button Styling
+   -------------------------------------------- */
+
+.bslib-sidebar-layout .btn,
+.bslib-sidebar-layout .btn-default,
+.bslib-sidebar-layout .btn-primary {
+  background-color: var(--accent-2) !important;   /* lighter brown */
+  border-color: var(--accent-1) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 0.6rem 1rem !important;
+}
+
+/* Hover effect */
+.bslib-sidebar-layout .btn:hover,
+.bslib-sidebar-layout .btn-primary:hover {
+  background-color: var(--accent-1) !important;   /* darker on hover */
+  border-color: var(--accent-1) !important;
+}
+
+/* -------------------------------------------
+    KPI Value Boxes
+    ------------------------------------------ */
+
+.value-box {
+    padding: 0.6rem 0.8rem !important;
+    min-height: unset !important;
+}
+
+.value-box-value {
+    font-size: 3.5rem !important;
+    font-weight: 600 !important;
+    line-height: 1.1 !important;
+}
+
+.value-box-title {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+}
+
+.small {
+    font-size: 1.2rem !important;
 }
 
 /* -------------------------------------------
    Quadrant Plot Containers (cards)
    =------------------------------------------ */
 .card, .bslib-card {
-    background-color: var(--bg-card) !important; /* white */
+    background-color: var(--bg-card); /* white */
     border-radius: 12px;
     border: 1px solid var(--border-soft);
     padding: 1rem;
@@ -60,6 +278,8 @@ html, body {
     font-weight: 600;
     border-bottom: none;
 }
+
+
 
 /* -------------------------------------------------------
    Altair/Vega embeds
