@@ -1,5 +1,7 @@
 # DSCI-532_2026_9_burnout-checkup
 
+## Overview
+
 **Burnout Checkup** is an **interactive dashboard** designed to **explore the relationship between AI tool usage, workload characteristics, and employee burnout risk**. As organizations increasingly adopt AI tools, it is critical to understand whether productivity gains come at the cost of employee well-being. The app enables users to examine how different workload patterns; including meetings, manual work, and task complexity, interact with AI adoption and influence employee well-being outcomes. By supporting workload-controlled comparisons and subgroup exploration, the dashboard helps managers and people analytics teams identify potential burnout risk patterns and make more informed, data-driven decisions. **Predictive burnout risk indicators** are included as a complementary decision-support layer to surface high-risk scenarios. The goal is to support sustainable AI adoption strategies that protect employee well-being.
 
 ---
@@ -94,7 +96,7 @@ conda activate burnout_checkup
 3. Run the dashboard locally:
 
 ```bash
-shiny run --reload src/app.py
+shiny run src.app
 ```
 
 ### Contribution Guidelines

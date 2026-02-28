@@ -401,7 +401,7 @@ def server(input, output, session):
         # )
 
         if val is None:
-            return kpi_card("Avg Productivity Score", "—")
+            return kpi_card("Median Productivity Score", "—")
 
         diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
@@ -410,7 +410,7 @@ def server(input, output, session):
         sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
 
         return kpi_card(
-            "Avg Productivity Score",
+            "Median Productivity Score",
             f"{val:.1f}",
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
             sub_class,
@@ -465,9 +465,9 @@ def server(input, output, session):
         #     theme=cmp["theme"],
         # )
         if val is None:
-            return kpi_card("Avg Productivity Score", "—")
+            return kpi_card("Median Burnout Risk Score", "—")
 
-        return kpi_card("Avg Productivity Score", f"{val:.1f}")
+        return kpi_card("Median Burnout Risk Score", f"{val:.1f}")
           
     @render.ui
     def wlb_box():
@@ -485,7 +485,7 @@ def server(input, output, session):
         #     theme=cmp["theme"],
         # )
         if val is None:
-            return kpi_card("Avg Work-Life Balance Score", "—")
+            return kpi_card("Median Work-Life Balance Score", "—")
 
         diff = (val - BASELINE_MEDIAN_WLB) / BASELINE_MEDIAN_WLB
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
@@ -493,7 +493,7 @@ def server(input, output, session):
         sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
 
         return kpi_card(
-            "Avg Work-Life Balance Score",
+            "Median Work-Life Balance Score",
             f"{val:.1f}",
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
             sub_class,
