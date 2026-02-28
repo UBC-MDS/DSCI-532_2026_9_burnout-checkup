@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added `src/__init__.py` to make src a package and resolve import errors in app.py.
 - Implemented `filtered_df()` as the `@reactive.calc` object to manage all filtering logic.
 - Added `reset_btn` and implemented `_reset_filters()` using `@reactive.effect` and `@reactive.event` to reset all filters to default values.
+- updated `README.md` for potential users and contributors.
 
 ## [0.1.0]
 
