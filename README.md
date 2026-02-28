@@ -67,3 +67,46 @@ This dashboard helps answer:
 2. Observe KPI changes at the top.
 3. Explore relationships in scatter plots.
 4. Reset filters to return to full dataset view.
+
+---
+
+# For Contributors
+
+We welcome contributions in the form of code improvements, feature additions,
+documentation updates, or bug reports.
+
+## Development Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup.git
+cd DSCI-532_2026_9_burnout-checkup
+```
+
+2. Create and activate the environment:
+
+```bash
+conda env create -f environment.yml
+conda activate burnout_checkup
+```
+
+3. Run the dashboard locally:
+
+```bash
+shiny run --reload src/app.py
+```
+
+### Contribution Guidelines
+
+This project follows a structured GitHub workflow:
+
+- All work is done on feature branches
+- Each task corresponds to a GitHub issue
+- Pull requests require review before merging
+- No direct commits to main
+
+For detailed contribution rules, branch naming conventions, and the full
+workflow, please see:
+
+👉 [CONTRIBUTING.md](CONTRIBUTING.md)
