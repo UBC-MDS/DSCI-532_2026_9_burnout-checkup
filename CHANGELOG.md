@@ -28,9 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 2. Implement % high risk score card since comparison between group median and company median is already implemented in each value box, the original `burnout_vs_median` is redundant. We have decided to change this card to % of high burnout risk employees in a group, which would make it easier to track by managers.
 
-## Reflection (Milestones 2)
-
-When a reflection is required, address the following points within **500 words**:
+### Reflection (Milestone 2)
 
 1. **Implementation Status:**
 Most components from our original proposal and sketch have been implemented. The filtering logic is fully centralized through `filtered_df()` using `@reactive.calc`, and all charts are rendered consistently with `render_widget`. Job Stories 1, 2 and 3 are implemented through interactive filters, KPI comparisons, and scatterplots that allow users to evaluate burnout drivers and sustainability of productivity gains. Median-based KPIs and the % High Burnout Risk card are fully functional, and reset functionality has been added. Further refinement of deadline pressure interactions (Job Story 2) could still be improved with clearer summarization.
