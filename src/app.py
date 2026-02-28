@@ -52,6 +52,7 @@ task_min, task_max = int(df["tasks_automated_percent"].min()), int(
 # Burnout median for reference in plots
 BASELINE_MEDIAN_BURNOUT = float(df["burnout_risk_score"].median())
 BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
+BASELINE_MEDIAN_WLB = float(df["work_life_balance_score"].median())
 
 # -------------------------
 # UI
@@ -131,36 +132,40 @@ app_ui = ui.page_fluid(
         ui.div(
             # KPI ROW (4 KPIs)
             ui.layout_columns(
-                # Average burnout risk score for the filtered employees.
-                ui.card(
-                    ui.card_header("Avg Burnout Risk Score"),
-                    ui.h2(ui.output_text("kpi_avg_burnout")),
-                ),
-                ui.card(
-                    ui.card_header("Avg Productivity Score"),
-                    ui.h2(ui.output_text("kpi_avg_productivity")),
-                    # ui.p(
-                    #     ui.em("Average productivity score for the filtered employees.")
-                    # ),
-                ),
-                ui.card(
-                    ui.card_header("Burnout vs Median (%)"),
-                    ui.h2(ui.output_text("kpi_burnout_vs_median")),
-                    ui.p(
-                        # ui.em(
-                        #     "Percentage difference between filtered burnout score and company median."
-                        # )
-                    ),
-                ),
-                ui.card(
-                    ui.card_header("Avg Work-Life Balance Score"),
-                    ui.h2(ui.output_text("kpi_avg_wlb")),
-                    ui.p(
-                        # ui.em(
-                        #     "Average work-life balance score for the filtered employees."
-                        # )
-                    ),
-                ),
+                # # Average burnout risk score for the filtered employees.
+                # ui.card(
+                #     ui.card_header("Avg Burnout Risk Score"),
+                #     ui.h2(ui.output_text("kpi_avg_burnout")),
+                # ),
+                # ui.card(
+                #     ui.card_header("Avg Productivity Score"),
+                #     ui.h2(ui.output_text("kpi_avg_productivity")),
+                #     # ui.p(
+                #     #     ui.em("Average productivity score for the filtered employees.")
+                #     # ),
+                # ),
+                # ui.card(
+                #     ui.card_header("Burnout vs Median (%)"),
+                #     ui.h2(ui.output_text("kpi_burnout_vs_median")),
+                #     ui.p(
+                #         # ui.em(
+                #         #     "Percentage difference between filtered burnout score and company median."
+                #         # )
+                #     ),
+                # ),
+                # ui.card(
+                #     ui.card_header("Avg Work-Life Balance Score"),
+                #     ui.h2(ui.output_text("kpi_avg_wlb")),
+                #     ui.p(
+                #         # ui.em(
+                #         #     "Average work-life balance score for the filtered employees."
+                #         # )
+                #     ),
+                # ),
+                ui.output_ui("burnout_box"),
+                ui.output_ui("productivity_box"),
+                ui.output_ui("wlb_box"),
+                ui.output_ui("burnout_vs_box"),
                 col_widths=(3, 3, 3, 3),
             ),
             ui.br(),
@@ -270,48 +275,126 @@ def server(input, output, session):
 
         return d
     
+    def compare(current, baseline, higher_is_better=True):
+        if baseline == 0 or current is None:
+            return dict(theme="secondary", badge="no data")
+
+        pct = (current - baseline) / abs(baseline) * 100
+        abs_pct = abs(pct)
+
+        # small change treated as stable
+        if abs_pct < 1:
+            return dict(theme="secondary", badge="≈ same as company")
+
+        is_good = (pct > 0) if higher_is_better else (pct < 0)
+
+        if is_good and abs_pct >= 5:
+            theme = "success"
+        elif is_good:
+            theme = "info"
+        elif abs_pct >= 5:
+            theme = "danger"
+        else:
+            theme = "warning"
+
+        sign = "+" if pct >= 0 else ""
+        badge = f"{sign}{pct:.1f}% vs company median"
+
+        return dict(theme=theme, badge=badge)
+
     # KPIs
     def _safe_mean(series: pd.Series) -> float | None:
         if series.empty:
             return None
         return float(series.mean())
 
-    @output
-    @render.text
-    def kpi_avg_burnout():
+    @render.ui
+    def burnout_box():
         d = filtered_df()
-        m = _safe_mean(d["burnout_risk_score"])
-        return "—" if m is None else f"{m:.2f}"
+        val = _safe_mean(d["burnout_risk_score"])
+        if val is None:
+            return ui.value_box("Avg Burnout Risk", "—", theme="secondary")
 
-    @output
-    @render.text
-    def kpi_avg_productivity():
-        d = filtered_df()
-        m = _safe_mean(d["productivity_score"])
-        return "—" if m is None else f"{m:.1f}"
+        cmp = compare(val, BASELINE_MEDIAN_BURNOUT, higher_is_better=False)
 
-    @output
-    @render.text
-    def kpi_avg_wlb():
+        return ui.value_box(
+            "Avg Burnout Risk",
+            f"{val:.2f}",
+            ui.tags.div(cmp["badge"], class_="small"),
+            theme=cmp["theme"],
+        )
+    
+    @render.ui
+    def productivity_box():
         d = filtered_df()
-        m = _safe_mean(d["work_life_balance_score"])
-        return "—" if m is None else f"{m:.2f}"
+        val = _safe_mean(d["productivity_score"])
+        if val is None:
+            return ui.value_box("Avg Productivity", "—", theme="secondary")
 
-    @output
-    @render.text
-    def kpi_burnout_vs_median():
+        cmp = compare(val, BASELINE_MEDIAN_PRODUCTIVITY, higher_is_better=True)
+
+        return ui.value_box(
+            "Avg Productivity",
+            f"{val:.1f}",
+            ui.tags.div(cmp["badge"], class_="small"),
+            theme=cmp["theme"],
+        )
+    
+    @render.ui
+    def wlb_box():
         d = filtered_df()
-        med = float(d["burnout_risk_score"].median()) if d is not None and len(d) else None
-        if med is None or BASELINE_MEDIAN_BURNOUT == 0:
-            return "—"
-        pct = (med - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT * 100.0
-        if pct > 0:
-            arrow = "▲"
-        elif pct < 0:
-            arrow = "▼"
-        else:
-            arrow = "→"
-        return f"{arrow} {abs(pct):.1f}%"
+        val = _safe_mean(d["work_life_balance_score"])
+        if val is None:
+            return ui.value_box("Avg Work-Life Balance", "—", theme="secondary")
+
+        cmp = compare(val, BASELINE_MEDIAN_WLB, higher_is_better=True)
+
+        return ui.value_box(
+            "Avg Work-Life Balance",
+            f"{val:.2f}",
+            ui.tags.div(cmp["badge"], class_="small"),
+            theme=cmp["theme"],
+        )
+        
+    @render.ui
+    def burnout_vs_box():
+        return ui.value_box("Placeholder", "—", theme="secondary")
+    # @output
+    # @render.text
+    # def kpi_avg_burnout():
+    #     d = filtered_df()
+    #     m = _safe_mean(d["burnout_risk_score"])
+    #     return "—" if m is None else f"{m:.2f}"
+
+    # @output
+    # @render.text
+    # def kpi_avg_productivity():
+    #     d = filtered_df()
+    #     m = _safe_mean(d["productivity_score"])
+    #     return "—" if m is None else f"{m:.1f}"
+
+    # @output
+    # @render.text
+    # def kpi_avg_wlb():
+    #     d = filtered_df()
+    #     m = _safe_mean(d["work_life_balance_score"])
+    #     return "—" if m is None else f"{m:.2f}"
+
+    # @output
+    # @render.text
+    # def kpi_burnout_vs_median():
+    #     d = filtered_df()
+    #     med = float(d["burnout_risk_score"].median()) if d is not None and len(d) else None
+    #     if med is None or BASELINE_MEDIAN_BURNOUT == 0:
+    #         return "—"
+    #     pct = (med - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT * 100.0
+    #     if pct > 0:
+    #         arrow = "▲"
+    #     elif pct < 0:
+    #         arrow = "▼"
+    #     else:
+    #         arrow = "→"
+    #     return f"{arrow} {abs(pct):.1f}%"
 
     # Plots (Altair)
     def _empty_chart(message: str) -> alt.Chart:
