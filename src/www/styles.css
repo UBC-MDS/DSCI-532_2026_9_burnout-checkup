@@ -151,8 +151,7 @@ html, body {
 }
 
 /* -------------------------------------------
-   Sliders (ION Range Slider)
-   This removes the blue and makes them brown
+   Sliders
 ------------------------------------------- */
 
 /* Track */
@@ -215,6 +214,27 @@ html, body {
     background: transparent !important;
 }
 
+/* --------------------------------------------
+   Reset Filters Button Styling
+   -------------------------------------------- */
+
+.bslib-sidebar-layout .btn,
+.bslib-sidebar-layout .btn-default,
+.bslib-sidebar-layout .btn-primary {
+  background-color: var(--accent-2) !important;   /* lighter brown */
+  border-color: var(--accent-1) !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  border-radius: 10px !important;
+  padding: 0.6rem 1rem !important;
+}
+
+/* Hover effect */
+.bslib-sidebar-layout .btn:hover,
+.bslib-sidebar-layout .btn-primary:hover {
+  background-color: var(--accent-1) !important;   /* darker on hover */
+  border-color: var(--accent-1) !important;
+}
 
 /* -------------------------------------------
    Quadrant Plot Containers (cards)
