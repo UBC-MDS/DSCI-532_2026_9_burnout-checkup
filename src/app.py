@@ -297,7 +297,7 @@ def server(input, output, session):
 
         # small change treated as stable
         if abs_pct < 1:
-            return dict(theme="secondary", badge="≈ same as company mean")
+            return dict(theme="secondary", badge="≈ same as company baseline")
 
         is_good = (pct > 0) if higher_is_better else (pct < 0)
 
@@ -321,22 +321,32 @@ def server(input, output, session):
             return None
         return float(series.mean())
     
+    def _safe_median(series: pd.Series) -> float | None:
+        if series.empty:
+            return None
+        val = series.median()
+        if pd.isna(val):
+            return None
+        return float(val)
+    
     @render.ui
     def productivity_box():
         d = filtered_df()
-        val = _safe_mean(d["productivity_score"])
+        val = _safe_median(d["productivity_score"])
         if val is None:
-            return ui.value_box("Avg Productivity", "—", theme="secondary")
+            return ui.value_box("Median Productivity", "—", theme="secondary")
 
         cmp = compare(val, BASELINE_MEDIAN_PRODUCTIVITY, higher_is_better=True)
 
         return ui.value_box(
-            "Avg Productivity",
+            "Median Productivity",
             f"{val:.1f}",
             ui.tags.div(cmp["badge"], class_="small"),
             theme=cmp["theme"],
         )
     
+    # percentage of employees in the filtered set that are at high risk of burnout, 
+    # compared to company-wide baseline percentage.
     @render.ui
     def high_burnout_perc_box():
         d = filtered_df()
@@ -356,14 +366,14 @@ def server(input, output, session):
     @render.ui
     def burnout_box():
         d = filtered_df()
-        val = _safe_mean(d["burnout_risk_score"])
+        val = _safe_median(d["burnout_risk_score"])
         if val is None:
-            return ui.value_box("Avg Burnout Risk", "—", theme="secondary")
+            return ui.value_box("Median Burnout Risk", "—", theme="secondary")
 
         cmp = compare(val, BASELINE_MEDIAN_BURNOUT, higher_is_better=False)
 
         return ui.value_box(
-            "Avg Burnout Risk",
+            "Median Burnout Risk",
             f"{val:.2f}",
             ui.tags.div(cmp["badge"], class_="small"),
             theme=cmp["theme"],
@@ -372,14 +382,14 @@ def server(input, output, session):
     @render.ui
     def wlb_box():
         d = filtered_df()
-        val = _safe_mean(d["work_life_balance_score"])
+        val = _safe_median(d["work_life_balance_score"])
         if val is None:
-            return ui.value_box("Avg Work-Life Balance", "—", theme="secondary")
+            return ui.value_box("Median Work-Life Balance", "—", theme="secondary")
 
         cmp = compare(val, BASELINE_MEDIAN_WLB, higher_is_better=True)
 
         return ui.value_box(
-            "Avg Work-Life Balance",
+            "Median Work-Life Balance",
             f"{val:.2f}",
             ui.tags.div(cmp["badge"], class_="small"),
             theme=cmp["theme"],
