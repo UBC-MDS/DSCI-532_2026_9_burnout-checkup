@@ -83,7 +83,7 @@ documentation
 
     ``` bash
     git clone git@github.com:UBC-MDS/DSCI-532_2026_9_burnout-checkup.git
-    cd burnout_checkup
+    cd DSCI-532_2026_9_burnout-checkup
     ```
 
 2.  Create and activate the environment:
@@ -96,7 +96,7 @@ documentation
 3.  Run the dashboard locally:
 
     ``` bash
-    shiny run --reload src/app.py
+    shiny run src.app
     ```
 
 ------------------------------------------------------------------------
