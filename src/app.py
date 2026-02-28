@@ -267,6 +267,12 @@ def server(input, output, session):
         d = d[d["deadline_pressure_level"].isin(input.deadline_pressure())]
 
         return d
+    
+    # KPIs
+    def _safe_mean(series: pd.Series) -> float | None:
+        if series.empty:
+            return None
+        return float(series.mean())
 
     @output
     @render.text
