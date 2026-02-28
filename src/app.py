@@ -8,6 +8,7 @@ import pandas as pd
 import altair as alt
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
+from src.constants.theme import COLORS, deadline_scale, ai_band_scale, hours_breakdown_scale
 from pathlib import Path
 
 # Read our data
@@ -459,7 +460,12 @@ def server(input, output, session):
                     "ai_tool_usage_hours_per_week:Q", title="AI tool usage (hrs/week)"
                 ),
                 y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
-                color=alt.Color("deadline_pressure_level:N", title="Deadline pressure"),
+                # color=alt.Color("deadline_pressure_level:N", title="Deadline pressure"),
+                color=alt.Color(
+                    "deadline_pressure_level:N",
+                    title="Deadline pressure",
+                    scale=deadline_scale(),
+                ),
                 tooltip=[
                     "job_role:N",
                     "experience_years:Q",
@@ -473,7 +479,7 @@ def server(input, output, session):
 
         median_line = (
             alt.Chart(pd.DataFrame({"y": [BASELINE_MEDIAN_BURNOUT]}))
-            .mark_rule()
+            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
             .encode(y="y:Q")
         )
 
@@ -496,7 +502,7 @@ def server(input, output, session):
 
         chart = (
             alt.Chart(summary)
-            .mark_bar()
+            .mark_bar(color=COLORS["medium_brown"])
             .encode(
                 x=alt.X("job_role:N", sort="-y", title="Job role"),
                 y=alt.Y("avg_burnout:Q", title="Avg burnout risk score"),
@@ -542,7 +548,20 @@ def server(input, output, session):
             .mark_arc()
             .encode(
                 theta=alt.Theta("hours:Q", title=None),
-                color=alt.Color("category:N", title=None),
+                # color=alt.Color("category:N", title=None),
+                color=alt.Color(
+                    "category:N",
+                    title=None,
+                    scale=alt.Scale(
+                        domain=["Meetings", "Collaboration", "Deep work", "Manual work"],
+                        range=[
+                            COLORS["medium_brown"],
+                            COLORS["light_orange"],
+                            COLORS["deep_maroon"],
+                            COLORS["soft_gold"],
+                        ],
+                    ),
+                ),
                 tooltip=[
                     alt.Tooltip("category:N", title="Category"),
                     alt.Tooltip("hours:Q", title="Avg hours/week", format=".1f"),
@@ -567,7 +586,12 @@ def server(input, output, session):
             .encode(
                 x=alt.X("productivity_score:Q", title="Productivity score"),
                 y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
-                color=alt.Color("ai_band:N", title="AI usage band"),
+                # color=alt.Color("ai_band:N", title="AI usage band"),
+                color=alt.Color(
+                    "ai_band:N",
+                    title="AI usage band",
+                    scale=ai_band_scale(),
+                ),
                 tooltip=[
                     "job_role:N",
                     "ai_band:N",
@@ -580,12 +604,12 @@ def server(input, output, session):
 
         vline = (
             alt.Chart(pd.DataFrame({"x": [BASELINE_MEDIAN_PRODUCTIVITY]}))
-            .mark_rule()
+            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
             .encode(x="x:Q")
         )
         hline = (
             alt.Chart(pd.DataFrame({"y": [BASELINE_MEDIAN_BURNOUT]}))
-            .mark_rule()
+            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
             .encode(y="y:Q")
         )
 
