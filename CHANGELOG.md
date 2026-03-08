@@ -29,7 +29,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added minimal NumPy-style docstrings for data-loading and preprocessing helpers.
 - Added `DEADLINE_PRESSURE_MAP` constant to standardize workload-score derivation.
 - Added .env.example file to provide a template for required environment variables.
-- Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.
+- Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.### Added
+- Unit tests for `src/data.py` covering data loading, filter choice generation, slider range computation, and baseline metric calculations.
 
 ### Changed
 

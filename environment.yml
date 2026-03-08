@@ -21,6 +21,7 @@ dependencies:
 - altair=6.0.0
 - anywidget=0.9.21
 - anthropic==0.84.0
+- pytest=9.0.2
 
 - pip:
   - querychat==0.5.1
