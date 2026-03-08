@@ -192,83 +192,43 @@ app_ui = ui.page_fluid(
             ui.nav_panel(
                 "Dashboard",
                 ui.div(
-                    # KPI ROW (4)
+                    # KPI ROW (4 KPIs)
                     ui.layout_columns(
-                        ui.card(
-                            ui.card_header("Avg Burnout Risk Score"),
-                            ui.h2(ui.output_text("kpi_avg_burnout")),
-                            ui.p(
-                                ui.em(
-                                    "Average burnout risk score for the filtered employees."
-                                )
-                            ),
-                        ),
-                        ui.card(
-                            ui.card_header("Avg Productivity Score"),
-                            ui.h2(ui.output_text("kpi_avg_productivity")),
-                            ui.p(
-                                ui.em(
-                                    "Average productivity score for the filtered employees."
-                                )
-                            ),
-                        ),
-                        ui.card(
-                            ui.card_header("Burnout vs Median (%)"),
-                            ui.h2(ui.output_text("kpi_burnout_vs_median")),
-                            ui.p(
-                                ui.em(
-                                    "Percentage difference between filtered burnout score and company median."
-                                )
-                            ),
-                        ),
-                        ui.card(
-                            ui.card_header("Avg Work-Life Balance Score"),
-                            ui.h2(ui.output_text("kpi_avg_wlb")),
-                            ui.p(
-                                ui.em(
-                                    "Average work-life balance score for the filtered employees."
-                                )
-                            ),
-                        ),
+                        # Average burnout risk score for the filtered employees.
+                        # These boxes are ordered this way because the first two are key KPIs and are both lower the better,
+                        # while the last two are higher the better.
+                        ui.output_ui("burnout_box"),
+                        ui.output_ui("high_burnout_perc_box"),
+                        ui.output_ui("productivity_box"),
+                        ui.output_ui("wlb_box"),
                         col_widths=(3, 3, 3, 3),
+                        class_="kpi-grid",
                     ),
                     ui.br(),
                     # 4 PANELS (2 x 2)
+                    # Row 1: AI vs Burnout scatter, Burnout by Role bar
                     ui.layout_columns(
                         ui.card(
                             ui.card_header("AI Usage vs Burnout"),
-                            ui.p(
-                                "Scatter plot of AI usage hours per week versus burnout risk score. "
-                                "Points are grouped by deadline pressure level (Low, Medium, High), and a horizontal "
-                                "reference line marks the median burnout score."
-                            ),
+                            output_widget("plot_ai_vs_burnout"),
                         ),
                         ui.card(
-                            ui.card_header("Burnout Risk Score Prediction"),
-                            ui.p(
-                                "Grouped bar chart showing observed burnout risk scores across job roles. "
-                                "Predicted burnout scores may be overlaid to assess divergence between "
-                                "observed and model-estimated risk."
-                            ),
+                            ui.card_header("Burnout Risk by Job Role"),
+                            # ui.p(ui.em("Observed values are shown; prediction overlay is planned for a later milestone.")),
+                            output_widget("plot_burnout_by_role"),
                         ),
                         col_widths=(6, 6),
                     ),
                     ui.br(),
+                    # Row 2: Weekly hours breakdown, Productivity vs Burnout scatter
                     ui.layout_columns(
                         ui.card(
                             ui.card_header("Weekly Work Hours Breakdown"),
-                            ui.p(
-                                "Pie chart showing the breakdown of weekly work hours across Meetings, Collaboration, "
-                                "Deep work, and Manual work for the selected filters."
-                            ),
+                            output_widget("plot_hours_breakdown"),
                         ),
                         ui.card(
                             ui.card_header("Productivity vs Burnout Risk Score"),
-                            ui.p(
-                                "Scatter plot of productivity score versus burnout risk score. Points are grouped by AI "
-                                "usage level (Low, Medium, High), and a horizontal reference line marks the median "
-                                "productivity score."
-                            ),
+                            output_widget("plot_prod_vs_burnout"),
                         ),
                         col_widths=(6, 6),
                     ),
@@ -277,7 +237,7 @@ app_ui = ui.page_fluid(
                         "input.show_debug",
                         ui.card(
                             ui.card_header(
-                                "Development utility: echoes filter values to validate reactivity"
+                                "Debug (reactive inputs + filtered row count)"
                             ),
                             ui.output_text_verbatim("debug_filters"),
                         ),
