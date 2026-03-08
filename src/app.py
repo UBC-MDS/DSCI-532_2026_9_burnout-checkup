@@ -37,6 +37,7 @@ from src.charts import (
     make_hours_breakdown_chart,
     make_productivity_vs_burnout_chart,
 )
+from src.utils.debug import format_filter_debug
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
@@ -593,17 +594,16 @@ def server(input, output, session):
     @output
     @render.text
     def debug_filters():
-        d = filtered_df()
-        return (
-            f"job_role={input.job_role()}\n"
-            f"ai_band={input.ai_band()}\n"
-            f"experience={input.experience()}\n"
-            f"ai_usage={input.ai_usage()}\n"
-            f"manual_hours={input.manual_hours()}\n"
-            f"tasks_automated={input.tasks_automated()}\n"
-            f"deadline_pressure={input.deadline_pressure()}\n"
-            f"show_pred={input.show_pred()}\n"
-            f"filtered_rows={len(d)}"
+        return format_filter_debug(
+            job_role=input.job_role(),
+            ai_band=input.ai_band(),
+            experience=input.experience(),
+            ai_usage=input.ai_usage(),
+            manual_hours=input.manual_hours(),
+            tasks_automated=input.tasks_automated(),
+            deadline_pressure=input.deadline_pressure(),
+            show_pred=input.show_pred(),
+            filtered_df=filtered_df(),
         )
 
 

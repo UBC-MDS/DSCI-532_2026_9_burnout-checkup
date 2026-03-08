@@ -76,6 +76,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - productivity vs burnout
 - Reduced `app.py` complexity by separating visualization logic from Shiny server wiring.
 - Prepared chart functions for reuse in other dashboard sections, including the AI Explorer tab.
+- Moved debug panel formatting logic from `app.py` to `src/utils/debug.py`.
+- Added `format_filter_debug()` utility to simplify server debug output.
 
 ### Infrastructure
 
