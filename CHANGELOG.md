@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - Milestone 3 Preparation
+
+### Added
+
+- Introduced modular project structure to improve maintainability and collaboration.
+- Created new module files to separate dashboard responsibilities:
+    - src/data.py for data loading and preprocessing logic.
+    - src/filters.py for reusable dataframe filtering utilities.
+    - src/kpis.py for KPI computation and UI helpers.
+    - src/charts.py for reusable Altair visualization functions.
+    - src/ai_tab.py as a placeholder for the upcoming AI-powered dashboard tab.
+    - Added src/utils/ package with __init__.py to host shared utility functions across modules.
+
+### Changed
+
+- Prepared the application architecture for modularization of app.py logic in future commits.
+- Refactoring groundwork added to support upcoming AI-driven filtering features and easier parallel development.
+
+## Notes
+
+These changes introduce scaffolding only; no functional behavior changes were made yet.
+
 ## [0.2.0]
 
 ### What's Changed
