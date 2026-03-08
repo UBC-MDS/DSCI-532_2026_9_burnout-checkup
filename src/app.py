@@ -717,12 +717,23 @@ def server(input, output, session):
         )
 
         median_line = (
-            alt.Chart(pd.DataFrame({"y": [BASELINE_MEDIAN_BURNOUT]}))
-            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
-            .encode(y="y:Q")
+            alt.Chart(
+                pd.DataFrame(
+                    {"y": [BASELINE_MEDIAN_BURNOUT], "line": ["Company Median Burnout"]}
+                )
+            )
+            .mark_rule(strokeDash=[6, 4])
+            .encode(
+                y="y:Q",
+                color=alt.Color(
+                    "line:N",
+                    scale=alt.Scale(range=[COLORS["alert_red"]]),
+                    legend=alt.Legend(title=None),
+                ),
+            )
         )
 
-        return chart + median_line
+        return (chart + median_line).resolve_scale(color="independent")
 
     @output
     @render_altair
@@ -845,17 +856,42 @@ def server(input, output, session):
         )
 
         vline = (
-            alt.Chart(pd.DataFrame({"x": [BASELINE_MEDIAN_PRODUCTIVITY]}))
-            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
-            .encode(x="x:Q")
+            alt.Chart(
+                pd.DataFrame(
+                    {
+                        "x": [BASELINE_MEDIAN_PRODUCTIVITY],
+                        "line": ["Company Median Productivity"],
+                    }
+                )
+            )
+            .mark_rule(strokeDash=[6, 4])
+            .encode(
+                x="x:Q",
+                color=alt.Color(
+                    "line:N",
+                    scale=alt.Scale(range=[COLORS["alert_red"]]),
+                    legend=alt.Legend(title=None),
+                ),
+            )
         )
         hline = (
-            alt.Chart(pd.DataFrame({"y": [BASELINE_MEDIAN_BURNOUT]}))
-            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
-            .encode(y="y:Q")
+            alt.Chart(
+                pd.DataFrame(
+                    {"y": [BASELINE_MEDIAN_BURNOUT], "line": ["Company Median Burnout"]}
+                )
+            )
+            .mark_rule(strokeDash=[6, 4])
+            .encode(
+                y="y:Q",
+                color=alt.Color(
+                    "line:N",
+                    scale=alt.Scale(range=[COLORS["alert_red"]]),
+                    legend=alt.Legend(title=None),
+                ),
+            )
         )
 
-        return chart + vline + hline
+        return (chart + vline + hline).resolve_scale(color="independent")
 
     # Render df in AI tab
     @output
