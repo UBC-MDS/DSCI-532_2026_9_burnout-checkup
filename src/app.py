@@ -460,11 +460,33 @@ def server(input, output, session):
 
         return d
 
-    # ai filtered df
+    # -------------------------
+    # QueryChat server values for AI Explorer
+    # -------------------------
+    qc_vals = qc.server()
+
+    # ai filtered df returned by QueryChat
     @reactive.calc
     @reactive.event(input.run_ai_query)
     def ai_filtered_df():
-        return filtered_df().copy()
+        result = qc_vals.df()
+
+        # convert querychat df to pandas df (code generated with GPT-5)
+        if hasattr(result, "to_native"):
+            return result.to_native()
+        return result
+
+    # title output
+    @render.text
+    def ai_title():
+        return qc_vals.title() or "Preview of AI-filtered data"
+
+    # reset button for AI filters
+    @reactive.effect
+    @reactive.event(input.reset_ai_query)
+    def _reset_ai_query():
+        qc_vals.sql("")
+        qc_vals.title(None)
 
     # KPIs
     def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
@@ -500,7 +522,7 @@ def server(input, output, session):
         diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
 
-        # Higher productivity is GOOD
+        # Higher productivity is good
         sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
 
         return kpi_card(
@@ -832,13 +854,6 @@ def server(input, output, session):
         )
 
         return chart + vline + hline
-
-    # AI explorer trigger
-    @reactive.effect
-    @reactive.event(input.run_ai_query)
-    def _run_ai_query():
-        query = input.ai_query()
-        print("User query:", query)
 
     # Render df in AI tab
     @output
