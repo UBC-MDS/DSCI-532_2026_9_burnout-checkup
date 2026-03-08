@@ -6,7 +6,6 @@ from shiny.render import DataGrid
 from shinywidgets import output_widget, render_altair
 
 import pandas as pd
-import altair as alt
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
 from src.constants.theme import (
@@ -31,6 +30,12 @@ from src.kpis import (
     high_burnout_pct_card,
     kpi_card,
     median_metric_card,
+)
+from src.charts import (
+    make_ai_vs_burnout_chart,
+    make_burnout_by_role_chart,
+    make_hours_breakdown_chart,
+    make_productivity_vs_burnout_chart,
 )
 
 load_dotenv()
@@ -538,222 +543,40 @@ def server(input, output, session):
             title="High Burnout %",
         )
 
+    # -------------------------
     # Plots (Altair)
-    def _empty_chart(message: str) -> alt.Chart:
-        return (
-            alt.Chart(pd.DataFrame({"text": [message]}))
-            .mark_text(align="center", baseline="middle", size=14)
-            .encode(text="text:N")
-            .properties(height=260)
-        )
+    # -------------------------
 
+    # Render AI usage vs burnout chart
     @output
     @render_altair
     def plot_ai_vs_burnout():
-        d = filtered_df()
-        if d.empty:
-            return _empty_chart("No data for current filters.")
-
-        chart = (
-            alt.Chart(d)
-            .mark_circle(opacity=0.7)
-            .encode(
-                x=alt.X(
-                    "ai_tool_usage_hours_per_week:Q", title="AI tool usage (hrs/week)"
-                ),
-                y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
-                color=alt.Color(
-                    "deadline_pressure_level:N",
-                    title="Deadline pressure",
-                    scale=deadline_scale(),
-                ),
-                tooltip=[
-                    "job_role:N",
-                    "experience_years:Q",
-                    "ai_tool_usage_hours_per_week:Q",
-                    "manual_work_hours_per_week:Q",
-                    "burnout_risk_score:Q",
-                ],
-            )
-            .properties(height=260)
+        return make_ai_vs_burnout_chart(
+            filtered_df(),
+            baseline_median_burnout=BASELINE_MEDIAN_BURNOUT,
         )
 
-        median_line = (
-            alt.Chart(
-                pd.DataFrame(
-                    {"y": [BASELINE_MEDIAN_BURNOUT], "line": ["Company Median Burnout"]}
-                )
-            )
-            .mark_rule(strokeDash=[6, 4])
-            .encode(
-                y="y:Q",
-                color=alt.Color(
-                    "line:N",
-                    scale=alt.Scale(range=[COLORS["alert_red"]]),
-                    legend=alt.Legend(title=None),
-                ),
-            )
-        )
-
-        return (chart + median_line).resolve_scale(color="independent")
-
+    # Render burnout by role chart
     @output
     @render_altair
-    def plot_burnout_by_role():
-        d = filtered_df()
-        if d.empty:
-            return _empty_chart("No data for current filters.")
+    def plot_burnout_by_role():       
+        return make_burnout_by_role_chart(filtered_df())
 
-        # mean burnout by role
-        summary = (
-            d.groupby("job_role", as_index=False)["burnout_risk_score"]
-            .mean()
-            .rename(columns={"burnout_risk_score": "avg_burnout"})
-            .sort_values("avg_burnout", ascending=False)
-        )
-
-        chart = (
-            alt.Chart(summary)
-            .mark_bar(color=COLORS["medium_brown"])
-            .encode(
-                x=alt.X("job_role:N", sort="-y", title="Job role"),
-                y=alt.Y("avg_burnout:Q", title="Avg burnout risk score"),
-                tooltip=["job_role:N", alt.Tooltip("avg_burnout:Q", format=".2f")],
-            )
-            .properties(height=260)
-        )
-        return chart
-
+    # Render hours breakdown chart
     @output
     @render_altair
     def plot_hours_breakdown():
-        d = filtered_df()
-        if d.empty:
-            return _empty_chart("No data for current filters.")
+        return make_hours_breakdown_chart(filtered_df())
 
-        # Convert focus hours/day to approximate weekly focus hours (5-day workweek assumption)
-        weekly_focus = d["focus_hours_per_day"] * 5.0
-
-        breakdown = pd.DataFrame(
-            {
-                "category": ["Meetings", "Collaboration", "Deep work", "Manual work"],
-                "hours": [
-                    float(d["meeting_hours_per_week"].mean()),
-                    float(d["collaboration_hours_per_week"].mean()),
-                    float(weekly_focus.mean()),
-                    float(d["manual_work_hours_per_week"].mean()),
-                ],
-            }
-        )
-
-        total = breakdown["hours"].sum()
-        if total <= 0:
-            return _empty_chart("No hours available for current filters.")
-
-        breakdown["pct"] = breakdown["hours"] / total
-        breakdown["pct_label"] = (breakdown["pct"] * 100).round(0).astype(int).astype(
-            str
-        ) + "%"
-
-        pie = (
-            alt.Chart(breakdown)
-            .mark_arc(innerRadius=70)
-            .encode(
-                theta=alt.Theta("hours:Q", title=None),
-                color=alt.Color(
-                    "category:N",
-                    title=None,
-                    scale=alt.Scale(
-                        domain=[
-                            "Meetings",
-                            "Collaboration",
-                            "Deep work",
-                            "Manual work",
-                        ],
-                        range=[
-                            COLORS["medium_brown"],
-                            COLORS["light_orange"],
-                            COLORS["deep_maroon"],
-                            COLORS["soft_gold"],
-                        ],
-                    ),
-                ),
-                tooltip=[
-                    alt.Tooltip("category:N", title="Category"),
-                    alt.Tooltip("hours:Q", title="Avg hours/week", format=".1f"),
-                    alt.Tooltip("pct:Q", title="Share", format=".0%"),
-                ],
-            )
-            .properties(height=260)
-        )
-
-        return pie
-
+    # Render productivity vs burnout chart
     @output
     @render_altair
     def plot_prod_vs_burnout():
-        d = filtered_df()
-        if d.empty:
-            return _empty_chart("No data for current filters.")
-
-        chart = (
-            alt.Chart(d)
-            .mark_circle(opacity=0.7)
-            .encode(
-                x=alt.X("productivity_score:Q", title="Productivity score"),
-                y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
-                color=alt.Color(
-                    "ai_band:N",
-                    title="AI usage band",
-                    scale=ai_band_scale(),
-                ),
-                tooltip=[
-                    "job_role:N",
-                    "ai_band:N",
-                    "productivity_score:Q",
-                    "burnout_risk_score:Q",
-                ],
-            )
-            .properties(height=260)
+        return make_productivity_vs_burnout_chart(
+            filtered_df(),
+            baseline_median_productivity=BASELINE_MEDIAN_PRODUCTIVITY,
+            baseline_median_burnout=BASELINE_MEDIAN_BURNOUT,
         )
-
-        vline = (
-            alt.Chart(
-                pd.DataFrame(
-                    {
-                        "x": [BASELINE_MEDIAN_PRODUCTIVITY],
-                        "line": ["Company Median Productivity"],
-                    }
-                )
-            )
-            .mark_rule(strokeDash=[6, 4])
-            .encode(
-                x="x:Q",
-                color=alt.Color(
-                    "line:N",
-                    scale=alt.Scale(range=[COLORS["alert_red"]]),
-                    legend=alt.Legend(title=None),
-                ),
-            )
-        )
-        hline = (
-            alt.Chart(
-                pd.DataFrame(
-                    {"y": [BASELINE_MEDIAN_BURNOUT], "line": ["Company Median Burnout"]}
-                )
-            )
-            .mark_rule(strokeDash=[6, 4])
-            .encode(
-                y="y:Q",
-                color=alt.Color(
-                    "line:N",
-                    scale=alt.Scale(range=[COLORS["alert_red"]]),
-                    legend=alt.Legend(title=None),
-                ),
-            )
-        )
-
-        return (chart + vline + hline).resolve_scale(color="independent")
 
     # Render df in AI tab
     @output

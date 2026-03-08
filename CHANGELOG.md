@@ -38,6 +38,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Replaced the **pie chart with a donut chart** to improve readability and visual clarity.
 - Removed unused plots and cleaned up visualization components.
 - Updated **environment and requirements files** to ensure consistent dependency management.
+- Refactored Altair chart construction out of `src/app.py` into reusable helper functions in `src/charts.py`.
+- Updated dashboard chart rendering in `app.py` to call chart helper functions instead of building charts inline.
+- Rotated x-axis labels in the burnout-by-role chart to improve readability for longer job role names.
 
 ### Fixed
 
@@ -66,6 +69,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Replaced repeated inline KPI computation logic in `src/app.py` with shared helper calls.
 - Standardized baseline comparison behavior for KPI arrows, subtitle messaging, and visual status classes.
 - Simplified `app.py` server code by separating KPI presentation logic from reactive dashboard wiring.
+- Centralized dashboard plotting logic for:
+  - AI usage vs burnout
+  - burnout by job role
+  - weekly work hours breakdown
+  - productivity vs burnout
+- Reduced `app.py` complexity by separating visualization logic from Shiny server wiring.
+- Prepared chart functions for reuse in other dashboard sections, including the AI Explorer tab.
 
 ### Infrastructure
 
