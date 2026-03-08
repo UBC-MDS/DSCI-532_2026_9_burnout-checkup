@@ -4,6 +4,61 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0]
+
+### Added
+
+- Added **AI Explore tab** to allow users to interact with the dataset using natural language queries.
+- Implemented **QueryChat integration** for AI-driven exploration.
+- Added **AI server configuration** to support model interactions.
+- Added **API key configuration** using a `.env` file.
+- Added `.env` to `.gitignore` for secure handling of API credentials.
+- Added **new KPI cards** for the AI Explore tab.
+- Added **download button** to export filtered data.
+- Added **legend for KPI indicators** in scatter plots.
+- Added **dummy table output and query functionality** as the initial structure for AI-assisted querying.
+
+### Changed
+
+- Restructured the **AI Explore tab layout** to improve usability and organization.
+- Updated the **job role filter** to allow **multiple selections** instead of a single selection.
+- Replaced the **pie chart with a donut chart** to improve readability and visual clarity.
+- Removed unused plots and cleaned up visualization components.
+- Updated **environment and requirements files** to ensure consistent dependency management.
+
+### Fixed
+
+- Fixed multiple **code bugs and minor UI issues** identified during development.
+- Fixed dependency conflicts in `requirements.txt` and environment configuration.
+
+### Infrastructure
+
+- Updated **Shiny dependency versions** to resolve compatibility issues.
+- Updated and synchronized **environment.yml** and **requirements.txt**.
+- Merged several feature and bug-fix branches related to:
+  - AI tab implementation
+  - API configuration
+  - dependency fixes
+  - dashboard restructuring
+  - lab feedback improvements
+
+### Reflection (Milestone 3)
+
+1. **Implementation Status:**
+Most of the planned functionality for Milestone 3 has been implemented. The dashboard was expanded with an **AI Explore tab** to allow users to interact with the dataset in more flexible ways. The AI Explore tab now includes additional KPI cards, improved filtering through the sidebar, and updated visualizations such as the donut chart and enhanced scatterplots with clearer legends. The chatbot integration allows users to query the data using natural language, providing an additional exploratory interface beyond traditional dashboard filters. Supporting infrastructure such as API configuration, environment management, and dependency updates were also implemented to ensure the application runs consistently across environments.
+
+2. **Deviations:**
+Some adjustments were made from the original implementation plan as development progressed. The AI tab initially included several experimental components such as dummy tables and placeholder queries, which were used to prototype the chatbot interaction workflow before integrating the final functionality. Additionally, the structure of the AI Explore tab was reorganized to improve usability, and some unused plots were removed to keep the interface focused on the most informative visualizations. The job role filter was also updated to allow **multiple selections**, improving flexibility compared to the earlier design.
+
+3. **Known Issues:**
+The chatbot functionality currently serves as an exploratory interface and may still produce limited responses depending on the query structure. Since the model interaction depends on API configuration, users must properly set environment variables for the chatbot to function correctly. Additionally, some filter combinations may still produce sparse datasets, which can reduce the interpretability of certain visualizations.
+
+4. **Best Practices:**
+We focused on improving usability and clarity in the dashboard layout. The replacement of the pie chart with a **donut chart** improves readability while maintaining the same conceptual representation. Legends and annotations were added to scatterplots to make KPI comparisons easier to interpret. Environment configuration was also improved by using a `.env` file and synchronizing dependency files, which supports reproducibility and secure handling of API credentials.
+
+5. **Self-Assessment:**
+The addition of the AI components significantly enhances the exploratory capabilities of the dashboard. Users can now interact with the data through both structured visual analytics and conversational querying. The restructuring of the AI Explore tab and improvements to filtering and visualization clarity make the dashboard more intuitive and flexible. While the chatbot feature could be expanded further, the current implementation demonstrates the feasibility of integrating AI-assisted exploration within the dashboard. Future work could focus on improving response quality, adding more guided insights, and further refining visual explanations for users.
+
 ## [0.2.0]
 
 ### What's Changed
@@ -24,6 +79,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Implemented styling in KPIs: added badges and coloring to improve readability
 
 ### Changes
+
 1. Switch comparison between mean and company median to median vs. median. Our data is slightly skewed, with many value for `burnout_risk_score` at or very close to 10. After discussion, we decided that it's not very reasonable to compare mean and company median(baseline), so we changed all KPIs to median.
 
 2. Implement % high risk score card since comparison between group median and company median is already implemented in each value box, the original `burnout_vs_median` is redundant. We have decided to change this card to % of high burnout risk employees in a group, which would make it easier to track by managers.
