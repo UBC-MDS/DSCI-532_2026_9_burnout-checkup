@@ -31,6 +31,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added .env.example file to provide a template for required environment variables.
 - Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.### Added
 - Unit tests for `src/data.py` covering data loading, filter choice generation, slider range computation, and baseline metric calculations.
+- Unit tests for dashboard filtering logic in `apply_dashboard_filters` using `pytest`.
+- Test coverage for QueryChat dataframe normalization via `normalize_querychat_result`.
+- Synthetic test dataset fixture for validating filter behavior across job roles, AI usage bands, numeric ranges, and deadline pressure levels.
 
 ### Changed
 
@@ -104,7 +107,9 @@ Some adjustments were made from the original implementation plan as development 
 The chatbot functionality currently serves as an exploratory interface and may still produce limited responses depending on the query structure. Since the model interaction depends on API configuration, users must properly set environment variables for the chatbot to function correctly. Additionally, some filter combinations may still produce sparse datasets, which can reduce the interpretability of certain visualizations.
 
 4. **Best Practices:**
-We focused on improving usability and clarity in the dashboard layout. The replacement of the pie chart with a **donut chart** improves readability while maintaining the same conceptual representation. Legends and annotations were added to scatterplots to make KPI comparisons easier to interpret. Environment configuration was also improved by using a `.env` file and synchronizing dependency files, which supports reproducibility and secure handling of API credentials.
+We focused on improving usability and clarity in the dashboard layout. The replacement of the pie chart with a **donut chart** improves readability while maintaining the same conceptual representation. Legends and annotations were added to scatterplots to make KPI comparisons easier to interpret. Environment configuration was also improved by using a `.env` file and synchronizing dependency files, which supports reproducibility and secure handling of API credentials. - 
+
+Adding tests improves reliability of the dashboard's reactive filtering logic and reduces risk of regressions during future feature development (e.g., AI query filtering).
 
 5. **Self-Assessment:**
 The addition of the AI components significantly enhances the exploratory capabilities of the dashboard. Users can now interact with the data through both structured visual analytics and conversational querying. The restructuring of the AI Explore tab and improvements to filtering and visualization clarity make the dashboard more intuitive and flexible. While the chatbot feature could be expanded further, the current implementation demonstrates the feasibility of integrating AI-assisted exploration within the dashboard. Future work could focus on improving response quality, adding more guided insights, and further refining visual explanations for users.
