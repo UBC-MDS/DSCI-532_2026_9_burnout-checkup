@@ -259,11 +259,19 @@ app_ui = ui.page_fluid(
                         placeholder="Example: Show employees with high burnout risk and high AI usage",
                         rows=4,
                     ),
+                    # Add run query button
                     ui.br(),
                     ui.input_action_button("run_ai_query", "Run query"),
                     ui.br(),
+                    # Add filtered table
                     ui.h4("Preview of filtered data"),
                     ui.output_data_frame("ai_table"),
+                    # Add 1st visualization
+                    ui.br(),
+                    ui.card(
+                        ui.card_header("AI Usage vs Burnout"),
+                        output_widget("ai_plot_ai_vs_burnout"),
+                    ),
                 ),
             ),
         ),
@@ -625,6 +633,39 @@ def server(input, output, session):
         )
 
         return chart + vline + hline
+
+    # 1st table in AI tab
+    @output
+    @render_altair
+    def ai_plot_ai_vs_burnout():
+        d = ai_filtered_df()
+        if d.empty:
+            return _empty_chart("No data for current AI query.")
+
+        chart = (
+            alt.Chart(d)
+            .mark_circle(opacity=0.7)
+            .encode(
+                x=alt.X(
+                    "ai_tool_usage_hours_per_week:Q", title="AI tool usage (hrs/week)"
+                ),
+                y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
+                color=alt.Color(
+                    "deadline_pressure_level:N",
+                    title="Deadline pressure",
+                    scale=deadline_scale(),
+                ),
+                tooltip=[
+                    "job_role:N",
+                    "experience_years:Q",
+                    "ai_tool_usage_hours_per_week:Q",
+                    "burnout_risk_score:Q",
+                ],
+            )
+            .properties(height=260)
+        )
+
+        return chart
 
     # AI explorer trigger
     @reactive.effect
