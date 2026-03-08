@@ -286,45 +286,54 @@ app_ui = ui.page_fluid(
         # ==================================================
         ui.nav_panel(
             "AI Explorer",
-            ui.div(
+            ui.layout_sidebar(
                 # -------------------------
-                # AI Explorer header and query input
+                # AI Explorer sidebar
                 # -------------------------
-                ui.h3("AI Explorer"),
-                ui.p("Use natural language to explore the filtered dataset."),
-                ui.input_text_area(
-                    "ai_query",
-                    "Ask a question about the data:",
-                    placeholder="Example: Show employees with high burnout risk and high AI usage",
-                    rows=4,
+                ui.sidebar(
+                    ui.h3("AI Explorer"),
+                    ui.p("Use natural language to explore the filtered dataset."),
+                    ui.input_text_area(
+                        "ai_query",
+                        "Ask a question about the data:",
+                        placeholder="Example: Show employees with high burnout risk and high AI usage",
+                        rows=6,
+                    ),
+                    ui.br(),
+                    ui.input_action_button("run_ai_query", "Run query"),
+                    width=320,
                 ),
-                ui.br(),
-                ui.input_action_button("run_ai_query", "Run query"),
-                ui.br(),
                 # -------------------------
-                # AI Explorer KPI row
+                # AI Explorer main content
                 # -------------------------
-                ui.layout_columns(
-                    ui.output_ui("ai_count_box"),
-                    ui.output_ui("ai_burnout_box"),
-                    ui.output_ui("ai_productivity_box"),
-                    ui.output_ui("ai_high_burnout_box"),
-                    col_widths=(3, 3, 3, 3),
-                    class_="kpi-grid",
+                ui.div(
+                    # -------------------------
+                    # AI Explorer KPI row
+                    # -------------------------
+                    ui.layout_columns(
+                        ui.output_ui("ai_count_box"),
+                        ui.output_ui("ai_burnout_box"),
+                        ui.output_ui("ai_productivity_box"),
+                        ui.output_ui("ai_high_burnout_box"),
+                        col_widths=(3, 3, 3, 3),
+                        class_="kpi-grid",
+                    ),
+                    ui.br(),
+                    # -------------------------
+                    # AI Explorer table preview
+                    # -------------------------
+                    ui.card(
+                        ui.card_header(
+                            "Preview of AI-filtered data",
+                            ui.download_button(
+                                "download_ai_data",
+                                "Download AI-filtered data",
+                            ),
+                            class_="d-flex justify-content-between align-items-center",
+                        ),
+                        ui.output_data_frame("ai_table"),
+                    ),
                 ),
-                ui.br(),
-                # -------------------------
-                # AI Explorer table preview
-                # -------------------------
-                ui.card(
-                    ui.card_header("Preview of AI-filtered data"),
-                    ui.output_data_frame("ai_table"),
-                ),
-                ui.br(),
-                # -------------------------
-                # AI Explorer data download
-                # -------------------------
-                ui.download_button("download_ai_data", "Download AI-filtered data"),
             ),
         ),
     ),
