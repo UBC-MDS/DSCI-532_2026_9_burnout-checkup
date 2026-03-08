@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Synthetic test dataset fixture for validating filter behavior across job roles, AI usage bands, numeric ranges, and deadline pressure levels.
 - Unit tests for reusable KPI helpers (`safe_mean`, `safe_median`, `percent_diff`, `trend_arrow`, `trend_class`).
 - Tests for KPI UI components (`median_metric_card`, `high_burnout_pct_card`, `count_card`).
+- Added unit tests for chart-building functions in `src/charts.py`, covering empty-state placeholders, layered scatter plots, bar chart aggregation, and hours breakdown visualization behavior.
 
 ### Changed
 
