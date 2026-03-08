@@ -17,8 +17,8 @@ from src.constants.theme import (
 )
 from pathlib import Path
 from dotenv import load_dotenv
-import querychat
-import chatlas
+from querychat import QueryChat
+from chatlas import ChatAnthropic
 import os
 
 load_dotenv()
@@ -68,6 +68,65 @@ BASELINE_MEDIAN_BURNOUT = float(df["burnout_risk_score"].median())
 BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
 BASELINE_MEDIAN_WLB = float(df["work_life_balance_score"].median())
 BASELINE_HIGH_BURNOUT = (df["burnout_risk_level"] == "High").mean()
+
+# -------------------------
+# QueryChat setup for AI Explorer
+# -------------------------
+ai_greeting = """
+👋 Hi! I’m your AI burnout explorer.
+
+Ask me questions about employee burnout, productivity, AI usage, workload, and work-life balance.
+
+Examples:
+- Show employees with high burnout risk
+- Show employees with high AI usage and low productivity
+- Sort employees by burnout risk from highest to lowest
+- Which job roles have the highest burnout risk?
+- Show employees with high manual work hours
+
+You can also say Reset to clear the current AI filter/sort.
+"""
+
+ai_data_description = """
+Employee-level workplace wellbeing and productivity dataset.
+
+Each row represents one employee.
+
+Columns:
+- Employee_ID: unique identifier for each employee.
+- job_role: employee job role/category.
+- experience_years: years of experience.
+- ai_tool_usage_hours_per_week: hours per week spent using AI tools.
+- tasks_automated_percent: percent of tasks automated with AI/tools.
+- manual_work_hours_per_week: hours per week spent on manual work.
+- meeting_hours_per_week: hours per week spent in meetings.
+- collaboration_hours_per_week: hours per week spent collaborating.
+- focus_hours_per_day: average focus/deep work hours per day.
+- deadline_pressure_level: categorical deadline pressure level (Low, Medium, High).
+- burnout_risk_score: numeric burnout risk score.
+- burnout_risk_level: burnout category label.
+- productivity_score: numeric productivity score.
+- work_life_balance_score: numeric work-life balance score.
+- workload_score: derived workload metric combining manual work, meetings, and deadline pressure.
+- workload_band: workload category (Low, Medium, High).
+- ai_band: AI usage category (Low, Moderate, High).
+
+This dataset can be used to analyze:
+- Burnout risk by role or experience
+- AI usage patterns across employees
+- Links between productivity and burnout
+- Work-life balance differences
+- Manual work and deadline pressure patterns
+- High-risk employee subgroups
+"""
+
+qc = QueryChat(
+    df.copy(),
+    "AIUsageBurnoutCheckup",
+    greeting=ai_greeting,
+    data_description=ai_data_description,
+    client=ChatAnthropic(model="claude-sonnet-4-0"),
+)
 
 # -------------------------
 # UI
@@ -292,15 +351,10 @@ app_ui = ui.page_fluid(
                 # -------------------------
                 ui.sidebar(
                     ui.h3("AI Explorer"),
-                    ui.p("Use natural language to explore the filtered dataset."),
-                    ui.input_text_area(
-                        "ai_query",
-                        "Ask a question about the data:",
-                        placeholder="Example: Show employees with high burnout risk and high AI usage",
-                        rows=6,
-                    ),
-                    ui.br(),
-                    ui.input_action_button("run_ai_query", "Run query"),
+                    # ui.p("Use natural language to explore the filtered dataset."),
+                    qc.ui(),
+                    ui.hr(),
+                    ui.input_action_button("reset_ai_query", "Reset AI filters"),
                     width=320,
                 ),
                 # -------------------------
@@ -324,7 +378,7 @@ app_ui = ui.page_fluid(
                     # -------------------------
                     ui.card(
                         ui.card_header(
-                            "Preview of AI-filtered data",
+                            ui.output_text("ai_title"),
                             ui.download_button(
                                 "download_ai_data",
                                 "Download AI-filtered data",
@@ -406,11 +460,34 @@ def server(input, output, session):
 
         return d
 
-    # ai filtered df
+    # -------------------------
+    # QueryChat server values for AI Explorer
+    # -------------------------
+    qc_vals = qc.server()
+
+    # ai filtered df returned by QueryChat
     @reactive.calc
-    @reactive.event(input.run_ai_query)
     def ai_filtered_df():
-        return filtered_df().copy()
+        result = qc_vals.df()
+
+        # convert querychat df to pandas df (code generated with GPT-5)
+        if hasattr(result, "to_native"):
+            return result.to_native()
+        if result is None:
+            return df.copy()
+        return result
+
+    # title output
+    @render.text
+    def ai_title():
+        return qc_vals.title() or "Preview of AI-filtered data"
+
+    # reset button for AI filters
+    @reactive.effect
+    @reactive.event(input.reset_ai_query)
+    def _reset_ai_query():
+        qc_vals.sql("")
+        qc_vals.title(None)
 
     # KPIs
     def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
@@ -446,7 +523,7 @@ def server(input, output, session):
         diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
 
-        # Higher productivity is GOOD
+        # Higher productivity is good
         sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
 
         return kpi_card(
@@ -779,18 +856,11 @@ def server(input, output, session):
 
         return chart + vline + hline
 
-    # AI explorer trigger
-    @reactive.effect
-    @reactive.event(input.run_ai_query)
-    def _run_ai_query():
-        query = input.ai_query()
-        print("User query:", query)
-
     # Render df in AI tab
     @output
     @render.data_frame
     def ai_table():
-        return DataGrid(ai_filtered_df().head(10))
+        return DataGrid(ai_filtered_df())
 
     # Download data button in ai tab
     @render.download(filename="ai_filtered_data.csv")
