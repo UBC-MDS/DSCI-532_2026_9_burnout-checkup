@@ -216,7 +216,8 @@ app_ui = ui.page_fluid(
                         "job_role",
                         None,
                         choices=job_role_choices,
-                        selected="All",
+                        selected=["Manager"],
+                        multiple=True,
                     ),
                     ui.br(),
                     ui.h6("AI Usage Band:"),
@@ -403,7 +404,7 @@ def server(input, output, session):
     def _reset_filters():
 
         # Reset selectize inputs
-        ui.update_selectize("job_role", selected="All")
+        ui.update_selectize("job_role", selected=["Manager"])
         ui.update_selectize("ai_band", selected=["All"])
 
         # Reset sliders
@@ -424,8 +425,8 @@ def server(input, output, session):
         d = df
 
         # job role
-        if input.job_role() != "All":
-            d = d[d["job_role"] == input.job_role()]
+        if "Manager" not in input.job_role():
+            d = d[d["job_role"].isin(input.job_role())]
 
         # ai band
         if "All" not in input.ai_band():
@@ -716,12 +717,23 @@ def server(input, output, session):
         )
 
         median_line = (
-            alt.Chart(pd.DataFrame({"y": [BASELINE_MEDIAN_BURNOUT]}))
-            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
-            .encode(y="y:Q")
+            alt.Chart(
+                pd.DataFrame(
+                    {"y": [BASELINE_MEDIAN_BURNOUT], "line": ["Company Median Burnout"]}
+                )
+            )
+            .mark_rule(strokeDash=[6, 4])
+            .encode(
+                y="y:Q",
+                color=alt.Color(
+                    "line:N",
+                    scale=alt.Scale(range=[COLORS["alert_red"]]),
+                    legend=alt.Legend(title=None),
+                ),
+            )
         )
 
-        return chart + median_line
+        return (chart + median_line).resolve_scale(color="independent")
 
     @output
     @render_altair
@@ -783,7 +795,7 @@ def server(input, output, session):
 
         pie = (
             alt.Chart(breakdown)
-            .mark_arc()
+            .mark_arc(innerRadius=70)
             .encode(
                 theta=alt.Theta("hours:Q", title=None),
                 color=alt.Color(
@@ -844,17 +856,42 @@ def server(input, output, session):
         )
 
         vline = (
-            alt.Chart(pd.DataFrame({"x": [BASELINE_MEDIAN_PRODUCTIVITY]}))
-            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
-            .encode(x="x:Q")
+            alt.Chart(
+                pd.DataFrame(
+                    {
+                        "x": [BASELINE_MEDIAN_PRODUCTIVITY],
+                        "line": ["Company Median Productivity"],
+                    }
+                )
+            )
+            .mark_rule(strokeDash=[6, 4])
+            .encode(
+                x="x:Q",
+                color=alt.Color(
+                    "line:N",
+                    scale=alt.Scale(range=[COLORS["alert_red"]]),
+                    legend=alt.Legend(title=None),
+                ),
+            )
         )
         hline = (
-            alt.Chart(pd.DataFrame({"y": [BASELINE_MEDIAN_BURNOUT]}))
-            .mark_rule(color=COLORS["alert_red"], strokeDash=[6, 4])
-            .encode(y="y:Q")
+            alt.Chart(
+                pd.DataFrame(
+                    {"y": [BASELINE_MEDIAN_BURNOUT], "line": ["Company Median Burnout"]}
+                )
+            )
+            .mark_rule(strokeDash=[6, 4])
+            .encode(
+                y="y:Q",
+                color=alt.Color(
+                    "line:N",
+                    scale=alt.Scale(range=[COLORS["alert_red"]]),
+                    legend=alt.Legend(title=None),
+                ),
+            )
         )
 
-        return chart + vline + hline
+        return (chart + vline + hline).resolve_scale(color="independent")
 
     # Render df in AI tab
     @output
