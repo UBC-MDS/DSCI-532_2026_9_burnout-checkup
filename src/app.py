@@ -392,7 +392,7 @@ def server(input, output, session):
         d = filtered_df()
         val = _safe_median(d["burnout_risk_score"])
         if val is None:
-            return kpi_card("Median Productivity", "—")
+            return kpi_card("Median Burnout Risk Score", "—")
 
         diff = (val - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
