@@ -69,7 +69,7 @@ BASELINE_HIGH_BURNOUT = baselines["high_burnout_rate"]
 # QueryChat setup for AI Explorer
 # -------------------------
 ai_greeting = """
-👋 Hi! I’m your AI burnout explorer.
+👋 Hi! I'm your AI burnout explorer.
 
 Ask me questions about employee burnout, productivity, AI usage, workload, and work-life balance.
 
@@ -395,12 +395,14 @@ app_ui = ui.page_fluid(
 # Server
 # -------------------------
 def server(input, output, session):
+
+    # Reset filters button - resets all filters to default values
     @reactive.effect
     @reactive.event(input.reset_btn)
     def _reset_filters():
 
         # Reset selectize inputs
-        ui.update_selectize("job_role", selected=["Manager"])
+        ui.update_selectize("job_role", selected=["All"])
         ui.update_selectize("ai_band", selected=["All"])
 
         # Reset sliders
@@ -416,6 +418,10 @@ def server(input, output, session):
         ui.update_checkbox("show_pred", value=True)
         ui.update_checkbox("show_debug", value=False)
 
+    # -------------------------
+    # Dashboard filters
+    # -------------------------
+    # Reactive expression for the filtered dataframe based on sidebar inputs
     @reactive.calc
     def filtered_df():
         return apply_dashboard_filters(
@@ -477,6 +483,8 @@ def server(input, output, session):
             title="High Burnout %",
         )
 
+    # Median work-life balance score for the filtered employees,
+    # compared to the company-wide baseline median.
     @render.ui
     def burnout_box():
         return median_metric_card(
@@ -486,7 +494,9 @@ def server(input, output, session):
             baseline=BASELINE_MEDIAN_BURNOUT,
             higher_is_better=False,
         )
-        
+
+    # Median work-life balance score for the filtered employees,
+    # compared to the company-wide baseline median.        
     @render.ui
     def wlb_box():
         return median_metric_card(
@@ -502,6 +512,7 @@ def server(input, output, session):
     # -------------------------
 
     # Number of employees returned by the AI-filtered subset
+    # (i.e. the number of rows in the dataframe)
     @render.ui
     def ai_count_box():
         return count_card(
@@ -549,6 +560,7 @@ def server(input, output, session):
     # -------------------------
 
     # Render AI usage vs burnout chart
+    # (scatter plot with a reference median burnout line)
     @output
     @render_altair
     def plot_ai_vs_burnout():
@@ -558,18 +570,21 @@ def server(input, output, session):
         )
 
     # Render burnout by role chart
+    # (bar chart of average burnout risk score by job role)
     @output
     @render_altair
     def plot_burnout_by_role():       
         return make_burnout_by_role_chart(filtered_df())
 
     # Render hours breakdown chart
+    # (stacked bar chart of average hours spent on manual work, meetings, and collaboration)
     @output
     @render_altair
     def plot_hours_breakdown():
         return make_hours_breakdown_chart(filtered_df())
 
     # Render productivity vs burnout chart
+    # (scatter plot with productivity on x-axis and burnout risk score on y-axis, with reference median lines for both)
     @output
     @render_altair
     def plot_prod_vs_burnout():
@@ -580,6 +595,7 @@ def server(input, output, session):
         )
 
     # Render df in AI tab
+    # (data grid)
     @output
     @render.data_frame
     def ai_table():
@@ -590,7 +606,7 @@ def server(input, output, session):
     def download_ai_data():
         yield ai_filtered_df().to_csv(index=False)
 
-    # Debug panel
+    # Debug panel output showing current filter values and number of rows in the filtered dataframe
     @output
     @render.text
     def debug_filters():
