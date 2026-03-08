@@ -111,4 +111,4 @@ This project follows a structured GitHub workflow:
 For detailed contribution rules, branch naming conventions, and the full
 workflow, please see:
 
-👉 [CONTRIBUTING.md](CONTRIBUTING.md)
+👉 [CONTRIBUTING.md](CONTRIBUTING.md) 
