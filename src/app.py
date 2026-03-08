@@ -272,6 +272,15 @@ app_ui = ui.page_fluid(
                         ui.card_header("AI Usage vs Burnout"),
                         output_widget("ai_plot_ai_vs_burnout"),
                     ),
+                    # Add 2nd visualization
+                    ui.br(),
+                    ui.card(
+                        ui.card_header("Productivity vs Burnout Risk Score"),
+                        output_widget("ai_plot_prod_vs_burnout"),
+                    ),
+                    # Add download button
+                    ui.br(),
+                    ui.download_button("download_ai_data", "Download AI-filtered data"),
                 ),
             ),
         ),
@@ -634,7 +643,7 @@ def server(input, output, session):
 
         return chart + vline + hline
 
-    # 1st table in AI tab
+    # 1st visualization in AI tab
     @output
     @render_altair
     def ai_plot_ai_vs_burnout():
@@ -667,6 +676,37 @@ def server(input, output, session):
 
         return chart
 
+    # 2nd visualization in AI tab
+    @output
+    @render_altair
+    def ai_plot_prod_vs_burnout():
+        d = ai_filtered_df()
+        if d.empty:
+            return _empty_chart("No data for current AI query.")
+
+        chart = (
+            alt.Chart(d)
+            .mark_circle(opacity=0.7)
+            .encode(
+                x=alt.X("productivity_score:Q", title="Productivity score"),
+                y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
+                color=alt.Color(
+                    "ai_band:N",
+                    title="AI usage band",
+                    scale=ai_band_scale(),
+                ),
+                tooltip=[
+                    "job_role:N",
+                    "ai_band:N",
+                    "productivity_score:Q",
+                    "burnout_risk_score:Q",
+                ],
+            )
+            .properties(height=260)
+        )
+
+        return chart
+
     # AI explorer trigger
     @reactive.effect
     @reactive.event(input.run_ai_query)
@@ -679,6 +719,11 @@ def server(input, output, session):
     @render.data_frame
     def ai_table():
         return DataGrid(ai_filtered_df().head(10))
+
+    # Download data button in ai tab
+    @render.download(filename="ai_filtered_data.csv")
+    def download_ai_data():
+        yield ai_filtered_df().to_csv(index=False)
 
     # Debug panel
     @output
