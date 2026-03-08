@@ -61,6 +61,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved company-wide baseline metric computation into `get_baselines()`.
 - Refactored data filtering logic in filters.py to streamline implementation and remove redundant code.
 - Updated app.py to integrate the new filtering logic and ensure AI filtering functionality works correctly with the revised system.
+- Extracted reusable KPI card UI and metric helper functions into `src/kpis.py`.
+- Centralized median-, percentage-, and count-based KPI generation to reduce duplication across Dashboard and AI Explorer tabs.
+- Replaced repeated inline KPI computation logic in `src/app.py` with shared helper calls.
+- Standardized baseline comparison behavior for KPI arrows, subtitle messaging, and visual status classes.
+- Simplified `app.py` server code by separating KPI presentation logic from reactive dashboard wiring.
 
 ### Infrastructure
 
