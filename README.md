@@ -93,10 +93,27 @@ conda env create -f environment.yml
 conda activate burnout_checkup
 ```
 
-3. Run the dashboard locally:
+3. Setup Environment variables
+
+- i. Copy `.env.example` to `.env`
+- ii. Add your Anthropic API key to `.env`
+
+Example:
+
+```bash
+cp .env.example .env
+```
+
+4. Run the dashboard locally:
 
 ```bash
 shiny run src.app
+```
+
+or
+
+```bash
+ shiny run --reload src/app.py
 ```
 
 ### Contribution Guidelines
