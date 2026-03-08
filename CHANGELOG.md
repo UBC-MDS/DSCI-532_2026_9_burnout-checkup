@@ -42,6 +42,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Refactored Altair chart construction out of `src/app.py` into reusable helper functions in `src/charts.py`.
 - Updated dashboard chart rendering in `app.py` to call chart helper functions instead of building charts inline.
 - Rotated x-axis labels in the burnout-by-role chart to improve readability for longer job role names.
+- Updated README with instructions for running the project test suite using `pytest`.
 
 ### Fixed
 

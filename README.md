@@ -116,6 +116,23 @@ or
  shiny run --reload src/app.py
 ```
 
+## Running tests
+
+This project uses `pytest` for unit testing.
+
+1. Activate the project environment.
+2. Run all tests with:
+
+```bash
+python -m pytest
+```
+
+To run a specific test file (e.g.: `test_data.py`):
+
+```bash
+python -m pytest tests/test_data.py
+```
+
 ### Contribution Guidelines
 
 This project follows a structured GitHub workflow:
