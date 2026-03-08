@@ -2,6 +2,7 @@
 # Main Shiny app file defining the UI and server logic. Reads data, sets up reactive
 
 from shiny import App, ui, render, reactive
+from shiny.render import DataGrid
 from shinywidgets import output_widget, render_altair
 
 import pandas as pd
@@ -260,6 +261,9 @@ app_ui = ui.page_fluid(
                     ),
                     ui.br(),
                     ui.input_action_button("run_ai_query", "Run query"),
+                    ui.br(),
+                    ui.h4("Preview of filtered data"),
+                    ui.output_data_frame("ai_table"),
                 ),
             ),
         ),
@@ -622,6 +626,12 @@ def server(input, output, session):
     def _run_ai_query():
         query = input.ai_query()
         print("User query:", query)
+
+    # Render df in AI tab
+    @output
+    @render.data_frame
+    def ai_table():
+        return DataGrid(filtered_df().head(10))
 
     # Debug panel
     @output
