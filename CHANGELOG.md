@@ -34,6 +34,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Unit tests for dashboard filtering logic in `apply_dashboard_filters` using `pytest`.
 - Test coverage for QueryChat dataframe normalization via `normalize_querychat_result`.
 - Synthetic test dataset fixture for validating filter behavior across job roles, AI usage bands, numeric ranges, and deadline pressure levels.
+- Unit tests for reusable KPI helpers (`safe_mean`, `safe_median`, `percent_diff`, `trend_arrow`, `trend_class`).
+- Tests for KPI UI components (`median_metric_card`, `high_burnout_pct_card`, `count_card`).
 
 ### Changed
 
@@ -46,6 +48,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated dashboard chart rendering in `app.py` to call chart helper functions instead of building charts inline.
 - Rotated x-axis labels in the burnout-by-role chart to improve readability for longer job role names.
 - Updated README with instructions for running the project test suite using `pytest`.
+- Improved test coverage for KPI computation logic used in dashboard metrics.
 
 ### Fixed
 
@@ -109,7 +112,7 @@ The chatbot functionality currently serves as an exploratory interface and may s
 4. **Best Practices:**
 We focused on improving usability and clarity in the dashboard layout. The replacement of the pie chart with a **donut chart** improves readability while maintaining the same conceptual representation. Legends and annotations were added to scatterplots to make KPI comparisons easier to interpret. Environment configuration was also improved by using a `.env` file and synchronizing dependency files, which supports reproducibility and secure handling of API credentials. - 
 
-Adding tests improves reliability of the dashboard's reactive filtering logic and reduces risk of regressions during future feature development (e.g., AI query filtering).
+Adding tests improves reliability of the dashboard's reactive filtering logic and reduces risk of regressions during future feature development.
 
 5. **Self-Assessment:**
 The addition of the AI components significantly enhances the exploratory capabilities of the dashboard. Users can now interact with the data through both structured visual analytics and conversational querying. The restructuring of the AI Explore tab and improvements to filtering and visualization clarity make the dashboard more intuitive and flexible. While the chatbot feature could be expanded further, the current implementation demonstrates the feasibility of integrating AI-assisted exploration within the dashboard. Future work could focus on improving response quality, adding more guided insights, and further refining visual explanations for users.
