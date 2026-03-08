@@ -244,11 +244,22 @@ app_ui = ui.page_fluid(
                     ),
                 ),
             ),
+            # -------------------------------
+            #        AI PANEL
+            # -------------------------------
             ui.nav_panel(
                 "AI Explorer",
                 ui.div(
                     ui.h3("AI Explorer"),
-                    ui.p("This tab will contain the AI exploration interface."),
+                    ui.p("Use natural language to explore the filtered dataset."),
+                    ui.input_text_area(
+                        "ai_query",
+                        "Ask a question about the data:",
+                        placeholder="Example: Show employees with high burnout risk and high AI usage",
+                        rows=4,
+                    ),
+                    ui.br(),
+                    ui.input_action_button("run_ai_query", "Run query"),
                 ),
             ),
         ),
@@ -604,6 +615,13 @@ def server(input, output, session):
         )
 
         return chart + vline + hline
+
+    # AI explorer trigger
+    @reactive.effect
+    @reactive.event(input.run_ai_query)
+    def _run_ai_query():
+        query = input.ai_query()
+        print("User query:", query)
 
     # Debug panel
     @output
