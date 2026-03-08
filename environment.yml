@@ -4,7 +4,7 @@ channels:
 dependencies:
 - python=3.11.14
 - pip=26.0.1
-- shiny=1.4.0
+- shiny=1.5.1
 - pandas=3.0.0
 - numpy=2.4.2
 - matplotlib=3.10.8
@@ -22,6 +22,6 @@ dependencies:
 - anywidget=0.9.21
 
 - pip:
-  - querychat
-  - chatlas
-  - anthropic
+  - querychat==0.5.1
+  - chatlas==0.15.2
+  - anthropic==0.84.0
