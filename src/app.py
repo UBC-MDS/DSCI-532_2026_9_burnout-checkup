@@ -2,13 +2,19 @@
 # Main Shiny app file defining the UI and server logic. Reads data, sets up reactive
 
 from shiny import App, ui, render, reactive
+from shiny.render import DataGrid
 from shinywidgets import output_widget, render_altair
 
 import pandas as pd
 import altair as alt
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
-from src.constants.theme import COLORS, deadline_scale, ai_band_scale, hours_breakdown_scale
+from src.constants.theme import (
+    COLORS,
+    deadline_scale,
+    ai_band_scale,
+    hours_breakdown_scale,
+)
 from pathlib import Path
 
 # Read our data
@@ -54,16 +60,15 @@ task_min, task_max = int(df["tasks_automated_percent"].min()), int(
 BASELINE_MEDIAN_BURNOUT = float(df["burnout_risk_score"].median())
 BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
 BASELINE_MEDIAN_WLB = float(df["work_life_balance_score"].median())
-BASELINE_HIGH_BURNOUT = (
-    (df["burnout_risk_level"] == "High").mean()
-)
+BASELINE_HIGH_BURNOUT = (df["burnout_risk_level"] == "High").mean()
 
 # -------------------------
 # UI
 # -------------------------
 app_ui = ui.page_fluid(
     ui.include_css(Path(__file__).parent / "www" / "styles.css"),
-    ui.tags.style(f"""
+    ui.tags.style(
+        f"""
         .bslib-sidebar-layout > .sidebar > .sidebar-content {{
             gap: 0 !important;
         }}
@@ -113,7 +118,8 @@ app_ui = ui.page_fluid(
         .kpi-sub.down {{
             color: {COLORS["medium_brown"]};
         }}    
-    """),
+    """
+    ),
     ui.tags.head(
         ui.tags.link(
             rel="stylesheet",
@@ -183,53 +189,98 @@ app_ui = ui.page_fluid(
         # -------------------------
         # MAIN CONTENT
         # -------------------------
-        ui.div(
-            # KPI ROW (4 KPIs)
-            ui.layout_columns(
-                # Average burnout risk score for the filtered employees.
-                # These boxes are ordered this way because the first two are key KPIs and are both lower the better,
-                # while the last two are higher the better.
-                ui.output_ui("burnout_box"),
-                ui.output_ui("high_burnout_perc_box"),
-                ui.output_ui("productivity_box"),
-                ui.output_ui("wlb_box"),
-                col_widths=(3, 3, 3, 3),
-                class_="kpi-grid",
+        ui.navset_tab(
+            ui.nav_panel(
+                "Dashboard",
+                ui.div(
+                    # KPI ROW (4 KPIs)
+                    ui.layout_columns(
+                        # Average burnout risk score for the filtered employees.
+                        # These boxes are ordered this way because the first two are key KPIs and are both lower the better,
+                        # while the last two are higher the better.
+                        ui.output_ui("burnout_box"),
+                        ui.output_ui("high_burnout_perc_box"),
+                        ui.output_ui("productivity_box"),
+                        ui.output_ui("wlb_box"),
+                        col_widths=(3, 3, 3, 3),
+                        class_="kpi-grid",
+                    ),
+                    ui.br(),
+                    # 4 PANELS (2 x 2)
+                    # Row 1: AI vs Burnout scatter, Burnout by Role bar
+                    ui.layout_columns(
+                        ui.card(
+                            ui.card_header("AI Usage vs Burnout"),
+                            output_widget("plot_ai_vs_burnout"),
+                        ),
+                        ui.card(
+                            ui.card_header("Burnout Risk by Job Role"),
+                            # ui.p(ui.em("Observed values are shown; prediction overlay is planned for a later milestone.")),
+                            output_widget("plot_burnout_by_role"),
+                        ),
+                        col_widths=(6, 6),
+                    ),
+                    ui.br(),
+                    # Row 2: Weekly hours breakdown, Productivity vs Burnout scatter
+                    ui.layout_columns(
+                        ui.card(
+                            ui.card_header("Weekly Work Hours Breakdown"),
+                            output_widget("plot_hours_breakdown"),
+                        ),
+                        ui.card(
+                            ui.card_header("Productivity vs Burnout Risk Score"),
+                            output_widget("plot_prod_vs_burnout"),
+                        ),
+                        col_widths=(6, 6),
+                    ),
+                    ui.br(),
+                    ui.panel_conditional(
+                        "input.show_debug",
+                        ui.card(
+                            ui.card_header(
+                                "Debug (reactive inputs + filtered row count)"
+                            ),
+                            ui.output_text_verbatim("debug_filters"),
+                        ),
+                    ),
+                ),
             ),
-            ui.br(),
-            # 4 PANELS (2 x 2)
-            # Row 1: AI vs Burnout scatter, Burnout by Role bar
-            ui.layout_columns(
-                ui.card(
-                    ui.card_header("AI Usage vs Burnout"),
-                    output_widget("plot_ai_vs_burnout"),
-                ),
-                ui.card(
-                    ui.card_header("Burnout Risk by Job Role"),
-                    # ui.p(ui.em("Observed values are shown; prediction overlay is planned for a later milestone.")),
-                    output_widget("plot_burnout_by_role"),
-                ),
-                col_widths=(6, 6),
-            ),
-            ui.br(),
-            # Row 2: Weekly hours breakdown, Productivity vs Burnout scatter
-            ui.layout_columns(
-                ui.card(
-                    ui.card_header("Weekly Work Hours Breakdown"),
-                    output_widget("plot_hours_breakdown"),
-                ),
-                ui.card(
-                    ui.card_header("Productivity vs Burnout Risk Score"),
-                    output_widget("plot_prod_vs_burnout"),
-                ),
-                col_widths=(6, 6),
-            ),
-            ui.br(),
-            ui.panel_conditional(
-                "input.show_debug",
-                ui.card(
-                    ui.card_header("Debug (reactive inputs + filtered row count)"),
-                    ui.output_text_verbatim("debug_filters"),
+            # -------------------------------
+            #        AI PANEL
+            # -------------------------------
+            ui.nav_panel(
+                "AI Explorer",
+                ui.div(
+                    ui.h3("AI Explorer"),
+                    ui.p("Use natural language to explore the filtered dataset."),
+                    ui.input_text_area(
+                        "ai_query",
+                        "Ask a question about the data:",
+                        placeholder="Example: Show employees with high burnout risk and high AI usage",
+                        rows=4,
+                    ),
+                    # Add run query button
+                    ui.br(),
+                    ui.input_action_button("run_ai_query", "Run query"),
+                    ui.br(),
+                    # Add filtered table
+                    ui.h4("Preview of filtered data"),
+                    ui.output_data_frame("ai_table"),
+                    # Add 1st visualization
+                    ui.br(),
+                    ui.card(
+                        ui.card_header("AI Usage vs Burnout"),
+                        output_widget("ai_plot_ai_vs_burnout"),
+                    ),
+                    # Add 2nd visualization
+                    ui.br(),
+                    ui.card(
+                        ui.card_header("Productivity vs Burnout Risk Score"),
+                        output_widget("ai_plot_prod_vs_burnout"),
+                    ),
+                    # Add download button
+                    ui.br(),
+                    ui.download_button("download_ai_data", "Download AI-filtered data"),
                 ),
             ),
         ),
@@ -261,7 +312,7 @@ def server(input, output, session):
         # Reset checkboxes
         ui.update_checkbox("show_pred", value=True)
         ui.update_checkbox("show_debug", value=False)
-    
+
     @reactive.calc
     def filtered_df():
         d = df
@@ -276,26 +327,26 @@ def server(input, output, session):
 
         # experience
         d = d[
-            (d["experience_years"] >= input.experience()[0]) &
-            (d["experience_years"] <= input.experience()[1])
+            (d["experience_years"] >= input.experience()[0])
+            & (d["experience_years"] <= input.experience()[1])
         ]
 
         # ai usage
         d = d[
-            (d["ai_tool_usage_hours_per_week"] >= input.ai_usage()[0]) &
-            (d["ai_tool_usage_hours_per_week"] <= input.ai_usage()[1])
+            (d["ai_tool_usage_hours_per_week"] >= input.ai_usage()[0])
+            & (d["ai_tool_usage_hours_per_week"] <= input.ai_usage()[1])
         ]
 
         # manual hours
         d = d[
-            (d["manual_work_hours_per_week"] >= input.manual_hours()[0]) &
-            (d["manual_work_hours_per_week"] <= input.manual_hours()[1])
+            (d["manual_work_hours_per_week"] >= input.manual_hours()[0])
+            & (d["manual_work_hours_per_week"] <= input.manual_hours()[1])
         ]
 
         # tasks automated
         d = d[
-            (d["tasks_automated_percent"] >= input.tasks_automated()[0]) &
-            (d["tasks_automated_percent"] <= input.tasks_automated()[1])
+            (d["tasks_automated_percent"] >= input.tasks_automated()[0])
+            & (d["tasks_automated_percent"] <= input.tasks_automated()[1])
         ]
 
         # deadline pressure
@@ -303,7 +354,13 @@ def server(input, output, session):
 
         return d
 
-    # KPIs    
+    # ai filtered df
+    @reactive.calc
+    @reactive.event(input.run_ai_query)
+    def ai_filtered_df():
+        return filtered_df().copy()
+
+    # KPIs
     def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
         return ui.div(
             ui.div(title, class_="kpi-title"),
@@ -325,7 +382,7 @@ def server(input, output, session):
         if pd.isna(val):
             return None
         return float(val)
-    
+
     @render.ui
     def productivity_box():
         d = filtered_df()
@@ -346,8 +403,8 @@ def server(input, output, session):
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
             sub_class,
         )
-    
-    # percentage of employees in the filtered set that are at high risk of burnout, 
+
+    # percentage of employees in the filtered set that are at high risk of burnout,
     # compared to company-wide baseline percentage.
     @render.ui
     def high_burnout_perc_box():
@@ -367,13 +424,13 @@ def server(input, output, session):
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
             sub_class,
         )
-    
+
     @render.ui
     def burnout_box():
         d = filtered_df()
         val = _safe_median(d["burnout_risk_score"])
         if val is None:
-            return kpi_card("Median Productivity", "—")
+            return kpi_card("Median Burnout Risk Score", "—")
 
         diff = (val - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT
         arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
@@ -385,7 +442,7 @@ def server(input, output, session):
             f"{arrow} {abs(diff)*100:.0f}% vs baseline",
             sub_class,
         )
-          
+
     @render.ui
     def wlb_box():
         d = filtered_df()
@@ -520,7 +577,12 @@ def server(input, output, session):
                     "category:N",
                     title=None,
                     scale=alt.Scale(
-                        domain=["Meetings", "Collaboration", "Deep work", "Manual work"],
+                        domain=[
+                            "Meetings",
+                            "Collaboration",
+                            "Deep work",
+                            "Manual work",
+                        ],
                         range=[
                             COLORS["medium_brown"],
                             COLORS["light_orange"],
@@ -581,6 +643,88 @@ def server(input, output, session):
 
         return chart + vline + hline
 
+    # 1st visualization in AI tab
+    @output
+    @render_altair
+    def ai_plot_ai_vs_burnout():
+        d = ai_filtered_df()
+        if d.empty:
+            return _empty_chart("No data for current AI query.")
+
+        chart = (
+            alt.Chart(d)
+            .mark_circle(opacity=0.7)
+            .encode(
+                x=alt.X(
+                    "ai_tool_usage_hours_per_week:Q", title="AI tool usage (hrs/week)"
+                ),
+                y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
+                color=alt.Color(
+                    "deadline_pressure_level:N",
+                    title="Deadline pressure",
+                    scale=deadline_scale(),
+                ),
+                tooltip=[
+                    "job_role:N",
+                    "experience_years:Q",
+                    "ai_tool_usage_hours_per_week:Q",
+                    "burnout_risk_score:Q",
+                ],
+            )
+            .properties(height=260)
+        )
+
+        return chart
+
+    # 2nd visualization in AI tab
+    @output
+    @render_altair
+    def ai_plot_prod_vs_burnout():
+        d = ai_filtered_df()
+        if d.empty:
+            return _empty_chart("No data for current AI query.")
+
+        chart = (
+            alt.Chart(d)
+            .mark_circle(opacity=0.7)
+            .encode(
+                x=alt.X("productivity_score:Q", title="Productivity score"),
+                y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
+                color=alt.Color(
+                    "ai_band:N",
+                    title="AI usage band",
+                    scale=ai_band_scale(),
+                ),
+                tooltip=[
+                    "job_role:N",
+                    "ai_band:N",
+                    "productivity_score:Q",
+                    "burnout_risk_score:Q",
+                ],
+            )
+            .properties(height=260)
+        )
+
+        return chart
+
+    # AI explorer trigger
+    @reactive.effect
+    @reactive.event(input.run_ai_query)
+    def _run_ai_query():
+        query = input.ai_query()
+        print("User query:", query)
+
+    # Render df in AI tab
+    @output
+    @render.data_frame
+    def ai_table():
+        return DataGrid(ai_filtered_df().head(10))
+
+    # Download data button in ai tab
+    @render.download(filename="ai_filtered_data.csv")
+    def download_ai_data():
+        yield ai_filtered_df().to_csv(index=False)
+
     # Debug panel
     @output
     @render.text
@@ -597,5 +741,6 @@ def server(input, output, session):
             f"show_pred={input.show_pred()}\n"
             f"filtered_rows={len(d)}"
         )
+
 
 app = App(app_ui, server)
