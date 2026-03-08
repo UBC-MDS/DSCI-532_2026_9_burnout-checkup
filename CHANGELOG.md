@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
     - src/kpis.py for KPI computation and UI helpers.
     - src/charts.py for reusable Altair visualization functions.
     - src/ai_tab.py as a placeholder for the upcoming AI-powered dashboard tab.
-    - Added src/utils/ package with __init__.py to host shared utility functions across modules.
+- Added src/utils/ package with __init__.py to host shared utility functions across modules.
 
 ### Changed
 
