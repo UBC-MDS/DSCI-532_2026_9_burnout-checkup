@@ -17,8 +17,8 @@ from src.constants.theme import (
 )
 from pathlib import Path
 from dotenv import load_dotenv
-import querychat
-import chatlas
+from querychat import QueryChat
+from chatlas import ChatAnthropic
 import os
 
 load_dotenv()
@@ -68,6 +68,65 @@ BASELINE_MEDIAN_BURNOUT = float(df["burnout_risk_score"].median())
 BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
 BASELINE_MEDIAN_WLB = float(df["work_life_balance_score"].median())
 BASELINE_HIGH_BURNOUT = (df["burnout_risk_level"] == "High").mean()
+
+# -------------------------
+# QueryChat setup for AI Explorer
+# -------------------------
+ai_greeting = """
+👋 Hi! I’m your AI burnout explorer.
+
+Ask me questions about employee burnout, productivity, AI usage, workload, and work-life balance.
+
+Examples:
+- Show employees with high burnout risk
+- Show employees with high AI usage and low productivity
+- Sort employees by burnout risk from highest to lowest
+- Which job roles have the highest burnout risk?
+- Show employees with high manual work hours
+
+You can also say Reset to clear the current AI filter/sort.
+"""
+
+ai_data_description = """
+Employee-level workplace wellbeing and productivity dataset.
+
+Each row represents one employee.
+
+Columns:
+- Employee_ID: unique identifier for each employee.
+- job_role: employee job role/category.
+- experience_years: years of experience.
+- ai_tool_usage_hours_per_week: hours per week spent using AI tools.
+- tasks_automated_percent: percent of tasks automated with AI/tools.
+- manual_work_hours_per_week: hours per week spent on manual work.
+- meeting_hours_per_week: hours per week spent in meetings.
+- collaboration_hours_per_week: hours per week spent collaborating.
+- focus_hours_per_day: average focus/deep work hours per day.
+- deadline_pressure_level: categorical deadline pressure level (Low, Medium, High).
+- burnout_risk_score: numeric burnout risk score.
+- burnout_risk_level: burnout category label.
+- productivity_score: numeric productivity score.
+- work_life_balance_score: numeric work-life balance score.
+- workload_score: derived workload metric combining manual work, meetings, and deadline pressure.
+- workload_band: workload category (Low, Medium, High).
+- ai_band: AI usage category (Low, Moderate, High).
+
+This dataset can be used to analyze:
+- Burnout risk by role or experience
+- AI usage patterns across employees
+- Links between productivity and burnout
+- Work-life balance differences
+- Manual work and deadline pressure patterns
+- High-risk employee subgroups
+"""
+
+qc = QueryChat(
+    df.copy(),
+    "AIUsageBurnoutCheckup",
+    greeting=ai_greeting,
+    data_description=ai_data_description,
+    client=ChatAnthropic(model="claude-sonnet-4-0"),
+)
 
 # -------------------------
 # UI
