@@ -29,7 +29,7 @@ def apply_dashboard_filters(
     df : pandas.DataFrame
         Input employee-level dataframe to filter.
     job_role : Sequence[str]
-        Selected job role values from the UI. If ``"Manager"`` is present,
+        Selected job role values from the UI. If ``"All"`` is present,
         the job role filter is not applied under the current dashboard logic.
     ai_band : Sequence[str]
         Selected AI usage band values from the UI. If ``"All"`` is present,
@@ -54,7 +54,7 @@ def apply_dashboard_filters(
 
     Notes
     -----
-    The current app logic treats ``"Manager"`` in ``job_role`` as the
+    The current app logic treats ``"All"`` in ``job_role`` as the
     default sentinel value meaning "do not filter by role". This behavior is
     preserved here so the refactor does not change app behavior.
 

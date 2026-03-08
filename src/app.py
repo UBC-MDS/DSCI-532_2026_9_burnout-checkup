@@ -402,7 +402,7 @@ def server(input, output, session):
     def _reset_filters():
 
         # Reset selectize inputs
-        ui.update_selectize("job_role", selected=["Manager"])
+        ui.update_selectize("job_role", selected=["All"])
         ui.update_selectize("ai_band", selected=["All"])
 
         # Reset sliders
