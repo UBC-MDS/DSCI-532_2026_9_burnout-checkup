@@ -112,7 +112,9 @@ Some adjustments were made from the original implementation plan as development 
 The chatbot functionality currently serves as an exploratory interface and may still produce limited responses depending on the query structure. Since the model interaction depends on API configuration, users must properly set environment variables for the chatbot to function correctly. Additionally, some filter combinations may still produce sparse datasets, which can reduce the interpretability of certain visualizations.
 
 4. **Best Practices:**
-We focused on improving usability and clarity in the dashboard layout. The replacement of the pie chart with a **donut chart** improves readability while maintaining the same conceptual representation. Legends and annotations were added to scatterplots to make KPI comparisons easier to interpret. Environment configuration was also improved by using a `.env` file and synchronizing dependency files, which supports reproducibility and secure handling of API credentials. - 
+We focused on improving usability and clarity in the dashboard layout. The replacement of the pie chart with a **donut chart** improves readability while maintaining the same conceptual representation. Legends and annotations were added to scatterplots to make KPI comparisons easier to interpret. Environment configuration was also improved by using a `.env` file and synchronizing dependency files, which supports reproducibility and secure handling of API credentials.
+
+Refactoring the dashboard into separate modules for data handling, filtering, KPI calculations, chart generation, and debugging made the codebase much easier to understand and maintain. Breaking the logic into smaller, focused components reduced the complexity of `app.py`, making it clearer how each part of the application works. It also improves collaboration within the team, since individual components can now be developed, tested, and reviewed independently without affecting the rest of the dashboard.
 
 Adding tests improves reliability of the dashboard's reactive filtering logic and reduces risk of regressions during future feature development.
 
