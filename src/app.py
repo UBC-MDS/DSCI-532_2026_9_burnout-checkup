@@ -13,61 +13,44 @@ from src.constants.theme import (
     COLORS,
     deadline_scale,
     ai_band_scale,
-    hours_breakdown_scale,
 )
 from pathlib import Path
 from dotenv import load_dotenv
 from querychat import QueryChat
 from chatlas import ChatAnthropic
 import os
+from src.data import (
+    load_dashboard_data,
+    get_baselines,
+    get_filter_choices,
+    get_slider_ranges,
+)
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
 
-# Read our data
-features = pd.read_csv(FEATURES_PATH)
-targets = pd.read_csv(TARGETS_PATH)
-df = features.merge(
-    targets, on="Employee_ID"
-)  # merge features and targets in a single df
-
-# Preprocessing taken from EDA file
-df["workload_score"] = (
-    df["manual_work_hours_per_week"]
-    + df["meeting_hours_per_week"]
-    + df["deadline_pressure_level"].map({"Low": 1, "Medium": 2, "High": 3})
-)
-
-df["workload_band"] = pd.qcut(
-    df["workload_score"], q=3, labels=["Low", "Medium", "High"]
-)
-df["ai_band"] = pd.qcut(
-    df["ai_tool_usage_hours_per_week"], q=3, labels=["Low", "Moderate", "High"]
-)
+# Load and preprocess data
+df = load_dashboard_data()
 
 # Input variables' options for filters
-job_role_choices = ["All"] + sorted(df["job_role"].dropna().unique().tolist())
-ai_band_choices = ["All"] + sorted(df["ai_band"].dropna().astype(str).unique().tolist())
-deadline_choices = sorted(df["deadline_pressure_level"].dropna().unique().tolist())
+filter_choices = get_filter_choices(df)
+job_role_choices = filter_choices["job_role_choices"]
+ai_band_choices = filter_choices["ai_band_choices"]
+deadline_choices = filter_choices["deadline_choices"]
 
-# Slider ranges
-exp_min, exp_max = int(df["experience_years"].min()), int(df["experience_years"].max())
-ai_min, ai_max = int(df["ai_tool_usage_hours_per_week"].min()), int(
-    df["ai_tool_usage_hours_per_week"].max()
-)
-man_min, man_max = int(df["manual_work_hours_per_week"].min()), int(
-    df["manual_work_hours_per_week"].max()
-)
-task_min, task_max = int(df["tasks_automated_percent"].min()), int(
-    df["tasks_automated_percent"].max()
-)
+# Slider ranges for numeric filters - experience, ai usage hours, manual hours, tasks automated
+slider_ranges = get_slider_ranges(df)
+exp_min, exp_max = slider_ranges["experience"]
+ai_min, ai_max = slider_ranges["ai_usage"]
+man_min, man_max = slider_ranges["manual_hours"]
+task_min, task_max = slider_ranges["tasks_automated"]
 
 # Company-wide baselines (computed once, used across outputs)
-# Burnout median for reference in plots
-BASELINE_MEDIAN_BURNOUT = float(df["burnout_risk_score"].median())
-BASELINE_MEDIAN_PRODUCTIVITY = float(df["productivity_score"].median())
-BASELINE_MEDIAN_WLB = float(df["work_life_balance_score"].median())
-BASELINE_HIGH_BURNOUT = (df["burnout_risk_level"] == "High").mean()
+baselines = get_baselines(df)
+BASELINE_MEDIAN_BURNOUT = baselines["median_burnout"]
+BASELINE_MEDIAN_PRODUCTIVITY = baselines["median_productivity"]
+BASELINE_MEDIAN_WLB = baselines["median_wlb"]
+BASELINE_HIGH_BURNOUT = baselines["high_burnout_rate"]
 
 # -------------------------
 # QueryChat setup for AI Explorer

@@ -20,8 +20,8 @@ dependencies:
 - shinywidgets=0.7.1
 - altair=6.0.0
 - anywidget=0.9.21
+- anthropic==0.84.0
 
 - pip:
   - querychat==0.5.1
   - chatlas==0.15.2
-  - anthropic==0.84.0

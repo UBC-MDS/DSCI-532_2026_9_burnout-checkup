@@ -19,12 +19,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added **dummy table output and query functionality** as the initial structure for AI-assisted querying.
 - Introduced modular project structure to improve maintainability and collaboration.
 - Created new module files to separate dashboard responsibilities:
-    - src/data.py for data loading and preprocessing logic.
-    - src/filters.py for reusable dataframe filtering utilities.
-    - src/kpis.py for KPI computation and UI helpers.
-    - src/charts.py for reusable Altair visualization functions.
-    - src/ai_tab.py as a placeholder for the upcoming AI-powered dashboard tab.
+  - src/data.py for data loading and preprocessing logic.
+  - src/filters.py for reusable dataframe filtering utilities.
+  - src/kpis.py for KPI computation and UI helpers.
+  - src/charts.py for reusable Altair visualization functions.
+  - src/ai_tab.py as a placeholder for the upcoming AI-powered dashboard tab.
 - Added src/utils/ package with __init__.py to host shared utility functions across modules.
+- Added `src/data.py` to encapsulate dashboard dataset preparation and configuration helpers.
+- Added minimal NumPy-style docstrings for data-loading and preprocessing helpers.
+- Added `DEADLINE_PRESSURE_MAP` constant to standardize workload-score derivation.
 
 ### Changed
 
@@ -35,11 +38,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated **environment and requirements files** to ensure consistent dependency management.
 - Prepared the application architecture for modularization of app.py logic in future commits.
 - Refactoring groundwork added to support upcoming AI-driven filtering features and easier parallel development.
+- Refactored dashboard data-loading logic out of `src/app.py` into `src/data.py`.
+- Centralized feature/target CSV loading and merge logic in `load_dashboard_data()`.
+- Moved derived-column preprocessing into the data module, including:
+  - `workload_score`
+  - `workload_band`
+  - `ai_band`
+- Moved sidebar filter option generation into `get_filter_choices()`.
+- Moved numeric slider range computation into `get_slider_ranges()`.
+- Moved company-wide baseline metric computation into `get_baselines()`.
 
 ### Fixed
 
 - Fixed multiple **code bugs and minor UI issues** identified during development.
 - Fixed dependency conflicts in `requirements.txt` and environment configuration.
+- Reduced duplication of top-level data setup logic in `src/app.py`.
+- Improved separation of concerns by keeping dataset preparation distinct from UI and server logic.
 
 ### Infrastructure
 
