@@ -352,14 +352,9 @@ app_ui = ui.page_fluid(
                 ui.sidebar(
                     ui.h3("AI Explorer"),
                     ui.p("Use natural language to explore the filtered dataset."),
-                    ui.input_text_area(
-                        "ai_query",
-                        "Ask a question about the data:",
-                        placeholder="Example: Show employees with high burnout risk and high AI usage",
-                        rows=6,
-                    ),
-                    ui.br(),
-                    ui.input_action_button("run_ai_query", "Run query"),
+                    qc.ui(),
+                    ui.hr(),
+                    ui.input_action_button("reset_ai_query", "Reset AI filters"),
                     width=320,
                 ),
                 # -------------------------
@@ -383,7 +378,7 @@ app_ui = ui.page_fluid(
                     # -------------------------
                     ui.card(
                         ui.card_header(
-                            "Preview of AI-filtered data",
+                            ui.output_text("ai_title"),
                             ui.download_button(
                                 "download_ai_data",
                                 "Download AI-filtered data",
