@@ -132,8 +132,13 @@ def make_burnout_by_role_chart(
     return (
         alt.Chart(summary)
         .mark_bar(color=COLORS["medium_brown"])
-        .encode(
-            x=alt.X("job_role:N", sort="-y", title="Job role"),
+        .encode(        
+            x=alt.X(
+                "job_role:N",
+                sort="-y",
+                title="Job role",
+                axis=alt.Axis(labelAngle=15),
+            ),
             y=alt.Y("avg_burnout:Q", title="Avg burnout risk score"),
             tooltip=["job_role:N", alt.Tooltip("avg_burnout:Q", format=".2f")],
         )
