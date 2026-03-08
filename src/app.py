@@ -351,7 +351,7 @@ app_ui = ui.page_fluid(
                 # -------------------------
                 ui.sidebar(
                     ui.h3("AI Explorer"),
-                    ui.p("Use natural language to explore the filtered dataset."),
+                    # ui.p("Use natural language to explore the filtered dataset."),
                     qc.ui(),
                     ui.hr(),
                     ui.input_action_button("reset_ai_query", "Reset AI filters"),
@@ -467,13 +467,14 @@ def server(input, output, session):
 
     # ai filtered df returned by QueryChat
     @reactive.calc
-    @reactive.event(input.run_ai_query)
     def ai_filtered_df():
         result = qc_vals.df()
 
         # convert querychat df to pandas df (code generated with GPT-5)
         if hasattr(result, "to_native"):
             return result.to_native()
+        if result is None:
+            return df.copy()
         return result
 
     # title output
@@ -859,7 +860,7 @@ def server(input, output, session):
     @output
     @render.data_frame
     def ai_table():
-        return DataGrid(ai_filtered_df().head(10))
+        return DataGrid(ai_filtered_df())
 
     # Download data button in ai tab
     @render.download(filename="ai_filtered_data.csv")
