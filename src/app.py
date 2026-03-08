@@ -216,7 +216,8 @@ app_ui = ui.page_fluid(
                         "job_role",
                         None,
                         choices=job_role_choices,
-                        selected="All",
+                        selected=["Manager"],
+                        multiple=True,
                     ),
                     ui.br(),
                     ui.h6("AI Usage Band:"),
@@ -403,7 +404,7 @@ def server(input, output, session):
     def _reset_filters():
 
         # Reset selectize inputs
-        ui.update_selectize("job_role", selected="All")
+        ui.update_selectize("job_role", selected=["Manager"])
         ui.update_selectize("ai_band", selected=["All"])
 
         # Reset sliders
@@ -424,8 +425,8 @@ def server(input, output, session):
         d = df
 
         # job role
-        if input.job_role() != "All":
-            d = d[d["job_role"] == input.job_role()]
+        if "Manager" not in input.job_role():
+            d = d[d["job_role"].isin(input.job_role())]
 
         # ai band
         if "All" not in input.ai_band():
