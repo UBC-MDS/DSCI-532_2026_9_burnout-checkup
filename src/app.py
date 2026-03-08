@@ -26,6 +26,12 @@ from src.data import (
     get_slider_ranges,
 )
 from src.filters import apply_dashboard_filters, normalize_querychat_result
+from src.kpis import (
+    count_card,
+    high_burnout_pct_card,
+    kpi_card,
+    median_metric_card,
+)
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
@@ -440,106 +446,49 @@ def server(input, output, session):
         qc_vals.sql("")
         qc_vals.title(None)
 
+    # -------------------------
     # KPIs
-    def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
-        return ui.div(
-            ui.div(title, class_="kpi-title"),
-            ui.div(value, class_="kpi-value"),
-            # Always render this div to keep consistent height
-            ui.div(sub, class_=f"kpi-sub {sub_class}"),
-            class_="kpi-card",
-        )
+    # -------------------------
 
-    def _safe_mean(series: pd.Series) -> float | None:
-        if series.empty:
-            return None
-        return float(series.mean())
-
-    def _safe_median(series: pd.Series) -> float | None:
-        if series.empty:
-            return None
-        val = series.median()
-        if pd.isna(val):
-            return None
-        return float(val)
-
+    # Returns a KPI card for the median productivity of the filtered employees.
     @render.ui
     def productivity_box():
-        d = filtered_df()
-        val = _safe_median(d["productivity_score"])
-
-        if val is None:
-            return kpi_card("Median Productivity", "—")
-
-        diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
-        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
-
-        # Higher productivity is good
-        sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
-
-        return kpi_card(
-            "Median Productivity",
-            f"{val:.1f}",
-            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
-            sub_class,
+        return median_metric_card(
+            filtered_df(),
+            column="productivity_score",
+            title="Median Productivity",
+            baseline=BASELINE_MEDIAN_PRODUCTIVITY,
+            higher_is_better=True,
         )
-
+        
     # percentage of employees in the filtered set that are at high risk of burnout,
     # compared to company-wide baseline percentage.
     @render.ui
     def high_burnout_perc_box():
-        d = filtered_df()
-        if d.empty:
-            return kpi_card("High Burnout %", "—")
-
-        pct = (d["burnout_risk_level"] == "High").mean()
-        diff = (pct - BASELINE_HIGH_BURNOUT) / BASELINE_HIGH_BURNOUT
-        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
-
-        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
-
-        return kpi_card(
-            "High Burnout %",
-            f"{pct*100:.1f}%",
-            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
-            sub_class,
+        return high_burnout_pct_card(
+            filtered_df(),
+            baseline_high_burnout=BASELINE_HIGH_BURNOUT,
+            title="High Burnout %",
         )
 
     @render.ui
     def burnout_box():
-        d = filtered_df()
-        val = _safe_median(d["burnout_risk_score"])
-        if val is None:
-            return kpi_card("Median Burnout Risk Score", "—")
-
-        diff = (val - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT
-        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
-        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
-
-        return kpi_card(
-            "Median Burnout Risk Score",
-            f"{val:.1f}",
-            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
-            sub_class,
+        return median_metric_card(
+            filtered_df(),
+            column="burnout_risk_score",
+            title="Median Burnout Risk Score",
+            baseline=BASELINE_MEDIAN_BURNOUT,
+            higher_is_better=False,
         )
-
+        
     @render.ui
     def wlb_box():
-        d = filtered_df()
-        val = _safe_median(d["work_life_balance_score"])
-        if val is None:
-            return kpi_card("Median Work-Life Balance Score", "—")
-
-        diff = (val - BASELINE_MEDIAN_WLB) / BASELINE_MEDIAN_WLB
-        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
-
-        sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
-
-        return kpi_card(
-            "Median Work-Life Balance Score",
-            f"{val:.1f}",
-            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
-            sub_class,
+        return median_metric_card(
+            filtered_df(),
+            column="work_life_balance_score",
+            title="Median Work-Life Balance Score",
+            baseline=BASELINE_MEDIAN_WLB,
+            higher_is_better=True,
         )
 
     # -------------------------
@@ -549,81 +498,44 @@ def server(input, output, session):
     # Number of employees returned by the AI-filtered subset
     @render.ui
     def ai_count_box():
-        d = ai_filtered_df()
-
-        if d.empty:
-            return kpi_card("Employees Found", "0")
-
-        return kpi_card(
-            "Employees Found",
-            f"{len(d):,}",
-            "Rows returned by AI query",
-            "",
+        return count_card(
+            ai_filtered_df(),
+            title="Employees Found",
+            subtitle="Rows returned by AI query",
         )
 
     # Median burnout risk score for the AI-filtered subset,
     # compared to the company-wide baseline median.
     @render.ui
     def ai_burnout_box():
-        d = ai_filtered_df()
-        val = _safe_median(d["burnout_risk_score"])
-
-        if val is None:
-            return kpi_card("Median Burnout Risk Score", "—")
-
-        diff = (val - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT
-        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
-        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
-
-        return kpi_card(
-            "Median Burnout Risk Score",
-            f"{val:.1f}",
-            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
-            sub_class,
+        return median_metric_card(
+            ai_filtered_df(),
+            column="burnout_risk_score",
+            title="Median Burnout Risk Score",
+            baseline=BASELINE_MEDIAN_BURNOUT,
+            higher_is_better=False,
         )
 
     # Median productivity score for the AI-filtered subset,
     # compared to the company-wide baseline median
     @render.ui
     def ai_productivity_box():
-        d = ai_filtered_df()
-        val = _safe_median(d["productivity_score"])
-
-        if val is None:
-            return kpi_card("Median Productivity", "—")
-
-        diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
-        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
-
-        # Higher productivity is good
-        sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
-
-        return kpi_card(
-            "Median Productivity",
-            f"{val:.1f}",
-            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
-            sub_class,
+        return median_metric_card(
+            ai_filtered_df(),
+            column="productivity_score",
+            title="Median Productivity",
+            baseline=BASELINE_MEDIAN_PRODUCTIVITY,
+            higher_is_better=True,
         )
 
     # Percentage of employees in the AI-filtered subset that are at high burnout risk,
     # compared to the company-wide baseline percentage
     @render.ui
     def ai_high_burnout_box():
-        d = ai_filtered_df()
-
-        if d.empty:
-            return kpi_card("High Burnout %", "—")
-
-        pct = (d["burnout_risk_level"] == "High").mean()
-        diff = (pct - BASELINE_HIGH_BURNOUT) / BASELINE_HIGH_BURNOUT
-        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
-        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
-
-        return kpi_card(
-            "High Burnout %",
-            f"{pct*100:.1f}%",
-            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
-            sub_class,
+        return high_burnout_pct_card(
+            ai_filtered_df(),
+            baseline_high_burnout=BASELINE_HIGH_BURNOUT,
+            title="High Burnout %",
         )
 
     # Plots (Altair)
