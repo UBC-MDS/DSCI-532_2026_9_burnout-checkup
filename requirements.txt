@@ -17,3 +17,6 @@ anywidget==0.9.21
 # AI libraries
 querychat
 "chatlas[anthropic]"
+querychat==0.5.1
+chatlas==0.15.2
+anthropic==0.84.0
