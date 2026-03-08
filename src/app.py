@@ -505,6 +505,90 @@ def server(input, output, session):
             sub_class,
         )
 
+    # -------------------------
+    # AI Explorer KPIs
+    # -------------------------
+
+    # Number of employees returned by the AI-filtered subset
+    @render.ui
+    def ai_count_box():
+        d = ai_filtered_df()
+
+        if d.empty:
+            return kpi_card("Employees Found", "0")
+
+        return kpi_card(
+            "Employees Found",
+            f"{len(d):,}",
+            "Rows returned by AI query",
+            "",
+        )
+
+    # Median burnout risk score for the AI-filtered subset,
+    # compared to the company-wide baseline median.
+    @render.ui
+    def ai_burnout_box():
+        d = ai_filtered_df()
+        val = _safe_median(d["burnout_risk_score"])
+
+        if val is None:
+            return kpi_card("Median Burnout Risk Score", "—")
+
+        diff = (val - BASELINE_MEDIAN_BURNOUT) / BASELINE_MEDIAN_BURNOUT
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
+        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
+
+        return kpi_card(
+            "Median Burnout Risk Score",
+            f"{val:.1f}",
+            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
+            sub_class,
+        )
+
+    # Median productivity score for the AI-filtered subset,
+    # compared to the company-wide baseline median
+    @render.ui
+    def ai_productivity_box():
+        d = ai_filtered_df()
+        val = _safe_median(d["productivity_score"])
+
+        if val is None:
+            return kpi_card("Median Productivity", "—")
+
+        diff = (val - BASELINE_MEDIAN_PRODUCTIVITY) / BASELINE_MEDIAN_PRODUCTIVITY
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
+
+        # Higher productivity is good
+        sub_class = "down" if diff > 0 else "up" if diff < 0 else ""
+
+        return kpi_card(
+            "Median Productivity",
+            f"{val:.1f}",
+            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
+            sub_class,
+        )
+
+    # Percentage of employees in the AI-filtered subset that are at high burnout risk,
+    # compared to the company-wide baseline percentage
+    @render.ui
+    def ai_high_burnout_box():
+        d = ai_filtered_df()
+
+        if d.empty:
+            return kpi_card("High Burnout %", "—")
+
+        pct = (d["burnout_risk_level"] == "High").mean()
+        diff = (pct - BASELINE_HIGH_BURNOUT) / BASELINE_HIGH_BURNOUT
+        arrow = "▲" if diff > 0 else "▼" if diff < 0 else "→"
+        sub_class = "up" if diff > 0 else "down" if diff < 0 else ""
+
+        return kpi_card(
+            "High Burnout %",
+            f"{pct*100:.1f}%",
+            f"{arrow} {abs(diff)*100:.0f}% vs baseline",
+            sub_class,
+        )
+
     # Plots (Altair)
     def _empty_chart(message: str) -> alt.Chart:
         return (
