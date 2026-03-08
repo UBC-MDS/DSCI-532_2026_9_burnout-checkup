@@ -73,6 +73,9 @@ BASELINE_HIGH_BURNOUT = (df["burnout_risk_level"] == "High").mean()
 # UI
 # -------------------------
 app_ui = ui.page_fluid(
+    # -------------------------
+    # Global CSS and font setup
+    # -------------------------
     ui.include_css(Path(__file__).parent / "www" / "styles.css"),
     ui.tags.style(
         f"""
@@ -133,74 +136,95 @@ app_ui = ui.page_fluid(
             href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap",
         )
     ),
-    ui.layout_sidebar(
-        ui.sidebar(
-            ui.h3("AI Usage &\nBurnout Checkup"),
-            ui.hr(),
-            ui.h6("Job Role:"),
-            ui.input_selectize(
-                "job_role",
-                None,
-                choices=job_role_choices,
-                selected="All",
-            ),
-            ui.br(),
-            ui.h6("AI Usage Band:"),
-            ui.input_selectize(
-                "ai_band",
-                None,
-                choices=ai_band_choices,
-                selected=["All"],
-                multiple=True,
-            ),
-            ui.br(),
-            ui.h6("Experience (years):"),
-            ui.input_slider(
-                "experience", None, min=exp_min, max=exp_max, value=(exp_min, exp_max)
-            ),
-            ui.br(),
-            ui.h6("Weekly AI Usage:"),
-            ui.input_slider(
-                "ai_usage", None, min=ai_min, max=ai_max, value=(ai_min, ai_max)
-            ),
-            ui.br(),
-            ui.h6("Manual Work Hours:"),
-            ui.input_slider(
-                "manual_hours", None, min=man_min, max=man_max, value=(man_min, man_max)
-            ),
-            ui.br(),
-            ui.h6("Tasks Automated:"),
-            ui.input_slider(
-                "tasks_automated",
-                None,
-                min=task_min,
-                max=task_max,
-                value=(task_min, task_max),
-            ),
-            ui.br(),
-            ui.h6("Deadline Pressure:"),
-            ui.input_checkbox_group(
-                "deadline_pressure",
-                None,
-                choices=deadline_choices,
-                selected=deadline_choices,
-                inline=True,
-            ),
-            ui.hr(),
-            ui.input_checkbox("show_pred", "Show Predicted Risk Overlay", value=True),
-            ui.input_checkbox("show_debug", "Show debug panel", value=False),
-            ui.br(),
-            ui.input_action_button("reset_btn", "Reset Filters"),
-            width=320,
-        ),
-        # -------------------------
-        # MAIN CONTENT
-        # -------------------------
-        ui.navset_tab(
-            ui.nav_panel(
-                "Dashboard",
+    # -------------------------
+    # Main app navigation tabs
+    # -------------------------
+    ui.navset_tab(
+        # ==================================================
+        # Dashboard tab
+        # ==================================================
+        ui.nav_panel(
+            "Dashboard",
+            ui.layout_sidebar(
+                # -------------------------
+                # Dashboard sidebar filters
+                # -------------------------
+                ui.sidebar(
+                    ui.h3("AI Usage &\nBurnout Checkup"),
+                    ui.hr(),
+                    ui.h6("Job Role:"),
+                    ui.input_selectize(
+                        "job_role",
+                        None,
+                        choices=job_role_choices,
+                        selected="All",
+                    ),
+                    ui.br(),
+                    ui.h6("AI Usage Band:"),
+                    ui.input_selectize(
+                        "ai_band",
+                        None,
+                        choices=ai_band_choices,
+                        selected=["All"],
+                        multiple=True,
+                    ),
+                    ui.br(),
+                    ui.h6("Experience (years):"),
+                    ui.input_slider(
+                        "experience",
+                        None,
+                        min=exp_min,
+                        max=exp_max,
+                        value=(exp_min, exp_max),
+                    ),
+                    ui.br(),
+                    ui.h6("Weekly AI Usage:"),
+                    ui.input_slider(
+                        "ai_usage", None, min=ai_min, max=ai_max, value=(ai_min, ai_max)
+                    ),
+                    ui.br(),
+                    ui.h6("Manual Work Hours:"),
+                    ui.input_slider(
+                        "manual_hours",
+                        None,
+                        min=man_min,
+                        max=man_max,
+                        value=(man_min, man_max),
+                    ),
+                    ui.br(),
+                    ui.h6("Tasks Automated:"),
+                    ui.input_slider(
+                        "tasks_automated",
+                        None,
+                        min=task_min,
+                        max=task_max,
+                        value=(task_min, task_max),
+                    ),
+                    ui.br(),
+                    ui.h6("Deadline Pressure:"),
+                    ui.input_checkbox_group(
+                        "deadline_pressure",
+                        None,
+                        choices=deadline_choices,
+                        selected=deadline_choices,
+                        inline=True,
+                    ),
+                    ui.hr(),
+                    ui.input_checkbox(
+                        "show_pred", "Show Predicted Risk Overlay", value=True
+                    ),
+                    ui.input_checkbox("show_debug", "Show debug panel", value=False),
+                    ui.br(),
+                    ui.input_action_button("reset_btn", "Reset Filters"),
+                    width=320,
+                ),
+                # -------------------------
+                # Dashboard main content
+                # -------------------------
                 ui.div(
-                    # KPI ROW (4 KPIs)
+                    # -------------------------
+                    # KPI row
+                    # -------------------------
                     ui.layout_columns(
                         # Average burnout risk score for the filtered employees.
                         # These boxes are ordered this way because the first two are key KPIs and are both lower the better,
@@ -213,8 +237,9 @@ app_ui = ui.page_fluid(
                         class_="kpi-grid",
                     ),
                     ui.br(),
-                    # 4 PANELS (2 x 2)
-                    # Row 1: AI vs Burnout scatter, Burnout by Role bar
+                    # -------------------------
+                    # Dashboard plots - row 1
+                    # -------------------------
                     ui.layout_columns(
                         ui.card(
                             ui.card_header("AI Usage vs Burnout"),
@@ -228,7 +253,9 @@ app_ui = ui.page_fluid(
                         col_widths=(6, 6),
                     ),
                     ui.br(),
-                    # Row 2: Weekly hours breakdown, Productivity vs Burnout scatter
+                    # -------------------------
+                    # Dashboard plots - row 2
+                    # -------------------------
                     ui.layout_columns(
                         ui.card(
                             ui.card_header("Weekly Work Hours Breakdown"),
@@ -241,6 +268,7 @@ app_ui = ui.page_fluid(
                         col_widths=(6, 6),
                     ),
                     ui.br(),
+                    # Optional debug panel
                     ui.panel_conditional(
                         "input.show_debug",
                         ui.card(
@@ -252,43 +280,51 @@ app_ui = ui.page_fluid(
                     ),
                 ),
             ),
-            # -------------------------------
-            #        AI PANEL
-            # -------------------------------
-            ui.nav_panel(
-                "AI Explorer",
-                ui.div(
-                    ui.h3("AI Explorer"),
-                    ui.p("Use natural language to explore the filtered dataset."),
-                    ui.input_text_area(
-                        "ai_query",
-                        "Ask a question about the data:",
-                        placeholder="Example: Show employees with high burnout risk and high AI usage",
-                        rows=4,
-                    ),
-                    # Add run query button
-                    ui.br(),
-                    ui.input_action_button("run_ai_query", "Run query"),
-                    ui.br(),
-                    # Add filtered table
-                    ui.h4("Preview of filtered data"),
-                    ui.output_data_frame("ai_table"),
-                    # Add 1st visualization
-                    ui.br(),
-                    ui.card(
-                        ui.card_header("AI Usage vs Burnout"),
-                        output_widget("ai_plot_ai_vs_burnout"),
-                    ),
-                    # Add 2nd visualization
-                    ui.br(),
-                    ui.card(
-                        ui.card_header("Productivity vs Burnout Risk Score"),
-                        output_widget("ai_plot_prod_vs_burnout"),
-                    ),
-                    # Add download button
-                    ui.br(),
-                    ui.download_button("download_ai_data", "Download AI-filtered data"),
+        ),
+        # ==================================================
+        # AI Explorer tab
+        # ==================================================
+        ui.nav_panel(
+            "AI Explorer",
+            ui.div(
+                # -------------------------
+                # AI Explorer header and query input
+                # -------------------------
+                ui.h3("AI Explorer"),
+                ui.p("Use natural language to explore the filtered dataset."),
+                ui.input_text_area(
+                    "ai_query",
+                    "Ask a question about the data:",
+                    placeholder="Example: Show employees with high burnout risk and high AI usage",
+                    rows=4,
                 ),
+                ui.br(),
+                ui.input_action_button("run_ai_query", "Run query"),
+                ui.br(),
+                # -------------------------
+                # AI Explorer KPI row
+                # -------------------------
+                ui.layout_columns(
+                    ui.output_ui("ai_count_box"),
+                    ui.output_ui("ai_burnout_box"),
+                    ui.output_ui("ai_productivity_box"),
+                    ui.output_ui("ai_high_burnout_box"),
+                    col_widths=(3, 3, 3, 3),
+                    class_="kpi-grid",
+                ),
+                ui.br(),
+                # -------------------------
+                # AI Explorer table preview
+                # -------------------------
+                ui.card(
+                    ui.card_header("Preview of AI-filtered data"),
+                    ui.output_data_frame("ai_table"),
+                ),
+                ui.br(),
+                # -------------------------
+                # AI Explorer data download
+                # -------------------------
+                ui.download_button("download_ai_data", "Download AI-filtered data"),
             ),
         ),
     ),
