@@ -337,6 +337,12 @@ def server(input, output, session):
 
         return d
 
+    # ai filtered df
+    @reactive.calc
+    @reactive.event(input.run_ai_query)
+    def ai_filtered_df():
+        return filtered_df().copy()
+
     # KPIs
     def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
         return ui.div(
@@ -631,7 +637,7 @@ def server(input, output, session):
     @output
     @render.data_frame
     def ai_table():
-        return DataGrid(filtered_df().head(10))
+        return DataGrid(ai_filtered_df().head(10))
 
     # Debug panel
     @output
