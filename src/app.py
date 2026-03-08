@@ -25,6 +25,7 @@ from src.data import (
     get_filter_choices,
     get_slider_ranges,
 )
+from src.filters import apply_dashboard_filters, normalize_querychat_result
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
@@ -199,7 +200,7 @@ app_ui = ui.page_fluid(
                         "job_role",
                         None,
                         choices=job_role_choices,
-                        selected=["Manager"],
+                        selected=["All"],
                         multiple=True,
                     ),
                     ui.br(),
@@ -405,44 +406,16 @@ def server(input, output, session):
 
     @reactive.calc
     def filtered_df():
-        d = df
-
-        # job role
-        if "Manager" not in input.job_role():
-            d = d[d["job_role"].isin(input.job_role())]
-
-        # ai band
-        if "All" not in input.ai_band():
-            d = d[d["ai_band"].astype(str).isin(input.ai_band())]
-
-        # experience
-        d = d[
-            (d["experience_years"] >= input.experience()[0])
-            & (d["experience_years"] <= input.experience()[1])
-        ]
-
-        # ai usage
-        d = d[
-            (d["ai_tool_usage_hours_per_week"] >= input.ai_usage()[0])
-            & (d["ai_tool_usage_hours_per_week"] <= input.ai_usage()[1])
-        ]
-
-        # manual hours
-        d = d[
-            (d["manual_work_hours_per_week"] >= input.manual_hours()[0])
-            & (d["manual_work_hours_per_week"] <= input.manual_hours()[1])
-        ]
-
-        # tasks automated
-        d = d[
-            (d["tasks_automated_percent"] >= input.tasks_automated()[0])
-            & (d["tasks_automated_percent"] <= input.tasks_automated()[1])
-        ]
-
-        # deadline pressure
-        d = d[d["deadline_pressure_level"].isin(input.deadline_pressure())]
-
-        return d
+        return apply_dashboard_filters(
+            df=df,
+            job_role=input.job_role(),
+            ai_band=input.ai_band(),
+            experience=input.experience(),
+            ai_usage=input.ai_usage(),
+            manual_hours=input.manual_hours(),
+            tasks_automated=input.tasks_automated(),
+            deadline_pressure=input.deadline_pressure(),
+        )
 
     # -------------------------
     # QueryChat server values for AI Explorer
@@ -453,13 +426,7 @@ def server(input, output, session):
     @reactive.calc
     def ai_filtered_df():
         result = qc_vals.df()
-
-        # convert querychat df to pandas df (code generated with GPT-5)
-        if hasattr(result, "to_native"):
-            return result.to_native()
-        if result is None:
-            return df.copy()
-        return result
+        return normalize_querychat_result(result=result, fallback_df=df)
 
     # title output
     @render.text
