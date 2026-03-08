@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.0]
+## [0.3.0] - Milestone 3
 
 ### Added
 
@@ -17,6 +17,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added **download button** to export filtered data.
 - Added **legend for KPI indicators** in scatter plots.
 - Added **dummy table output and query functionality** as the initial structure for AI-assisted querying.
+- Introduced modular project structure to improve maintainability and collaboration.
+- Created new module files to separate dashboard responsibilities:
+    - src/data.py for data loading and preprocessing logic.
+    - src/filters.py for reusable dataframe filtering utilities.
+    - src/kpis.py for KPI computation and UI helpers.
+    - src/charts.py for reusable Altair visualization functions.
+    - src/ai_tab.py as a placeholder for the upcoming AI-powered dashboard tab.
+- Added src/utils/ package with __init__.py to host shared utility functions across modules.
 
 ### Changed
 
@@ -25,6 +33,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Replaced the **pie chart with a donut chart** to improve readability and visual clarity.
 - Removed unused plots and cleaned up visualization components.
 - Updated **environment and requirements files** to ensure consistent dependency management.
+- Prepared the application architecture for modularization of app.py logic in future commits.
+- Refactoring groundwork added to support upcoming AI-driven filtering features and easier parallel development.
 
 ### Fixed
 
