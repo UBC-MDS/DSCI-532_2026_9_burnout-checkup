@@ -19,6 +19,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 import querychat
 import chatlas
+import os
 
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")

@@ -13,3 +13,7 @@ websockets==16.0
 shinywidgets==0.7.1
 altair==6.0.0
 anywidget==0.9.21
+
+# AI libraries
+querychat
+chatlas
