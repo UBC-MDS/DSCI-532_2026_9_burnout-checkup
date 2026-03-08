@@ -16,6 +16,13 @@ from src.constants.theme import (
     hours_breakdown_scale,
 )
 from pathlib import Path
+from dotenv import load_dotenv
+import querychat
+import chatlas
+import os
+
+load_dotenv()
+anthropic_key = os.getenv("ANTHROPIC_API_KEY")
 
 # Read our data
 features = pd.read_csv(FEATURES_PATH)
