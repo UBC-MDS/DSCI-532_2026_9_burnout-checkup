@@ -24,10 +24,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - src/kpis.py for KPI computation and UI helpers.
   - src/charts.py for reusable Altair visualization functions.
   - src/ai_tab.py as a placeholder for the upcoming AI-powered dashboard tab.
-- Added src/utils/ package with __init__.py to host shared utility functions across modules.
+- Added src/utils/ package with `__init__.py` to host shared utility functions across modules.
 - Added `src/data.py` to encapsulate dashboard dataset preparation and configuration helpers.
 - Added minimal NumPy-style docstrings for data-loading and preprocessing helpers.
 - Added `DEADLINE_PRESSURE_MAP` constant to standardize workload-score derivation.
+- Added .env.example file to provide a template for required environment variables.
+- Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.
 
 ### Changed
 
@@ -36,6 +38,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Replaced the **pie chart with a donut chart** to improve readability and visual clarity.
 - Removed unused plots and cleaned up visualization components.
 - Updated **environment and requirements files** to ensure consistent dependency management.
+
+### Fixed
+
+- Fixed multiple **code bugs and minor UI issues** identified during development.
+- Fixed dependency conflicts in `requirements.txt` and environment configuration.
+- Reduced duplication of top-level data setup logic in `src/app.py`.
+- Improved separation of concerns by keeping dataset preparation distinct from UI and server logic.
+
+### Refactored
+
 - Prepared the application architecture for modularization of app.py logic in future commits.
 - Refactoring groundwork added to support upcoming AI-driven filtering features and easier parallel development.
 - Refactored dashboard data-loading logic out of `src/app.py` into `src/data.py`.
@@ -47,13 +59,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Moved sidebar filter option generation into `get_filter_choices()`.
 - Moved numeric slider range computation into `get_slider_ranges()`.
 - Moved company-wide baseline metric computation into `get_baselines()`.
-
-### Fixed
-
-- Fixed multiple **code bugs and minor UI issues** identified during development.
-- Fixed dependency conflicts in `requirements.txt` and environment configuration.
-- Reduced duplication of top-level data setup logic in `src/app.py`.
-- Improved separation of concerns by keeping dataset preparation distinct from UI and server logic.
+- Refactored data filtering logic in filters.py to streamline implementation and remove redundant code.
+- Updated app.py to integrate the new filtering logic and ensure AI filtering functionality works correctly with the revised system.
 
 ### Infrastructure
 
