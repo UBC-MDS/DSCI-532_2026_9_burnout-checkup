@@ -783,7 +783,7 @@ def server(input, output, session):
 
         pie = (
             alt.Chart(breakdown)
-            .mark_arc()
+            .mark_arc(innerRadius=70)
             .encode(
                 theta=alt.Theta("hours:Q", title=None),
                 color=alt.Color(
