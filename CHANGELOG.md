@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - Mileston 4
+
+### Added
+
+- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes
+- Structured evaluation framework for LLM responses including scoring criteria (relevance, clarity, actionability, audience fit, faithfulness)
+- Detailed and compact summary tables comparing response style performance
+- Documentation of experiment narrative, discussion, and final decision for QueryChat customization
+
+### Changed
+
+- Specification document updated to include QueryChat Response Style control and design rationale
+- AI Explorer design documentation expanded to describe response style behavior and default configuration
+
 ## [0.3.0] - Milestone 3
 
 ### Added

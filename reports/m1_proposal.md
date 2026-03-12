@@ -92,6 +92,42 @@ This dashboard examines the relationship between AI tool usage, workload, produc
 
 Users can filter employees by job role, experience, AI usage, manual work hours, task automation, and deadline pressure. The main visualizations include a scatter plot of AI usage versus burnout, a grouped bar chart comparing burnout across roles (with optional predicted overlays), a breakdown of weekly work hours, and a productivity-versus-burnout quadrant view. These components allow HR managers to compare employee segments and assess whether AI adoption is associated with sustainable productivity or elevated burnout risk.
 
+## AI Explorer Design
+
+### QueryChat Response Style Control
+
+The AI Explorer tab includes a **Response Style control** that allows users to modify how the large language model (LLM) frames its responses. This control was introduced to provide users with flexibility in how AI-generated explanations are presented while maintaining consistency with the dataset context.
+
+#### Feature Description
+
+A dropdown input is provided in the AI Explorer sidebar with the following options:
+
+- **Executive Summary** - concise, high-level insights suitable for quick decision-making.
+- **Analytical Explanation** - balanced interpretation of dataset patterns and relationships.
+- **Technical Interpretation** - more precise explanations referencing dataset variables and analytical limitations.
+
+The selected response style is incorporated into the prompt instructions passed to the LLM, influencing the tone, level of detail, and framing of generated responses.
+
+#### Default Behavior
+
+The **Analytical Explanation** style is selected as the default mode.
+
+This style provides the best balance between interpretability, dataset grounding, and readability for typical dashboard users.
+
+#### Design Rationale
+
+The response style control was selected after evaluating several potential QueryChat customization options, including a verbosity slider and a scope-restriction toggle. These alternatives were not prioritized due to either limited behavioral impact (verbosity control) or higher implementation complexity (scope restriction).
+
+An experiment was conducted comparing three response styles across representative user questions about the dataset. Responses were evaluated using the following criteria:
+
+- relevance to the dataset
+- clarity
+- actionability
+- audience fit
+- faithfulness to the dataset context
+
+The **Analytical Explanation** style achieved the highest overall evaluation score and demonstrated the most consistent performance across the criteria. As a result, it was selected as the default response style while still allowing users to switch to other modes depending on their needs.
+
 ## References
 
 Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. <https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx>
