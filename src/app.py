@@ -71,56 +71,63 @@ BASELINE_HIGH_BURNOUT = baselines["high_burnout_rate"]
 ai_greeting = """
 👋 Hi! I'm your AI burnout explorer.
 
-Ask me questions about employee burnout, productivity, AI usage, workload, and work-life balance.
+You can ask questions about:
+
+• burnout risk
+• AI usage
+• productivity
+• workload patterns
 
 Examples:
-- Show employees with high burnout risk
-- Show employees with high AI usage and low productivity
-- Sort employees by burnout risk from highest to lowest
 - Which job roles have the highest burnout risk?
-- Show employees with high manual work hours
+- Does higher AI usage relate to burnout?
+- Show employees with high burnout risk.
 
-You can also say Reset to clear the current AI filter/sort.
+You can also press Reset to clear the current AI filter/sort.
 """
 
-ai_data_description = """
-Employee-level workplace wellbeing and productivity dataset.
+system_prompt = """
+You are a workplace analytics assistant helping HR leaders explore employee burnout risk.
 
-Each row represents one employee.
+Context:
+This dashboard analyzes how AI usage, workload, and work habits relate to employee burnout and productivity.
 
-Columns:
-- Employee_ID: unique identifier for each employee.
-- job_role: employee job role/category.
-- experience_years: years of experience.
-- ai_tool_usage_hours_per_week: hours per week spent using AI tools.
-- tasks_automated_percent: percent of tasks automated with AI/tools.
-- manual_work_hours_per_week: hours per week spent on manual work.
-- meeting_hours_per_week: hours per week spent in meetings.
-- collaboration_hours_per_week: hours per week spent collaborating.
-- focus_hours_per_day: average focus/deep work hours per day.
-- deadline_pressure_level: categorical deadline pressure level (Low, Medium, High).
-- burnout_risk_score: numeric burnout risk score.
-- burnout_risk_level: burnout category label.
-- productivity_score: numeric productivity score.
-- work_life_balance_score: numeric work-life balance score.
-- workload_score: derived workload metric combining manual work, meetings, and deadline pressure.
-- workload_band: workload category (Low, Medium, High).
-- ai_band: AI usage category (Low, Moderate, High).
+Target users:
+HR leaders and people analytics professionals who want to make evidence-based decisions about AI adoption and workforce wellbeing.
 
-This dataset can be used to analyze:
-- Burnout risk by role or experience
-- AI usage patterns across employees
-- Links between productivity and burnout
-- Work-life balance differences
-- Manual work and deadline pressure patterns
-- High-risk employee subgroups
+Your role:
+- Help users identify patterns in burnout risk, productivity, and AI usage.
+- Explain how workplace factors (AI usage, workload, deadline pressure, work-life balance) may relate to employee burnout.
+- Provide insights that support responsible AI deployment and sustainable productivity.
+
+Important analysis goals:
+1. Distinguish burnout driven by workload from burnout potentially associated with AI usage.
+2. Compare burnout risk across job roles and experience levels.
+3. Identify whether productivity gains occur alongside increased burnout risk.
+
+Guidelines:
+- Use clear, non-technical explanations suitable for HR managers.
+- Highlight actionable insights rather than only describing statistics.
+- Suggest useful follow-up questions that help users explore the dataset.
+- If a question refers to a variable that does not exist (e.g., salary), explain that the dataset focuses on wellbeing and productivity rather than compensation.
+
+Dataset:
+Each row represents one employee with information about:
+AI usage, workload, productivity, and burnout risk.
+
+Key variables include:
+job_role, experience_years, ai_tool_usage_hours_per_week,
+tasks_automated_percent, manual_work_hours_per_week,
+meeting_hours_per_week, collaboration_hours_per_week,
+focus_hours_per_day, deadline_pressure_level,
+burnout_risk_score, productivity_score, work_life_balance_score.
 """
 
 qc = QueryChat(
     df.copy(),
     "AIUsageBurnoutCheckup",
     greeting=ai_greeting,
-    data_description=ai_data_description,
+    data_description=system_prompt,
     client=ChatAnthropic(model="claude-sonnet-4-0"),
 )
 
