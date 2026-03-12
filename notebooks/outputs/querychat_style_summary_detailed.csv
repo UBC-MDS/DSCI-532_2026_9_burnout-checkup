@@ -1,0 +1,4 @@
+style,relevance_score,clarity_score,actionability_score,audience_fit_score,faithfulness_score,overall_score
+analytical,5.0,4.0,4.25,5.0,4.0,4.45
+executive,4.0,5.0,3.25,4.0,3.0,3.85
+technical,5.0,3.0,3.25,3.0,5.0,3.85
