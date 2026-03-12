@@ -128,6 +128,21 @@ An experiment was conducted comparing three response styles across representativ
 
 The **Analytical Explanation** style achieved the highest overall evaluation score and demonstrated the most consistent performance across the criteria. As a result, it was selected as the default response style while still allowing users to switch to other modes depending on their needs.
 
+#### Alignment with User Needs
+
+The QueryChat Response Style control supports several of the project's user stories and Jobs-to-Be-Done by enabling users to explore and interpret burnout patterns in different ways depending on their analytical needs.
+
+**User Story 3**  
+The AI Explorer allows HR analytics managers to investigate burnout patterns across job roles, experience levels, and AI usage. The response style control improves this exploration by allowing users to choose explanations that best match their decision-making context. For example, an Executive Summary provides quick insights about which roles or experience levels may be most affected, while Analytical or Technical styles provide deeper interpretation of the data.
+
+**JTBD 1 – Distinguishing workload-driven vs AI-associated burnout**  
+The analytical and technical response styles help users interpret relationships between workload indicators (manual work hours, deadlines, task complexity) and AI usage variables. This helps users avoid misattributing burnout to AI adoption when other factors may be more influential.
+
+**JTBD 3 – Evaluating productivity alongside burnout risk**  
+When examining productivity outcomes relative to burnout scores, the AI Explorer can explain observed patterns in different levels of detail. Analytical responses help managers understand whether productivity gains appear alongside increased burnout risk, while technical responses provide more cautious interpretations of potential relationships in the data.
+
+Overall, the response-style control improves the usability of the AI Explorer by allowing explanations to adapt to different analytical contexts while remaining grounded in the dashboard's dataset.
+
 ## References
 
 Wigert, B., and Agrawal, S. (2018). Employee burnout, part 1: The 5 main causes. <https://www.gallup.com/workplace/237059/employee-burnout-part-main-causes.aspx>
