@@ -134,3 +134,16 @@ Filters the full dataset to retain only observations matching the selected input
 - `plot_burnout_by_role`
 - `plot_hours_breakdown`
 - `plot_prod_vs_burnout`
+
+
+## 2.5 AI Explorer (QueryChat)
+
+The dashboard includes an AI assistant powered by QueryChat that allows users to ask questions about the dataset.
+
+The system prompt was customized to reflect the dashboard’s target audience (HR analytics managers) and the key analytical goals of the app, including:
+
+- identifying burnout patterns across job roles
+- understanding relationships between AI usage and burnout
+- evaluating productivity vs burnout trade-offs
+
+This prompt customization helps ensure that the AI assistant provides explanations aligned with HR decision-making rather than generic statistical descriptions.
