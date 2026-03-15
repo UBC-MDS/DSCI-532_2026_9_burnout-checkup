@@ -111,16 +111,6 @@ Guidelines:
 - Suggest useful follow-up questions that help users explore the dataset.
 - If a question refers to a variable that does not exist (e.g., salary), explain that the dataset focuses on wellbeing and productivity rather than compensation.
 
-Dataset:
-Each row represents one employee with information about:
-AI usage, workload, productivity, and burnout risk.
-
-Key variables include:
-job_role, experience_years, ai_tool_usage_hours_per_week,
-tasks_automated_percent, manual_work_hours_per_week,
-meeting_hours_per_week, collaboration_hours_per_week,
-focus_hours_per_day, deadline_pressure_level,
-burnout_risk_score, productivity_score, work_life_balance_score.
 """
 
 qc = QueryChat(
