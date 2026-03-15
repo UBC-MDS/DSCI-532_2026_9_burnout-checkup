@@ -26,3 +26,4 @@ dependencies:
 - pip:
   - querychat==0.5.1
   - chatlas==0.15.2
+  - ibis-framework[duckdb]
