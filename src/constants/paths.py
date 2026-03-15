@@ -10,3 +10,4 @@ REPORTS_DIR = PROJECT_ROOT / "reports"
 
 FEATURES_PATH = DATA_RAW_DIR / "ai_productivity_features.csv"
 TARGETS_PATH = DATA_RAW_DIR / "ai_productivity_targets.csv"
+PARQUET_PATH = Path("data/processed/ai_productivity.parquet")

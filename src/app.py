@@ -4,10 +4,13 @@
 from shiny import App, ui, render, reactive
 from shiny.render import DataGrid
 from shinywidgets import output_widget, render_altair
+import ibis
+from ibis import _
 
 import pandas as pd
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
+from src.constants.paths import PARQUET_PATH 
 from src.constants.theme import (
     COLORS,
     deadline_scale,
@@ -39,11 +42,15 @@ from src.charts import (
 )
 from src.utils.debug import format_filter_debug
 
+
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
 
 # Load and preprocess data
-df = load_dashboard_data()
+con = ibis.duckdb.connect()
+table = con.read_parquet(PARQUET_PATH)
+
+df = load_dashboard_data()  # still load in full dataframe used for baselines and querychat
 
 # Input variables' options for filters
 filter_choices = get_filter_choices(df)
@@ -212,7 +219,7 @@ app_ui = ui.page_fluid(
                         "job_role",
                         None,
                         choices=job_role_choices,
-                        selected=["All"],
+                        selected=["Manager"],
                         multiple=True,
                     ),
                     ui.br(),
@@ -424,16 +431,31 @@ def server(input, output, session):
     # Reactive expression for the filtered dataframe based on sidebar inputs
     @reactive.calc
     def filtered_df():
-        return apply_dashboard_filters(
-            df=df,
-            job_role=input.job_role(),
-            ai_band=input.ai_band(),
-            experience=input.experience(),
-            ai_usage=input.ai_usage(),
-            manual_hours=input.manual_hours(),
-            tasks_automated=input.tasks_automated(),
-            deadline_pressure=input.deadline_pressure(),
-        )
+
+        expr = table
+
+        if input.job_role() and "All" not in input.job_role():
+            expr = expr.filter(_.job_role.isin(input.job_role()))
+
+        if input.ai_band() and "All" not in input.ai_band():
+            expr = expr.filter(_.ai_band.isin(input.ai_band()))
+
+        lo, hi = input.experience()
+        expr = expr.filter(_.experience_years.between(lo, hi))
+
+        lo, hi = input.ai_usage()
+        expr = expr.filter(_.ai_tool_usage_hours_per_week.between(lo, hi))
+
+        lo, hi = input.manual_hours()
+        expr = expr.filter(_.manual_work_hours_per_week.between(lo, hi))
+
+        lo, hi = input.tasks_automated()
+        expr = expr.filter(_.tasks_automated_percent.between(lo, hi))
+
+        if input.deadline_pressure():
+            expr = expr.filter(_.deadline_pressure_level.isin(input.deadline_pressure()))
+
+        return expr.execute()
 
     # -------------------------
     # QueryChat server values for AI Explorer

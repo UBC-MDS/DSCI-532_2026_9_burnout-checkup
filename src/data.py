@@ -6,7 +6,11 @@ from typing import Any
 
 import pandas as pd
 
+import duckdb
+
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
+
+from src.constants.paths import PARQUET_PATH 
 
 
 DEADLINE_PRESSURE_MAP: dict[str, int] = {
