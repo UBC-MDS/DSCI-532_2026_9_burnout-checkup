@@ -104,7 +104,13 @@ Example:
 cp .env.example .env
 ```
 
-4. Run the dashboard locally:
+4. Build dataset
+
+```bash
+python src/scripts/build_parquet.py
+```
+
+5. Run the dashboard locally:
 
 ```bash
 shiny run src.app
