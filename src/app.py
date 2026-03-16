@@ -181,7 +181,6 @@ def make_querychat(style_key: str, module_id: str):
         client=llm_client,
     )
 
-
 qc_executive = make_querychat("executive", "qc_executive")
 qc_analytical = make_querychat("analytical", "qc_analytical")
 qc_technical = make_querychat("technical", "qc_technical")
@@ -411,7 +410,22 @@ app_ui = ui.page_fluid(
                 ui.sidebar(
                     ui.h3("AI Explorer"),
                     # ui.p("Use natural language to explore the filtered dataset."),
-                    qc.ui(),
+                    ui.h6("Response Style:"),
+                    ui.input_select(
+                        "response_style",
+                        None,
+                        choices={
+                            "executive": "Executive Summary",
+                            "analytical": "Analytical Explanation",
+                            "technical": "Technical Interpretation",
+                        },
+                        selected="analytical"
+                    ),
+                    ui.p("Choose how the AI explains results: concise, balanced, or more technical."),
+                    ui.br(),
+                    ui.panel_conditional("input.response_style === 'executive'", qc_executive.ui()),
+                    ui.panel_conditional("input.response_style === 'analytical'", qc_analytical.ui()),
+                    ui.panel_conditional("input.response_style === 'technical'", qc_technical.ui()),
                     ui.hr(),
                     ui.input_action_button("reset_ai_query", "Reset AI filters"),
                     width=320,
@@ -515,11 +529,29 @@ def server(input, output, session):
     # -------------------------
     # QueryChat server values for AI Explorer
     # -------------------------
-    qc_vals = qc.server()
+    qc_executive_vals = qc_executive.server()
+    qc_analytical_vals = qc_analytical.server()
+    qc_technical_vals = qc_technical.server()
 
+    # -------------------------
+    # QueryChat response style reactive
+    # -------------------------
+    @reactive.calc
+    def current_qc_vals():
+        style = input.response_style()
+
+        if style == "executive":
+            return qc_executive_vals
+        elif style == "technical":
+            return qc_technical_vals
+        else:
+            return qc_analytical_vals
+    
+    
     # ai filtered df returned by QueryChat
     @reactive.calc
     def ai_filtered_df():
+        qc_vals = current_qc_vals()
         current_sql = qc_vals.sql()
         result = qc_vals.df()
 
@@ -537,12 +569,14 @@ def server(input, output, session):
     # title output
     @render.text
     def ai_title():
+        qc_vals = current_qc_vals()
         return qc_vals.title() if qc_vals.sql() else "Preview of first 100 rows"
 
     # reset button for AI filters
     @reactive.effect
     @reactive.event(input.reset_ai_query)
     def _reset_ai_query():
+        qc_vals = current_qc_vals()
         qc_vals.sql("")
         qc_vals.title(None)
 
@@ -603,6 +637,7 @@ def server(input, output, session):
     # (i.e. the number of rows in the dataframe)
     @render.ui
     def ai_count_box():
+        qc_vals = current_qc_vals()
         subtitle = (
             "Rows returned by AI query"
             if qc_vals.sql()
