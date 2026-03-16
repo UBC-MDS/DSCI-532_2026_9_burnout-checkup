@@ -7,12 +7,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.4.0] - Mileston 4
 
 ### Added
+
 - QueryChat system prompt customization to provide more HR and managers-focused insights.
 - Prompt experiment notebook evaluating different system prompt designs.
+- `on_tool_request` experimentation notebook evaluating different validation/transformation features to implement in our QueryChat.
 
 ### Changed
+
 - Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases.
 - Updated app specification to document the AI Explorer component and prompt design.
+- Updated `app.py` to include all member's experimentation results combined into a customized QueryChat.
 
 ## [0.3.0] - Milestone 3
 
