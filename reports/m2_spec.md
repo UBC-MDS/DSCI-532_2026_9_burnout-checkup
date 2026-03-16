@@ -220,7 +220,17 @@ flowchart TD
 - `deadline_pressure_level`
 
 **Transformation:**
-Filters the full dataset to retain only observations matching the selected input criteria by the user.
+Starts from the full DuckDB/Ibis (`table`) and applies the dashboard sidebar filters sequentially.  
+If `job_role` or `ai_band` are set to values other than `"All"`, the data is filtered to those selected categories.  
+It then filters numeric columns using the selected slider ranges for:
+
+- `experience_years`
+- `ai_tool_usage_hours_per_week`
+- `manual_work_hours_per_week`
+- `tasks_automated_percent`
+
+Finally, if any `deadline_pressure` options are selected, it filters `deadline_pressure_level` to those values.  
+The resulting filtered Ibis expression is then executed and returned as a pandas dataframe.
 
 **Consumed by:**
 
@@ -233,6 +243,76 @@ Filters the full dataset to retain only observations matching the selected input
 - `plot_hours_breakdown`
 - `plot_prod_vs_burnout`
 
+### current_qc_vals (`@reactive.calc`)
+
+**Depends on:**
+
+- `response_style`
+- `qc_executive`
+- `qc_analytical`
+- `qc_technical`
+
+**Transformation:**
+Selects which QueryChat server object to use based on the selected `response_style`.
+
+- If `response_style == "executive"`, it returns `qc_executive_vals`
+- If `response_style == "technical"`, it returns `qc_technical_vals`
+- Otherwise, it returns `qc_analytical_vals`
+
+This reactive acts as a router so that downstream AI Explorer outputs always use the currently active QueryChat module.
+
+**Consumed by:**
+
+- `ai_filtered_df`
+- `ai_title`
+- `ai_count_box`
+- `_reset_ai_query`
+
+### ai_filtered_df (`@reactive.calc`)
+
+**Depends on:**
+
+- `current_qc_vals`
+
+**Transformation:**
+Retrieves the currently active QueryChat values object from `current_qc_vals()` and checks its SQL query and returned dataframe.
+
+- If no AI query has been run yet (`qc_vals.sql()` is empty), it returns `default_ai_preview_df`, which contains the first 100 rows of the full dataset.
+- If QueryChat has executed a valid query and returned a pandas dataframe, it returns that dataframe.
+- If an unexpected result occurs, it falls back to `default_ai_preview_df`.
+
+This reactive ensures that the AI Explorer always displays either:
+1. a default preview before any query is submitted, or  
+2. the full result of the most recent valid AI query.
+
+**Consumed by:**
+
+- `ai_count_box`
+- `ai_burnout_box`
+- `ai_productivity_box`
+- `ai_high_burnout_box`
+- `ai_table`
+- `download_ai_data`
+
+### _reset_ai_query (`@reactive.effect` + `@reactive.event(input.reset_ai_query)`)
+
+**Depends on:**
+
+- `reset_ai_query`
+- `current_qc_vals`
+
+**Transformation:**
+Triggers when the user clicks the `reset_ai_query` button.  
+It accesses the currently active QueryChat values object from `current_qc_vals()` and clears its stored SQL query and title by setting:
+
+- `qc_vals.sql("")`
+- `qc_vals.title(None)`
+
+This resets the AI Explorer state so the table and KPIs return to the default preview behavior.
+
+**Consumed by:**
+
+- No downstream reactive directly consumes this effect; instead, it updates QueryChat state, which causes `ai_filtered_df`, `ai_title`, and related AI Explorer outputs to re-render.
 
 ## 2.5 AI Explorer (QueryChat)
 
