@@ -316,6 +316,8 @@ This resets the AI Explorer state so the table and KPIs return to the default pr
 
 ## 2.5 AI Explorer (QueryChat)
 
+### AI Prompt
+
 The dashboard includes an AI assistant powered by QueryChat that allows users to ask questions about the dataset.
 
 The system prompt was customized to reflect the dashboard’s target audience (HR analytics managers) and the key analytical goals of the app, including:
@@ -325,3 +327,51 @@ The system prompt was customized to reflect the dashboard’s target audience (H
 - evaluating productivity vs burnout trade-offs
 
 This prompt customization helps ensure that the AI assistant provides explanations aligned with HR decision-making rather than generic statistical descriptions.
+
+### QueryChat Response Style Control
+
+The AI Explorer tab also includes a **Response Style control** that allows users to modify how the large language model (LLM) frames its responses. This control was introduced to provide users with flexibility in how AI-generated explanations are presented while maintaining consistency with the dataset context.
+
+#### Feature Description
+
+A dropdown input is provided in the AI Explorer sidebar with the following options:
+
+- **Executive Summary** - concise, high-level insights suitable for quick decision-making.
+- **Analytical Explanation** - balanced interpretation of dataset patterns and relationships.
+- **Technical Interpretation** - more precise explanations referencing dataset variables and analytical limitations.
+
+The selected response style is incorporated into the prompt instructions passed to the LLM, influencing the tone, level of detail, and framing of generated responses.
+
+#### Default Behavior
+
+The **Analytical Explanation** style is selected as the default mode. This style provides the best balance between interpretability, dataset grounding, and readability for typical dashboard users.
+
+#### Design Rationale
+
+The response style control was selected after evaluating several potential QueryChat customization options, including a verbosity slider and a scope-restriction toggle. These alternatives were not prioritized due to either limited behavioral impact (verbosity control) or higher implementation complexity (scope restriction).
+
+An experiment was conducted comparing three response styles across representative user questions about the dataset. Responses were evaluated using the following criteria:
+
+- relevance to the dataset
+- clarity
+- actionability
+- audience fit
+- faithfulness to the dataset context
+
+The **Analytical Explanation** style achieved the highest overall evaluation score and demonstrated the most consistent performance across the criteria. As a result, it was selected as the default response style while still allowing users to switch to other modes depending on their needs.
+
+#### Alignment with User Needs
+
+The QueryChat Response Style control supports several of the project's user stories and Jobs-to-Be-Done by enabling users to explore and interpret burnout patterns in different ways depending on their analytical needs.
+
+**User Story 3**  
+The AI Explorer allows HR analytics managers to investigate burnout patterns across job roles, experience levels, and AI usage. The response style control improves this exploration by allowing users to choose explanations that best match their decision-making context. For example, an Executive Summary provides quick insights about which roles or experience levels may be most affected, while Analytical or Technical styles provide deeper interpretation of the data.
+
+**JTBD 1 – Distinguishing workload-driven vs AI-associated burnout**  
+The analytical and technical response styles help users interpret relationships between workload indicators (manual work hours, deadlines, task complexity) and AI usage variables. This helps users avoid misattributing burnout to AI adoption when other factors may be more influential.
+
+**JTBD 3 – Evaluating productivity alongside burnout risk**  
+When examining productivity outcomes relative to burnout scores, the AI Explorer can explain observed patterns in different levels of detail. Analytical responses help managers understand whether productivity gains appear alongside increased burnout risk, while technical responses provide more cautious interpretations of potential relationships in the data.
+
+Overall, the response-style control improves the usability of the AI Explorer by allowing explanations to adapt to different analytical contexts while remaining grounded in the dashboard's dataset.
+
