@@ -1,4 +1,4 @@
-
+# tests/e2e/test_filter_behavior.py
 
 def test_reset_ai_query_clears_ai_state(page):
     """

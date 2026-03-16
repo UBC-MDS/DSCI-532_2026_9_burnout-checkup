@@ -1,7 +1,5 @@
 # tests/test_charts.py
 
-# tests/test_charts.py
-
 from __future__ import annotations
 
 import pandas as pd

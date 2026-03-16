@@ -58,6 +58,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Tests for KPI UI components (`median_metric_card`, `high_burnout_pct_card`, `count_card`).
 - Added unit tests for chart-building functions in `src/charts.py`, covering empty-state placeholders, layered scatter plots, bar chart aggregation, and hours breakdown visualization behavior.
 - Added unit tests for the debug formatter in `src/utils/debug.py` to validate filter-state output and filtered row count reporting.
+- Playwright test verifying that Reset Filters restores dashboard inputs to default values.
+- Playwright test verifying that the debug panel correctly displays current filter state and filtered row counts.
+- Playwright test verifying that the AI Explorer tab renders and remains functional when accessed.
+- Playwright edge-case test verifying that Reset AI filters clears AI Explorer query state and restores default results.
+- Documented test behavior descriptions and README instructions for running tests.
 
 ### Changed
 
