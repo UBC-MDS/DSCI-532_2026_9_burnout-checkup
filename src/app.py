@@ -6,7 +6,7 @@ from shiny.render import DataGrid
 from shinywidgets import output_widget, render_altair
 import ibis
 from ibis import _
-
+import re
 import pandas as pd
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
@@ -93,12 +93,62 @@ Examples:
 You can also press Reset to clear the current AI filter/sort.
 """
 
+# -------------------------
+# QueryChat tool interception
+# -------------------------
+blocking_logs = []
+
+def block_broad_tool_request(req):
+    """Intercept QueryChat tool calls and block overly broad SQL queries."""
+    tool_name = req.name
+    arguments = req.arguments or {}
+    query_text = arguments.get("query", "")
+    query_upper = query_text.upper()
+
+    has_select_all = "SELECT *" in query_upper
+    has_where = "WHERE" in query_upper
+    has_group_by = "GROUP BY" in query_upper
+    has_limit = "LIMIT" in query_upper
+
+    should_block = (
+        has_select_all
+        and not has_where
+        and not has_group_by
+        and not has_limit
+    )
+
+    reason = None
+    if should_block:
+        reason = "That request is too broad. Please narrow it with a filter, grouping, or limit."
+
+    print("\n--- BROAD QUERY CHECK ---")
+    print("Tool name:", tool_name)
+    print("Query:", query_text)
+    print("Blocked:", should_block)
+    print("Reason:", reason)
+
+    blocking_logs.append(
+        {
+            "tool_name": tool_name,
+            "query": query_text,
+            "blocked": should_block,
+            "reason": reason,
+        }
+    )
+
+    if should_block:
+        raise Exception(reason)
+
+
+llm_client = ChatAnthropic(model="claude-sonnet-4-0")
+llm_client.on_tool_request(block_broad_tool_request)
+
 qc = QueryChat(
     df.copy(),
     "AIUsageBurnoutCheckup",
     greeting=ai_greeting,
     prompt_template=Path(__file__).parent / "prompts" / "system_prompt.md",
-    client=ChatAnthropic(model="claude-sonnet-4-0"),
+    client=llm_client,
 )
 
 # -------------------------
