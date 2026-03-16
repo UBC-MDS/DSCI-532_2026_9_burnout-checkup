@@ -480,13 +480,24 @@ def server(input, output, session):
     # ai filtered df returned by QueryChat
     @reactive.calc
     def ai_filtered_df():
+        current_sql = qc_vals.sql()
         result = qc_vals.df()
-        return normalize_querychat_result(result=result, fallback_df=default_ai_preview_df)
+
+        # No AI query has been run yet -> show preview only
+        if not current_sql:
+            return default_ai_preview_df
+
+        # Valid AI query returned a dataframe -> show all matched rows
+        if isinstance(result, pd.DataFrame):
+            return result
+
+        # Fallback if something unexpected happens
+        return default_ai_preview_df
 
     # title output
     @render.text
     def ai_title():
-        return qc_vals.title() or "Preview of first 100 rows"
+        return qc_vals.title() if qc_vals.sql() else "Preview of first 100 rows"
 
     # reset button for AI filters
     @reactive.effect
@@ -552,11 +563,16 @@ def server(input, output, session):
     # (i.e. the number of rows in the dataframe)
     @render.ui
     def ai_count_box():
+        subtitle = (
+            "Rows returned by AI query"
+            if qc_vals.sql()
+            else "Rows shown in default preview"
+        )
         return count_card(
             ai_filtered_df(),
             title="Employees Found",
-            subtitle="Rows returned by AI query",
-        )
+            subtitle=subtitle,
+            )
 
     # Median burnout risk score for the AI-filtered subset,
     # compared to the company-wide baseline median.
