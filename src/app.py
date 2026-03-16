@@ -73,10 +73,10 @@ ai_greeting = """
 
 You can ask questions about:
 
-• burnout risk
-• AI usage
-• productivity
-• workload patterns
+- burnout risk
+- AI usage
+- productivity
+- workload patterns
 
 Examples:
 - Which job roles have the highest burnout risk?
@@ -117,7 +117,7 @@ qc = QueryChat(
     df.copy(),
     "AIUsageBurnoutCheckup",
     greeting=ai_greeting,
-    data_description=system_prompt,
+    prompt_template=Path(__file__).parent / "prompts" / "system_prompt.md",
     client=ChatAnthropic(model="claude-sonnet-4-0"),
 )
 
