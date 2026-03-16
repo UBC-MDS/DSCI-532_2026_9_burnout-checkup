@@ -57,16 +57,24 @@
 flowchart TD
 
   %% -------------------
-  %% Inputs
+  %% Inputs (Dashboard)
   %% -------------------
   job_role[/job_role/]
   ai_band[/ai_band/]
-  experience_years[/experience_years/]
-  ai_tool_usage_hours_per_week[/ai_tool_usage_hours_per_week/]
-  manual_work_hours_per_week[/manual_work_hours_per_week/]
-  tasks_automated_percent[/tasks_automated_percent/]
-  deadline_pressure_level[/deadline_pressure_level/]
+  experience[/experience/]
+  ai_usage[/ai_usage/]
+  manual_hours[/manual_hours/]
+  tasks_automated[/tasks_automated/]
+  deadline_pressure[/deadline_pressure/]
+  show_pred[/show_pred/]
+  show_debug[/show_debug/]
   reset_btn[/reset_btn/]
+
+  %% -------------------
+  %% Inputs (AI Explorer)
+  %% -------------------
+  response_style[/response_style/]
+  reset_ai_query[/reset_ai_query/]
 
   %% -------------------
   %% Reactives
@@ -74,39 +82,44 @@ flowchart TD
   filtered_df{{filtered_df}}
   reset_effect{{_reset_filters}}
 
-  %% Input -> filtered_df
+  current_qc_vals{{current_qc_vals}}
+  ai_filtered_df{{ai_filtered_df}}
+  reset_ai_effect{{_reset_ai_query}}
+
+  %% -------------------
+  %% QueryChat modules
+  %% -------------------
+  qc_executive[[qc_executive]]
+  qc_analytical[[qc_analytical]]
+  qc_technical[[qc_technical]]
+
+  %% -------------------
+  %% Baselines
+  %% -------------------
+  baselines[(baselines)]
+
+  %% -------------------
+  %% Dashboard filtering
+  %% -------------------
   job_role --> filtered_df
   ai_band --> filtered_df
-  experience_years --> filtered_df
-  ai_tool_usage_hours_per_week --> filtered_df
-  manual_work_hours_per_week --> filtered_df
-  tasks_automated_percent --> filtered_df
-  deadline_pressure_level --> filtered_df
+  experience --> filtered_df
+  ai_usage --> filtered_df
+  manual_hours --> filtered_df
+  tasks_automated --> filtered_df
+  deadline_pressure --> filtered_df
 
-  %% Reset button
+  %% Reset filters
   reset_btn --> reset_effect
 
   %% -------------------
-  %% Outputs (ui)
+  %% KPI Outputs
   %% -------------------
   burnout_box([burnout_box])
   productivity_box([productivity_box])
   high_burnout_perc_box([high_burnout_perc_box])
   wlb_box([wlb_box])
 
-  %% -------------------
-  %% Outputs (plots)
-  %% -------------------
-  plot_ai_vs_burnout([plot_ai_vs_burnout])
-  plot_burnout_by_role([plot_burnout_by_role])
-  plot_hours_breakdown([plot_hours_breakdown])
-  plot_prod_vs_burnout([plot_prod_vs_burnout])
-
-  %% filtered_df dependencies
-  filtered_df --> plot_burnout_by_role
-  filtered_df --> plot_hours_breakdown
-
-  %% filtered_df + baselines dependencies
   filtered_df --> burnout_box
   baselines --> burnout_box
 
@@ -119,11 +132,77 @@ flowchart TD
   filtered_df --> wlb_box
   baselines --> wlb_box
 
+  %% -------------------
+  %% Plot Outputs
+  %% -------------------
+  plot_ai_vs_burnout([plot_ai_vs_burnout])
+  plot_burnout_by_role([plot_burnout_by_role])
+  plot_hours_breakdown([plot_hours_breakdown])
+  plot_prod_vs_burnout([plot_prod_vs_burnout])
+
   filtered_df --> plot_ai_vs_burnout
   baselines --> plot_ai_vs_burnout
 
+  filtered_df --> plot_burnout_by_role
+  filtered_df --> plot_hours_breakdown
+
   filtered_df --> plot_prod_vs_burnout
   baselines --> plot_prod_vs_burnout
+
+  %% -------------------
+  %% Debug output
+  %% -------------------
+  debug_filters([debug_filters])
+
+  job_role --> debug_filters
+  ai_band --> debug_filters
+  experience --> debug_filters
+  ai_usage --> debug_filters
+  manual_hours --> debug_filters
+  tasks_automated --> debug_filters
+  deadline_pressure --> debug_filters
+  filtered_df --> debug_filters
+
+  %% -------------------
+  %% QueryChat logic
+  %% -------------------
+  response_style --> current_qc_vals
+  qc_executive --> current_qc_vals
+  qc_analytical --> current_qc_vals
+  qc_technical --> current_qc_vals
+
+  current_qc_vals --> ai_filtered_df
+
+  reset_ai_query --> reset_ai_effect
+  current_qc_vals --> reset_ai_effect
+
+  %% -------------------
+  %% AI Explorer outputs
+  %% -------------------
+  ai_title([ai_title])
+  ai_count_box([ai_count_box])
+  ai_burnout_box([ai_burnout_box])
+  ai_productivity_box([ai_productivity_box])
+  ai_high_burnout_box([ai_high_burnout_box])
+  ai_table([ai_table])
+  download_ai_data([download_ai_data])
+
+  current_qc_vals --> ai_title
+
+  ai_filtered_df --> ai_count_box
+  current_qc_vals --> ai_count_box
+
+  ai_filtered_df --> ai_burnout_box
+  baselines --> ai_burnout_box
+
+  ai_filtered_df --> ai_productivity_box
+  baselines --> ai_productivity_box
+
+  ai_filtered_df --> ai_high_burnout_box
+  baselines --> ai_high_burnout_box
+
+  ai_filtered_df --> ai_table
+  ai_filtered_df --> download_ai_data
 ```
 
 ## 2.4 Calculation Details
