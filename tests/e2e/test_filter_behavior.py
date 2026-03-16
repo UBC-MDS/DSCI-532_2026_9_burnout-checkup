@@ -17,4 +17,4 @@ def test_reset_ai_query_clears_ai_state(page):
     page.get_by_role("button", name="Reset AI filters").click()
     page.wait_for_timeout(1000)
 
-    assert page.get_by_text("Preview of AI-filtered data").is_visible()
+    assert page.get_by_text("Preview of first 100 rows").is_visible()

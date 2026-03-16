@@ -14,6 +14,6 @@ def test_reset_filters(page):
     page.get_by_role("button", name="Reset Filters").click()
     page.wait_for_timeout(1000)
 
-    # Check that All is restored
+    # Check that Manager is restored
     selected_text = page.locator("#job_role + .selectize-control").text_content()
-    assert "All" in selected_text
+    assert "Manager" in selected_text
