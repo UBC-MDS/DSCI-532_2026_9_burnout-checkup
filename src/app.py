@@ -6,7 +6,7 @@ from shiny.render import DataGrid
 from shinywidgets import output_widget, render_altair
 import ibis
 from ibis import _
-
+import re
 import pandas as pd
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
@@ -51,6 +51,7 @@ con = ibis.duckdb.connect()
 table = con.read_parquet(PARQUET_PATH)
 
 df = load_dashboard_data()  # still load in full dataframe used for baselines and querychat
+default_ai_preview_df = df.head(100).copy()
 
 # Input variables' options for filters
 filter_choices = get_filter_choices(df)
@@ -93,40 +94,96 @@ Examples:
 You can also press Reset to clear the current AI filter/sort.
 """
 
-system_prompt = """
-You are a workplace analytics assistant helping HR leaders explore employee burnout risk.
+# Define the style instructions
+STYLE_INSTRUCTIONS = {
+    "executive": 
+    """
+    Respond in an Executive Summary style.
+    - Use plain, concise language.
+    - Emphasize the main takeaway first.
+    - Mention practical workplace implications.
+    - Avoid technical jargon unless necessary.
+    - Keep the answer brief and decision-oriented.
+    """,
+    "analytical": 
+    """
+    Respond in an Analytical Explanation style.
+    - Explain the main patterns clearly.
+    - Compare relevant groups or variables where useful.
+    - Balance clarity and detail.
+    - Keep the answer grounded in the dataset.
+    - Do not overstate conclusions.
+    """,
+    "technical": """
+    Respond in a Technical Interpretation style.
+    - Refer explicitly to dataset variables where relevant.
+    - Emphasize associations, not causality.
+    - Mention limitations or ambiguity when appropriate.
+    - Use more precise analytical language.
+    - Keep the answer dataset-grounded and method-aware.
+    """
+}
 
-Context:
-This dashboard analyzes how AI usage, workload, and work habits relate to employee burnout and productivity.
+# -------------------------
+# QueryChat tool interception
+# -------------------------
+blocking_logs = []
 
-Target users:
-HR leaders and people analytics professionals who want to make evidence-based decisions about AI adoption and workforce wellbeing.
+def block_broad_tool_request(req):
+    """Intercept QueryChat tool calls and block overly broad SQL queries."""
+    tool_name = req.name
+    arguments = req.arguments or {}
+    query_text = arguments.get("query", "")
+    query_upper = query_text.upper()
 
-Your role:
-- Help users identify patterns in burnout risk, productivity, and AI usage.
-- Explain how workplace factors (AI usage, workload, deadline pressure, work-life balance) may relate to employee burnout.
-- Provide insights that support responsible AI deployment and sustainable productivity.
+    has_select_all = "SELECT *" in query_upper
+    has_where = "WHERE" in query_upper
+    has_group_by = "GROUP BY" in query_upper
+    has_limit = "LIMIT" in query_upper
 
-Important analysis goals:
-1. Distinguish burnout driven by workload from burnout potentially associated with AI usage.
-2. Compare burnout risk across job roles and experience levels.
-3. Identify whether productivity gains occur alongside increased burnout risk.
+    should_block = (
+        has_select_all
+        and not has_where
+        and not has_group_by
+        and not has_limit
+    )
 
-Guidelines:
-- Use clear, non-technical explanations suitable for HR managers.
-- Highlight actionable insights rather than only describing statistics.
-- Suggest useful follow-up questions that help users explore the dataset.
-- If a question refers to a variable that does not exist (e.g., salary), explain that the dataset focuses on wellbeing and productivity rather than compensation.
+    reason = None
+    if should_block:
+        reason = "That request is too broad. Please narrow it with a filter, grouping, or limit."
 
-"""
+    blocking_logs.append(
+        {
+            "tool_name": tool_name,
+            "query": query_text,
+            "blocked": should_block,
+            "reason": reason,
+        }
+    )
 
-qc = QueryChat(
-    df.copy(),
-    "AIUsageBurnoutCheckup",
-    greeting=ai_greeting,
-    prompt_template=Path(__file__).parent / "prompts" / "system_prompt.md",
-    client=ChatAnthropic(model="claude-sonnet-4-0"),
-)
+    if should_block:
+        raise Exception(reason)
+    
+llm_client = ChatAnthropic(model="claude-sonnet-4-0")
+llm_client.on_tool_request(block_broad_tool_request)
+
+# --------------------------------------
+# Make QueryChat for each response style
+# --------------------------------------
+def make_querychat(style_key: str, module_id: str):
+    return QueryChat(
+        df.copy(),
+        "AIUsageBurnoutCheckup",
+        id=module_id,
+        greeting=ai_greeting,
+        prompt_template=Path(__file__).parent / "prompts" / "system_prompt.md",
+        extra_instructions=STYLE_INSTRUCTIONS[style_key],
+        client=llm_client,
+    )
+
+qc_executive = make_querychat("executive", "qc_executive")
+qc_analytical = make_querychat("analytical", "qc_analytical")
+qc_technical = make_querychat("technical", "qc_technical")
 
 # -------------------------
 # UI
@@ -353,7 +410,22 @@ app_ui = ui.page_fluid(
                 ui.sidebar(
                     ui.h3("AI Explorer"),
                     # ui.p("Use natural language to explore the filtered dataset."),
-                    qc.ui(),
+                    ui.h6("Response Style:"),
+                    ui.input_select(
+                        "response_style",
+                        None,
+                        choices={
+                            "executive": "Executive Summary",
+                            "analytical": "Analytical Explanation",
+                            "technical": "Technical Interpretation",
+                        },
+                        selected="analytical"
+                    ),
+                    ui.p("Choose how the AI explains results: concise, balanced, or more technical."),
+                    ui.br(),
+                    ui.panel_conditional("input.response_style === 'executive'", qc_executive.ui()),
+                    ui.panel_conditional("input.response_style === 'analytical'", qc_analytical.ui()),
+                    ui.panel_conditional("input.response_style === 'technical'", qc_technical.ui()),
                     ui.hr(),
                     ui.input_action_button("reset_ai_query", "Reset AI filters"),
                     width=320,
@@ -457,23 +529,54 @@ def server(input, output, session):
     # -------------------------
     # QueryChat server values for AI Explorer
     # -------------------------
-    qc_vals = qc.server()
+    qc_executive_vals = qc_executive.server()
+    qc_analytical_vals = qc_analytical.server()
+    qc_technical_vals = qc_technical.server()
 
+    # -------------------------
+    # QueryChat response style reactive
+    # -------------------------
+    @reactive.calc
+    def current_qc_vals():
+        style = input.response_style()
+
+        if style == "executive":
+            return qc_executive_vals
+        elif style == "technical":
+            return qc_technical_vals
+        else:
+            return qc_analytical_vals
+    
+    
     # ai filtered df returned by QueryChat
     @reactive.calc
     def ai_filtered_df():
+        qc_vals = current_qc_vals()
+        current_sql = qc_vals.sql()
         result = qc_vals.df()
-        return normalize_querychat_result(result=result, fallback_df=df)
+
+        # No AI query has been run yet -> show preview only
+        if not current_sql:
+            return default_ai_preview_df
+
+        # Valid AI query returned a dataframe -> show all matched rows
+        if isinstance(result, pd.DataFrame):
+            return result
+
+        # Fallback if something unexpected happens
+        return default_ai_preview_df
 
     # title output
     @render.text
     def ai_title():
-        return qc_vals.title() or "Preview of AI-filtered data"
+        qc_vals = current_qc_vals()
+        return qc_vals.title() if qc_vals.sql() else "Preview of first 100 rows"
 
     # reset button for AI filters
     @reactive.effect
     @reactive.event(input.reset_ai_query)
     def _reset_ai_query():
+        qc_vals = current_qc_vals()
         qc_vals.sql("")
         qc_vals.title(None)
 
@@ -534,11 +637,17 @@ def server(input, output, session):
     # (i.e. the number of rows in the dataframe)
     @render.ui
     def ai_count_box():
+        qc_vals = current_qc_vals()
+        subtitle = (
+            "Rows returned by AI query"
+            if qc_vals.sql()
+            else "Rows shown in default preview"
+        )
         return count_card(
             ai_filtered_df(),
             title="Employees Found",
-            subtitle="Rows returned by AI query",
-        )
+            subtitle=subtitle,
+            )
 
     # Median burnout risk score for the AI-filtered subset,
     # compared to the company-wide baseline median.

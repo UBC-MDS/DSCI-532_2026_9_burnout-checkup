@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - QueryChat system prompt customization to provide more HR and managers-focused insights.
 - Prompt experiment notebook evaluating different system prompt designs.
+- `on_tool_request` experimentation notebook evaluating different validation/transformation features to implement in our QueryChat.
 - QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes
 - Structured evaluation framework for LLM responses including scoring criteria (relevance, clarity, actionability, audience fit, faithfulness)
 - Detailed and compact summary tables comparing response style performance
@@ -19,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases.
 - Updated app specification to document the AI Explorer component and prompt design.
+- Updated `app.py` to include all member's experimentation results combined into a customized QueryChat.
 - Specification document updated to include QueryChat Response Style control and design rationale
 - AI Explorer design documentation expanded to describe response style behavior and default configuration
 
