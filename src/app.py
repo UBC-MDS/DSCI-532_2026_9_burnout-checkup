@@ -51,6 +51,7 @@ con = ibis.duckdb.connect()
 table = con.read_parquet(PARQUET_PATH)
 
 df = load_dashboard_data()  # still load in full dataframe used for baselines and querychat
+default_ai_preview_df = df.head(100).copy()
 
 # Input variables' options for filters
 filter_choices = get_filter_choices(df)
@@ -120,12 +121,6 @@ def block_broad_tool_request(req):
     reason = None
     if should_block:
         reason = "That request is too broad. Please narrow it with a filter, grouping, or limit."
-
-    print("\n--- BROAD QUERY CHECK ---")
-    print("Tool name:", tool_name)
-    print("Query:", query_text)
-    print("Blocked:", should_block)
-    print("Reason:", reason)
 
     blocking_logs.append(
         {
@@ -486,12 +481,12 @@ def server(input, output, session):
     @reactive.calc
     def ai_filtered_df():
         result = qc_vals.df()
-        return normalize_querychat_result(result=result, fallback_df=df)
+        return normalize_querychat_result(result=result, fallback_df=default_ai_preview_df)
 
     # title output
     @render.text
     def ai_title():
-        return qc_vals.title() or "Preview of AI-filtered data"
+        return qc_vals.title() or "Preview of first 100 rows"
 
     # reset button for AI filters
     @reactive.effect
