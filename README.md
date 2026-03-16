@@ -128,18 +128,14 @@ This project uses:
 
 - **pytest** for unit testing
 - **Playwright** for end-to-end dashboard testing
+Ensure that the project environment is activated.
 
-If Playwright browsers are not installed yet, run:
+#### Unit Tests
 
-```bash
-playwright install
-```
-
-1. Activate the project environment.
-2. Run all tests with:
+Run all non-E2E tests with:
 
 ```bash
-python -m pytest
+pytest -k "not e2e"
 ```
 
 To run a specific test file (e.g.: `test_data.py`):
@@ -148,16 +144,38 @@ To run a specific test file (e.g.: `test_data.py`):
 python -m pytest tests/test_data.py
 ```
 
-Run end-to-end tests with Playwright:
+#### End-to-end tests
+
+The Playwright tests expect the Shiny app to be running locally on port 8000 (`http://localhost:8000`). If Playwright browsers are not installed yet, run:
+
+```bash
+playwright install
+```
+
+If not started yet, start the app in one terminal:
+
+```bash
+python -m shiny run --reload --port 8000 src/app.py
+```
+
+Then run the end-to-end tests in another terminal:
 
 ```bash
 pytest tests/e2e
 ```
 
+#### Run the full test suite
+
+With the app running on port 8000, run:
+
+```bash
+pytest
+```
+
 or
 
 ```bash
-pytest tests/e2e/test_dashboard.py
+python -m pytest
 ```
 
 ### Contribution Guidelines
