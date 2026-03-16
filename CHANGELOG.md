@@ -28,6 +28,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated `app.py` to include all member's experimentation results combined into a customized QueryChat.
 - Specification document updated to include QueryChat Response Style control and design rationale
 - AI Explorer design documentation expanded to describe response style behavior and default configuration
+- Updated `safe_median()` to drop missing values before computing the median, improving handling of empty or all-NaN inputs.
+- Updated AI Explorer reset tests to match the current default reset state and preview behavior.
+
+### Fixed
+
+- Eliminated runtime warnings from median calculations on empty or all-missing series in KPI helpers.
+- Fixed failing reset-related end-to-end tests by aligning test expectations with the current AI Explorer reset title and default preview state.
 
 ### Reflection
 
