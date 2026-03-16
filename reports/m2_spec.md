@@ -20,7 +20,6 @@
 | `manual_hours` | Input | `ui.input_slider()` | — | #1 |
 | `tasks_automated` | Input | `ui.input_slider()` | — | #1 |
 | `deadline_pressure` | Input | `ui.input_checkbox_group()` | — | #1, #2 |
-| `show_pred` | Input | `ui.input_checkbox()` | — | — |
 | `show_debug` | Input | `ui.input_checkbox()` | — | — |
 | `reset_btn` | Input | `ui.input_action_button()` | — | #1, #2, #3 |
 | `filtered_df` | Reactive calc | `@reactive.calc` | dashboard filter inputs | #1, #2, #3 |
@@ -50,6 +49,11 @@
 | `ai_table` | Output | `@render.data_frame` + `DataGrid` | `ai_filtered_df` | AI Explorer |
 | `download_ai_data` | Output | `@render.download` | `ai_filtered_df` | AI Explorer |
 
+>**Removal of Predicted Risk Overlay Control**
+>
+>The dashboard previously included a show_pred checkbox intended to toggle a Predicted Risk Overlay on certain visualizations. During Milestone 4 review, it was identified that this control did not activate any implemented functionality. To avoid exposing a misleading or non-functional UI element, the checkbox was removed from the dashboard interface.
+>
+>The predictive overlay concept is reserved for a potential future iteration once a validated prediction model is integrated into the dashboard.
 
 ## 2.3 Reactivity Diagram
 
@@ -66,7 +70,6 @@ flowchart TD
   manual_hours[/manual_hours/]
   tasks_automated[/tasks_automated/]
   deadline_pressure[/deadline_pressure/]
-  show_pred[/show_pred/]
   show_debug[/show_debug/]
   reset_btn[/reset_btn/]
 
