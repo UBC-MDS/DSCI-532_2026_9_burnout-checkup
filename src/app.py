@@ -94,6 +94,36 @@ Examples:
 You can also press Reset to clear the current AI filter/sort.
 """
 
+# Define the style instructions
+STYLE_INSTRUCTIONS = {
+    "executive": 
+    """
+    Respond in an Executive Summary style.
+    - Use plain, concise language.
+    - Emphasize the main takeaway first.
+    - Mention practical workplace implications.
+    - Avoid technical jargon unless necessary.
+    - Keep the answer brief and decision-oriented.
+    """,
+    "analytical": 
+    """
+    Respond in an Analytical Explanation style.
+    - Explain the main patterns clearly.
+    - Compare relevant groups or variables where useful.
+    - Balance clarity and detail.
+    - Keep the answer grounded in the dataset.
+    - Do not overstate conclusions.
+    """,
+    "technical": """
+    Respond in a Technical Interpretation style.
+    - Refer explicitly to dataset variables where relevant.
+    - Emphasize associations, not causality.
+    - Mention limitations or ambiguity when appropriate.
+    - Use more precise analytical language.
+    - Keep the answer dataset-grounded and method-aware.
+    """
+}
+
 # -------------------------
 # QueryChat tool interception
 # -------------------------
@@ -133,18 +163,28 @@ def block_broad_tool_request(req):
 
     if should_block:
         raise Exception(reason)
-
-
+    
 llm_client = ChatAnthropic(model="claude-sonnet-4-0")
 llm_client.on_tool_request(block_broad_tool_request)
 
-qc = QueryChat(
-    df.copy(),
-    "AIUsageBurnoutCheckup",
-    greeting=ai_greeting,
-    prompt_template=Path(__file__).parent / "prompts" / "system_prompt.md",
-    client=llm_client,
-)
+# --------------------------------------
+# Make QueryChat for each response style
+# --------------------------------------
+def make_querychat(style_key: str, module_id: str):
+    return QueryChat(
+        df.copy(),
+        "AIUsageBurnoutCheckup",
+        id=module_id,
+        greeting=ai_greeting,
+        prompt_template=Path(__file__).parent / "prompts" / "system_prompt.md",
+        extra_instructions=STYLE_INSTRUCTIONS[style_key],
+        client=llm_client,
+    )
+
+
+qc_executive = make_querychat("executive", "qc_executive")
+qc_analytical = make_querychat("analytical", "qc_analytical")
+qc_technical = make_querychat("technical", "qc_technical")
 
 # -------------------------
 # UI
