@@ -34,12 +34,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control.
 - Updated the **app specification document** to reflect the removal of the planned predicted overlay feature.
 - Updated the project proposal (**Section 5: App Description**) to remove references to predicted overlays in the burnout-by-role chart.
+- Increased AI Explorer sidebar width to improve readability and prevent layout compression of chat responses and tool outputs.
+- Refactored `app.py` to remove code smells and improve overall structure, readability, and maintainability.
 
 ### Fixed
 
 - Eliminated runtime warnings from median calculations on empty or all-missing series in KPI helpers.
 - Fixed failing reset-related end-to-end tests by aligning test expectations with the current AI Explorer reset title and default preview state.
 - Resolved feedback regarding the presence of a non-functional dashboard control that could confuse users.
+- Removed residual show_pred references from debug utilities and related logic to eliminate dead code and ensure consistency after feature removal.
 
 ### Reflection
 
