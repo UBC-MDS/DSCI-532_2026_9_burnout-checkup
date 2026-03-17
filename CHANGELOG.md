@@ -8,35 +8,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- QueryChat system prompt customization to provide more HR and managers-focused insights.
-- Prompt experiment notebook evaluating different system prompt designs (#119).
-- `on_tool_request` experimentation notebook evaluating different validation/transformation features to implement in our QueryChat.
-- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes (#120).
+- Prompt experiment notebook evaluating different system prompt designs ([PR #119](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/119)).
+- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes ([PR #120](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/120)).
 - Structured evaluation framework for LLM responses including scoring criteria (relevance, clarity, actionability, audience fit, faithfulness)
 - Detailed and compact summary tables comparing response style performance
+- `on_tool_request` experimentation notebook evaluating different validation/transformation features to implement in our QueryChat([PR 121](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/121)).
+- QueryChat system prompt customization to provide more HR and managers-focused insights ([PR #124](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/124)).
 - Documentation of experiment narrative, discussion, and final decision for QueryChat customization
-- Playwright test verifying that Reset Filters restores dashboard inputs to default values (#125).
+- Playwright test verifying that Reset Filters restores dashboard inputs to default values ([PR #125](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/125)).
 - Playwright test verifying that the debug panel correctly displays current filter state and filtered row counts.
 - Playwright test verifying that the AI Explorer tab renders and remains functional when accessed.
 - Playwright edge-case test verifying that Reset AI filters clears AI Explorer query state and restores default results.
 - Documented test behavior descriptions and README instructions for running tests.
-- Subtitles in KPI cards to clarify the baseline comparison with median/mean values across the company (#128).
+- Subtitles in KPI cards to clarify the baseline comparison with median/mean values across the company ([PR #128](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/128)).
 
 ### Changed
 
-- Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases (#119).
+- Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases ([PR #119](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/119)).
 - Updated app specification to document the AI Explorer component and prompt design.
-- Updated `app.py` to include all member's experimentation results combined into a customized QueryChat (#124).
+- Introduced Parquet-based storage and DuckDB lazy loading for more efficient data processing and improved performance ([PR #122](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/122)).
+- Updated `app.py` to include all member's experimentation results combined into a customized QueryChat ([PR #124](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/124)).
 - Specification document updated to include QueryChat Response Style control and design rationale
 - AI Explorer design documentation expanded to describe response style behavior and default configuration
 - Updated `safe_median()` to drop missing values before computing the median, improving handling of empty or all-NaN inputs.
 - Updated AI Explorer reset tests to match the current default reset state and preview behavior.
-- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control (#127).
+- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control ([PR #127](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/127)).
 - Updated the **app specification document** to reflect the removal of the planned predicted overlay feature.
 - Updated the project proposal (**Section 5: App Description**) to remove references to predicted overlays in the burnout-by-role chart.
 - Increased AI Explorer sidebar width to improve readability and prevent layout compression of chat responses and tool outputs.
 - Refactored `app.py` to remove code smells and improve overall structure, readability, and maintainability.
-- Updated the scatter plots including "How AI Usage Relates to Burnout Risk Across Employees" and "Relationship Between Productivity and Burnout Risk" to resolve overplotting issue. (#130)
+- Updated the scatter plots including "How AI Usage Relates to Burnout Risk Across Employees" and "Relationship Between Productivity and Burnout Risk" to resolve overplotting issue ([PR #130](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/130)).
 
 ### Fixed
 
@@ -55,7 +56,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Release Highlight
 
 QueryChat Response Style Control and Tool Interception Integration
-(see PR #124)
+(see [PR #124](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/124))
 
 This release introduces a configurable response-style control (Executive, Analytical, Technical) in the AI Explorer, allowing users to tailor AI explanations to their needs. Combined with on_tool_request interception, the system now prevents overly broad queries and improves the relevance and usability of AI-generated insights.
 
@@ -63,13 +64,13 @@ This feature was selected as the release highlight because it directly enhances 
 
 ### Collaboration
 
-- Updated CONTRIBUTING.md to include Milestone 3 retrospective and Milestone 4 collaboration norms (#115).
+- Updated CONTRIBUTING.md to include Milestone 3 retrospective and Milestone 4 collaboration norms ([PR #115](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/115)).
 - Incorporated team-wide experimentation results into a unified QueryChat implementation, integrating prompt design, response-style controls, and tool interception.
 - Established clearer division of responsibilities across:
   - AI experimentation and evaluation
   - dashboard testing and validation
   - documentation and specification updates
-- Improved coordination through issue-based task tracking and milestone prioritization (e.g., #103, #104).
+- Improved coordination through issue-based task tracking and feedback prioritization ([Issue #103](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/issues/103)).
 - Applied lessons from Milestone 3 to:
   - reduce duplication in app logic
   - standardize testing practices
@@ -134,7 +135,7 @@ Looking ahead, future work would focus on extending the AI Explorer with more ro
 - Added minimal NumPy-style docstrings for data-loading and preprocessing helpers.
 - Added `DEADLINE_PRESSURE_MAP` constant to standardize workload-score derivation.
 - Added .env.example file to provide a template for required environment variables.
-- Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.### Added
+- Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.
 - Unit tests for `src/data.py` covering data loading, filter choice generation, slider range computation, and baseline metric calculations.
 - Unit tests for dashboard filtering logic in `apply_dashboard_filters` using `pytest`.
 - Test coverage for QueryChat dataframe normalization via `normalize_querychat_result`.
