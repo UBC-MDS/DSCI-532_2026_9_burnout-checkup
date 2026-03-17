@@ -19,7 +19,6 @@ def test_format_filter_debug_returns_expected_multiline_string():
         manual_hours=(10, 30),
         tasks_automated=(20, 80),
         deadline_pressure=["Low", "High"],
-        show_pred=True,
         filtered_df=filtered_df,
     )
 
@@ -31,7 +30,6 @@ def test_format_filter_debug_returns_expected_multiline_string():
         "manual_hours=(10, 30)\n"
         "tasks_automated=(20, 80)\n"
         "deadline_pressure=['Low', 'High']\n"
-        "show_pred=True\n"
         "filtered_rows=3"
     )
 
@@ -50,9 +48,7 @@ def test_format_filter_debug_reports_zero_filtered_rows():
         manual_hours=(0, 40),
         tasks_automated=(0, 100),
         deadline_pressure=["Low", "Medium", "High"],
-        show_pred=False,
         filtered_df=filtered_df,
     )
 
     assert "filtered_rows=0" in result
-    assert "show_pred=False" in result
