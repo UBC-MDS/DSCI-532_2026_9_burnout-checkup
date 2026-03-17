@@ -11,11 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - QueryChat system prompt customization to provide more HR and managers-focused insights.
 - Prompt experiment notebook evaluating different system prompt designs.
 - `on_tool_request` experimentation notebook evaluating different validation/transformation features to implement in our QueryChat.
-- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes
+- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes (#120)
 - Structured evaluation framework for LLM responses including scoring criteria (relevance, clarity, actionability, audience fit, faithfulness)
 - Detailed and compact summary tables comparing response style performance
 - Documentation of experiment narrative, discussion, and final decision for QueryChat customization
-- Playwright test verifying that Reset Filters restores dashboard inputs to default values.
+- Playwright test verifying that Reset Filters restores dashboard inputs to default values. (#125)
 - Playwright test verifying that the debug panel correctly displays current filter state and filtered row counts.
 - Playwright test verifying that the AI Explorer tab renders and remains functional when accessed.
 - Playwright edge-case test verifying that Reset AI filters clears AI Explorer query state and restores default results.
@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- Updated CONTRIBUTING.md to include Milestone 3 retrospective and Milestone 4 collaboration norms (#115).
 - Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases.
 - Updated app specification to document the AI Explorer component and prompt design.
 - Updated `app.py` to include all member's experimentation results combined into a customized QueryChat.
@@ -31,7 +32,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - AI Explorer design documentation expanded to describe response style behavior and default configuration
 - Updated `safe_median()` to drop missing values before computing the median, improving handling of empty or all-NaN inputs.
 - Updated AI Explorer reset tests to match the current default reset state and preview behavior.
-- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control.
+- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control. (#127)
 - Updated the **app specification document** to reflect the removal of the planned predicted overlay feature.
 - Updated the project proposal (**Section 5: App Description**) to remove references to predicted overlays in the burnout-by-role chart.
 - Increased AI Explorer sidebar width to improve readability and prevent layout compression of chat responses and tool outputs.
@@ -41,8 +42,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Eliminated runtime warnings from median calculations on empty or all-missing series in KPI helpers.
 - Fixed failing reset-related end-to-end tests by aligning test expectations with the current AI Explorer reset title and default preview state.
+- Playwright end-to-end tests require the Shiny app to be running locally on `http://localhost:8000`; tests will fail with connection errors if the app is not started before running `pytest`.
+- AI Explorer responses depend on external LLM availability and API configuration, which may lead to variability in response quality or delays.
+- Certain filter combinations may produce sparse datasets, which can reduce interpretability of charts and KPI summaries.
+- QueryChat tool interception currently blocks overly broad queries but does not yet provide adaptive query rewriting.
 - Resolved feedback regarding the presence of a non-functional dashboard control that could confuse users.
 - Removed residual show_pred references from debug utilities and related logic to eliminate dead code and ensure consistency after feature removal.
+
+### Release Highlight
+
+QueryChat Response Style Control and Tool Interception Integration
+(see PR #124)
+
+This release introduces a configurable response-style control (Executive, Analytical, Technical) in the AI Explorer, allowing users to tailor AI explanations to their needs. Combined with on_tool_request interception, the system now prevents overly broad queries and improves the relevance and usability of AI-generated insights.
+
+This feature was selected as the release highlight because it directly enhances the core value of the dashboard: supporting HR decision-making through interpretable, context-aware AI insights, while addressing risks of misleading or overly generic responses.
 
 ### Reflection
 
