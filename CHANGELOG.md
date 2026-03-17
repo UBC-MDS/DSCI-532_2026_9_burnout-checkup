@@ -23,6 +23,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated `app.py` to include all member's experimentation results combined into a customized QueryChat.
 - Specification document updated to include QueryChat Response Style control and design rationale
 - AI Explorer design documentation expanded to describe response style behavior and default configuration
+- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control.
+- Updated the **app specification document** to reflect the removal of the planned predicted overlay feature.
+- Updated the project proposal (**Section 5: App Description**) to remove references to predicted overlays in the burnout-by-role chart.
+
+### Fixed
+
+Resolved feedback regarding the presence of a non-functional dashboard control that could confuse users.
 
 ## [0.3.0] - Milestone 3
 
