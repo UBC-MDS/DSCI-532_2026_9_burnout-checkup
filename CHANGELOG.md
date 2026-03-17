@@ -55,7 +55,7 @@ This update supports **Job Story 1**, allowing users to more clearly compare bur
 
 **Productivity vs Burnout (P2)**
 For this chart, we preserved the original design and analytical goal of examining the relationship between productivity, burnout risk, and AI usage bands (including the quadrant structure defined by company medians). Instead of changing the chart type, we reduced overplotting by lowering point opacity and adding jitter.
-These adjustments improve visual clarity while maintaining the ability to interpret the four quadrants (e.g., how is the burnout risk score when high productivity is combined with high AI usage, which would be represented in the top right quardrant), which directly supports **Job Story 3** in evaluating whether productivity gains are associated with elevated burnout risk.
+These adjustments improve visual clarity while maintaining the ability to interpret the four quadrants (e.g., this design is helpful for observing how is the burnout risk score when high productivity is combined with high AI usage, which would be represented in the top right quadrant), which directly supports **Job Story 3** in evaluating whether productivity gains are associated with elevated burnout risk when evaluating the impact of AI usage.
 
 ---
 
