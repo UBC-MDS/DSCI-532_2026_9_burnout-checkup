@@ -97,7 +97,7 @@ def make_ai_vs_burnout_chart(
         .encode(y="y:Q")
     )
 
-    return chart + median_line
+    return (chart + median_line).resolve_scale(color="independent")
 
 
 def make_burnout_by_role_chart(

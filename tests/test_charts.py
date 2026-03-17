@@ -75,7 +75,7 @@ def test_make_ai_vs_burnout_chart_returns_layered_chart(sample_df: pd.DataFrame)
     scatter_layer = spec["layer"][0]
     rule_layer = spec["layer"][1]
 
-    assert scatter_layer["mark"]["type"] == "circle"
+    assert scatter_layer["mark"]["type"] == "rect"
     assert scatter_layer["encoding"]["x"]["field"] == "ai_tool_usage_hours_per_week"
     assert scatter_layer["encoding"]["y"]["field"] == "burnout_risk_score"
 
