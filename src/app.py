@@ -589,6 +589,7 @@ def server(input, output, session):
             title="Median Productivity",
             baseline=BASELINE_MEDIAN_PRODUCTIVITY,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
         
     # percentage of employees in the filtered set that are at high risk of burnout,
@@ -599,6 +600,7 @@ def server(input, output, session):
             filtered_df(),
             baseline_high_burnout=BASELINE_HIGH_BURNOUT,
             title="High Burnout %",
+            subtitle="Compared to company-wide high-burnout rate across all employees.",
         )
 
     # Median work-life balance score for the filtered employees,
@@ -611,6 +613,7 @@ def server(input, output, session):
             title="Median Burnout Risk Score",
             baseline=BASELINE_MEDIAN_BURNOUT,
             higher_is_better=False,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Median work-life balance score for the filtered employees,
@@ -623,6 +626,7 @@ def server(input, output, session):
             title="Median Work-Life Balance Score",
             baseline=BASELINE_MEDIAN_WLB,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # -------------------------
@@ -655,6 +659,7 @@ def server(input, output, session):
             title="Median Burnout Risk Score",
             baseline=BASELINE_MEDIAN_BURNOUT,
             higher_is_better=False,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Median productivity score for the AI-filtered subset,
@@ -667,6 +672,7 @@ def server(input, output, session):
             title="Median Productivity",
             baseline=BASELINE_MEDIAN_PRODUCTIVITY,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Percentage of employees in the AI-filtered subset that are at high burnout risk,
@@ -677,6 +683,7 @@ def server(input, output, session):
             ai_filtered_df(),
             baseline_high_burnout=BASELINE_HIGH_BURNOUT,
             title="High Burnout %",
+            subtitle="Compared to company-wide high-burnout rate across all employees.",
         )
 
     # -------------------------
