@@ -14,7 +14,6 @@ def format_filter_debug(
     manual_hours,
     tasks_automated,
     deadline_pressure,
-    show_pred,
     filtered_df: pd.DataFrame,
 ) -> str:
     """
@@ -36,8 +35,6 @@ def format_filter_debug(
         Current tasks automated slider value.
     deadline_pressure : Any
         Current deadline pressure input value.
-    show_pred : Any
-        Current show-prediction toggle value.
     filtered_df : pandas.DataFrame
         Current filtered dataframe.
 
@@ -54,6 +51,5 @@ def format_filter_debug(
         f"manual_hours={manual_hours}\n"
         f"tasks_automated={tasks_automated}\n"
         f"deadline_pressure={deadline_pressure}\n"
-        f"show_pred={show_pred}\n"
         f"filtered_rows={len(filtered_df)}"
     )

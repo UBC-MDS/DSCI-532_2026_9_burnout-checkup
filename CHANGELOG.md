@@ -4,6 +4,112 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - Milestone 4
+
+### Added
+
+- Prompt experiment notebook evaluating different system prompt designs ([PR #119](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/119)).
+- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes ([PR #120](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/120)).
+- Structured evaluation framework for LLM responses including scoring criteria (relevance, clarity, actionability, audience fit, faithfulness)
+- Detailed and compact summary tables comparing response style performance
+- `on_tool_request` experimentation notebook evaluating different validation/transformation features to implement in our QueryChat([PR 121](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/121)).
+- QueryChat system prompt customization to provide more HR and managers-focused insights ([PR #124](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/124)).
+- Documentation of experiment narrative, discussion, and final decision for QueryChat customization
+- Playwright test verifying that Reset Filters restores dashboard inputs to default values ([PR #125](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/125)).
+- Playwright test verifying that the debug panel correctly displays current filter state and filtered row counts.
+- Playwright test verifying that the AI Explorer tab renders and remains functional when accessed.
+- Playwright edge-case test verifying that Reset AI filters clears AI Explorer query state and restores default results.
+- Documented test behavior descriptions and README instructions for running tests.
+- Subtitles in KPI cards to clarify the baseline comparison with median/mean values across the company ([PR #128](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/128)).
+
+### Changed
+
+- Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases ([PR #119](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/119)).
+- Updated app specification to document the AI Explorer component and prompt design.
+- Introduced Parquet-based storage and DuckDB lazy loading for more efficient data processing and improved performance ([PR #122](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/122)).
+- Updated `app.py` to include all member's experimentation results combined into a customized QueryChat ([PR #124](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/124)).
+- Specification document updated to include QueryChat Response Style control and design rationale
+- AI Explorer design documentation expanded to describe response style behavior and default configuration
+- Updated `safe_median()` to drop missing values before computing the median, improving handling of empty or all-NaN inputs.
+- Updated AI Explorer reset tests to match the current default reset state and preview behavior.
+- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control ([PR #127](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/127)).
+- Updated the **app specification document** to reflect the removal of the planned predicted overlay feature.
+- Updated the project proposal (**Section 5: App Description**) to remove references to predicted overlays in the burnout-by-role chart.
+- Increased AI Explorer sidebar width to improve readability and prevent layout compression of chat responses and tool outputs.
+- Refactored `app.py` to remove code smells and improve overall structure, readability, and maintainability.
+- Updated the scatter plots including "How AI Usage Relates to Burnout Risk Across Employees" and "Relationship Between Productivity and Burnout Risk" to resolve overplotting issue ([PR #130](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/130)).
+
+### Fixed
+
+- Eliminated runtime warnings from median calculations on empty or all-missing series in KPI helpers.
+- Fixed failing reset-related end-to-end tests by aligning test expectations with the current AI Explorer reset title and default preview state.
+
+### Known Issues
+
+- Playwright end-to-end tests require the Shiny app to be running locally on `http://localhost:8000`; tests will fail with connection errors if the app is not started before running `pytest`.
+- AI Explorer responses depend on external LLM availability and API configuration, which may lead to variability in response quality or delays.
+- Certain filter combinations may produce sparse datasets, which can reduce interpretability of charts and KPI summaries.
+- QueryChat tool interception currently blocks overly broad queries but does not yet provide adaptive query rewriting.
+- Resolved feedback regarding the presence of a non-functional dashboard control that could confuse users.
+- Removed residual show_pred references from debug utilities and related logic to eliminate dead code and ensure consistency after feature removal.
+
+### Release Highlight
+
+QueryChat Response Style Control and Tool Interception Integration
+(see [PR #124](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/124))
+
+This release introduces a configurable response-style control (Executive, Analytical, Technical) in the AI Explorer, allowing users to tailor AI explanations to their needs. Combined with on_tool_request interception, the system now prevents overly broad queries and improves the relevance and usability of AI-generated insights.
+
+This feature was selected as the release highlight because it directly enhances the core value of the dashboard: supporting HR decision-making through interpretable, context-aware AI insights, while addressing risks of misleading or overly generic responses.
+
+### Collaboration
+
+- Updated CONTRIBUTING.md to include Milestone 3 retrospective and Milestone 4 collaboration norms ([PR #115](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/pull/115)).
+- Incorporated team-wide experimentation results into a unified QueryChat implementation, integrating prompt design, response-style controls, and tool interception.
+- Established clearer division of responsibilities across:
+  - AI experimentation and evaluation
+  - dashboard testing and validation
+  - documentation and specification updates
+- Improved coordination through issue-based task tracking and feedback prioritization ([Issue #103](https://github.com/UBC-MDS/DSCI-532_2026_9_burnout-checkup/issues/103)).
+- Applied lessons from Milestone 3 to:
+  - reduce duplication in app logic
+  - standardize testing practices
+  - improve documentation consistency
+
+### Reflection
+
+We prioritized issues that directly affected the interpretability, correctness, and usability of the dashboard. In particular, unclear KPI baselines, scatterplot overplotting, and the presence of a non-functional overlay toggle were treated as critical because they could mislead users or reduce trust in the insights. In contrast, improvements related to UI layout, styling, and additional explanatory context were considered lower priority since they enhance usability but do not affect analytical outcomes.
+
+A key strength of the dashboard is the integration of interactive filtering with AI-assisted exploration, allowing users to analyze burnout patterns through both structured visualizations and natural language queries. The addition of response-style controls further improves interpretability for different user audiences.
+
+However, limitations remain. The AI Explorer depends on external LLM responses, which may introduce variability, and certain filter combinations can result in sparse datasets that reduce interpretability. Additionally, the current tool interception logic prevents overly broad queries but does not yet support adaptive query refinement.
+
+Trade-offs were made to prioritize analytical correctness, test coverage, and reliable user interactions. As a result, some advanced features (such as predictive overlays) were intentionally removed to avoid exposing incomplete or misleading functionality. Overall, this milestone reflects a shift toward robustness, clarity, and user trust over feature breadth.
+
+#### Tests
+
+To improve reliability and document expected behavior, we added automated tests covering both user-facing interactions and core dashboard logic. The Playwright tests verify key interface behaviors, including resetting dashboard filters, displaying the debug panel state, rendering the AI Explorer view, and clearing AI query state when reset is triggered. These tests help catch regressions that would directly affect user interaction, such as broken navigation or inconsistent UI states.
+
+For unit testing, we added a broader suite of pytest tests covering core data and dashboard logic, including filtering behavior, KPI calculations, chart preparation, debug output, and helper functions used throughout the app. Rather than targeting implementation details, these tests validate that key data transformations and summary computations produce expected outputs under representative conditions. If these behaviors change unexpectedly, the app could display incorrect filtered subsets, misleading KPI values, invalid chart inputs, or inconsistent debug outputs, so the unit tests act as an early warning for logic regressions.
+
+#### Charts
+
+**Scatter plot updates:**
+
+Based on peer feedback regarding overplotting and interpretability, we refined both scatterplots while preserving their analytical intent.
+
+**AI Usage vs Burnout:**  
+The original scatterplot was replaced with a binned/density-based visualization to reduce heavy point overlap and improve readability. Since burnout risk is already encoded on the y-axis, we removed the additional color encoding for deadline pressure and retained it as a filter instead. This simplifies the visual encoding and makes overall patterns easier to interpret.  
+This update supports **Job Story 1**, enabling clearer comparison of burnout levels across AI usage under controlled conditions.
+
+**Productivity vs Burnout**  
+We preserved the original structure, including the quadrant layout defined by company medians, to maintain its analytical purpose. Instead of changing the chart type, we reduced overplotting by lowering point opacity and adding jitter.  
+These adjustments improve clarity while preserving interpretability of the quadrants (e.g., identifying high productivity–high burnout scenarios in the top-right quadrant), directly supporting **Job Story 3** in assessing whether productivity gains are associated with increased burnout risk.
+
+#### Future Directions
+
+Looking ahead, future work would focus on extending the AI Explorer with more robust query handling, including adaptive query refinement rather than simple blocking of broad requests. We would also explore reintroducing predictive features, such as a validated burnout risk overlay, once a reliable modeling approach is established. Additional improvements could include better handling of sparse filter results, enhanced visual summaries for edge cases, and deeper evaluation of AI response quality across different user scenarios. These directions aim to expand functionality while maintaining the clarity and reliability established in this milestone.
+
 ## [0.3.0] - Milestone 3
 
 ### Added
@@ -29,7 +135,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added minimal NumPy-style docstrings for data-loading and preprocessing helpers.
 - Added `DEADLINE_PRESSURE_MAP` constant to standardize workload-score derivation.
 - Added .env.example file to provide a template for required environment variables.
-- Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.### Added
+- Updated **README** with instructions for setting up environment variables, helping prevent accidental commits of sensitive data and improving onboarding for new developers.
 - Unit tests for `src/data.py` covering data loading, filter choice generation, slider range computation, and baseline metric calculations.
 - Unit tests for dashboard filtering logic in `apply_dashboard_filters` using `pytest`.
 - Test coverage for QueryChat dataframe normalization via `normalize_querychat_result`.

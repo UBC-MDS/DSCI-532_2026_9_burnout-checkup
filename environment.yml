@@ -22,7 +22,10 @@ dependencies:
 - anywidget=0.9.21
 - anthropic==0.84.0
 - pytest=9.0.2
+- playwright=1.58.2
+- pytest-playwright=0.7.2
 
 - pip:
   - querychat==0.5.1
   - chatlas==0.15.2
+  - ibis-framework[duckdb]

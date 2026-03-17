@@ -4,10 +4,13 @@
 from shiny import App, ui, render, reactive
 from shiny.render import DataGrid
 from shinywidgets import output_widget, render_altair
-
+import ibis
+from ibis import _
+import re
 import pandas as pd
 
 from src.constants.paths import FEATURES_PATH, TARGETS_PATH
+from src.constants.paths import PARQUET_PATH 
 from src.constants.theme import (
     COLORS,
     deadline_scale,
@@ -39,11 +42,16 @@ from src.charts import (
 )
 from src.utils.debug import format_filter_debug
 
+
 load_dotenv()
 anthropic_key = os.getenv("ANTHROPIC_API_KEY")
 
 # Load and preprocess data
-df = load_dashboard_data()
+con = ibis.duckdb.connect()
+table = con.read_parquet(PARQUET_PATH)
+
+df = load_dashboard_data()  # still load in full dataframe used for baselines and querychat
+default_ai_preview_df = df.head(100).copy()
 
 # Input variables' options for filters
 filter_choices = get_filter_choices(df)
@@ -71,58 +79,111 @@ BASELINE_HIGH_BURNOUT = baselines["high_burnout_rate"]
 ai_greeting = """
 👋 Hi! I'm your AI burnout explorer.
 
-Ask me questions about employee burnout, productivity, AI usage, workload, and work-life balance.
+You can ask questions about:
+
+- burnout risk
+- AI usage
+- productivity
+- workload patterns
 
 Examples:
-- Show employees with high burnout risk
-- Show employees with high AI usage and low productivity
-- Sort employees by burnout risk from highest to lowest
 - Which job roles have the highest burnout risk?
-- Show employees with high manual work hours
+- Does higher AI usage relate to burnout?
+- Show employees with high burnout risk.
 
-You can also say Reset to clear the current AI filter/sort.
+You can also press Reset to clear the current AI filter/sort.
 """
 
-ai_data_description = """
-Employee-level workplace wellbeing and productivity dataset.
+# Define the style instructions
+STYLE_INSTRUCTIONS = {
+    "executive": 
+    """
+    Respond in an Executive Summary style.
+    - Use plain, concise language.
+    - Emphasize the main takeaway first.
+    - Mention practical workplace implications.
+    - Avoid technical jargon unless necessary.
+    - Keep the answer brief and decision-oriented.
+    """,
+    "analytical": 
+    """
+    Respond in an Analytical Explanation style.
+    - Explain the main patterns clearly.
+    - Compare relevant groups or variables where useful.
+    - Balance clarity and detail.
+    - Keep the answer grounded in the dataset.
+    - Do not overstate conclusions.
+    """,
+    "technical": """
+    Respond in a Technical Interpretation style.
+    - Refer explicitly to dataset variables where relevant.
+    - Emphasize associations, not causality.
+    - Mention limitations or ambiguity when appropriate.
+    - Use more precise analytical language.
+    - Keep the answer dataset-grounded and method-aware.
+    """
+}
 
-Each row represents one employee.
+# -------------------------
+# QueryChat tool interception
+# -------------------------
+blocking_logs = []
 
-Columns:
-- Employee_ID: unique identifier for each employee.
-- job_role: employee job role/category.
-- experience_years: years of experience.
-- ai_tool_usage_hours_per_week: hours per week spent using AI tools.
-- tasks_automated_percent: percent of tasks automated with AI/tools.
-- manual_work_hours_per_week: hours per week spent on manual work.
-- meeting_hours_per_week: hours per week spent in meetings.
-- collaboration_hours_per_week: hours per week spent collaborating.
-- focus_hours_per_day: average focus/deep work hours per day.
-- deadline_pressure_level: categorical deadline pressure level (Low, Medium, High).
-- burnout_risk_score: numeric burnout risk score.
-- burnout_risk_level: burnout category label.
-- productivity_score: numeric productivity score.
-- work_life_balance_score: numeric work-life balance score.
-- workload_score: derived workload metric combining manual work, meetings, and deadline pressure.
-- workload_band: workload category (Low, Medium, High).
-- ai_band: AI usage category (Low, Moderate, High).
+def block_broad_tool_request(req):
+    """Intercept QueryChat tool calls and block overly broad SQL queries."""
+    tool_name = req.name
+    arguments = req.arguments or {}
+    query_text = arguments.get("query", "")
+    query_upper = query_text.upper()
 
-This dataset can be used to analyze:
-- Burnout risk by role or experience
-- AI usage patterns across employees
-- Links between productivity and burnout
-- Work-life balance differences
-- Manual work and deadline pressure patterns
-- High-risk employee subgroups
-"""
+    has_select_all = "SELECT *" in query_upper
+    has_where = "WHERE" in query_upper
+    has_group_by = "GROUP BY" in query_upper
+    has_limit = "LIMIT" in query_upper
 
-qc = QueryChat(
-    df.copy(),
-    "AIUsageBurnoutCheckup",
-    greeting=ai_greeting,
-    data_description=ai_data_description,
-    client=ChatAnthropic(model="claude-sonnet-4-0"),
-)
+    should_block = (
+        has_select_all
+        and not has_where
+        and not has_group_by
+        and not has_limit
+    )
+
+    reason = None
+    if should_block:
+        reason = "That request is too broad. Please narrow it with a filter, grouping, or limit."
+
+    blocking_logs.append(
+        {
+            "tool_name": tool_name,
+            "query": query_text,
+            "blocked": should_block,
+            "reason": reason,
+        }
+    )
+
+    if should_block:
+        raise Exception(reason)
+    
+llm_client = ChatAnthropic(model="claude-sonnet-4-0")
+llm_client.on_tool_request(block_broad_tool_request)
+
+# --------------------------------------
+# Make QueryChat for each response style
+# --------------------------------------
+def make_querychat(style_key: str, module_id: str):
+    return QueryChat(
+        df.copy(),
+        "AIUsageBurnoutCheckup",
+        id=module_id,
+        greeting=ai_greeting,
+        prompt_template=Path(__file__).parent / "prompts" / "system_prompt.md",
+        extra_instructions=STYLE_INSTRUCTIONS[style_key],
+        client=llm_client,
+    )
+
+qc_executive = make_querychat("executive", "qc_executive")
+qc_analytical = make_querychat("analytical", "qc_analytical")
+qc_technical = make_querychat("technical", "qc_technical")
 
 # -------------------------
 # UI
@@ -161,7 +222,14 @@ app_ui = ui.page_fluid(
             color: {COLORS["dark_brown"]};
             margin-bottom: 6px;
         }}
-
+        
+        .kpi-note {{
+            font-size: 12px;
+            color: {COLORS["medium_brown"]};
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }}
+        
         .kpi-value {{
             font-size: 56px;
             line-height: 1;
@@ -212,7 +280,7 @@ app_ui = ui.page_fluid(
                         "job_role",
                         None,
                         choices=job_role_choices,
-                        selected=["All"],
+                        selected=["Manager"],
                         multiple=True,
                     ),
                     ui.br(),
@@ -266,9 +334,6 @@ app_ui = ui.page_fluid(
                         inline=True,
                     ),
                     ui.hr(),
-                    ui.input_checkbox(
-                        "show_pred", "Show Predicted Risk Overlay", value=True
-                    ),
                     ui.input_checkbox("show_debug", "Show debug panel", value=False),
                     ui.br(),
                     ui.input_action_button("reset_btn", "Reset Filters"),
@@ -298,12 +363,11 @@ app_ui = ui.page_fluid(
                     # -------------------------
                     ui.layout_columns(
                         ui.card(
-                            ui.card_header("AI Usage vs Burnout"),
+                            ui.card_header("How AI Usage Relates to Burnout Risk Across Employees"),
                             output_widget("plot_ai_vs_burnout"),
                         ),
                         ui.card(
                             ui.card_header("Burnout Risk by Job Role"),
-                            # ui.p(ui.em("Observed values are shown; prediction overlay is planned for a later milestone.")),
                             output_widget("plot_burnout_by_role"),
                         ),
                         col_widths=(6, 6),
@@ -318,13 +382,13 @@ app_ui = ui.page_fluid(
                             output_widget("plot_hours_breakdown"),
                         ),
                         ui.card(
-                            ui.card_header("Productivity vs Burnout Risk Score"),
+                            ui.card_header("Relationship Between Productivity, AI usage and Burnout Risk"),
                             output_widget("plot_prod_vs_burnout"),
                         ),
                         col_widths=(6, 6),
                     ),
                     ui.br(),
-                    # Optional debug panel
+                    # Debug panel
                     ui.panel_conditional(
                         "input.show_debug",
                         ui.card(
@@ -348,11 +412,25 @@ app_ui = ui.page_fluid(
                 # -------------------------
                 ui.sidebar(
                     ui.h3("AI Explorer"),
-                    # ui.p("Use natural language to explore the filtered dataset."),
-                    qc.ui(),
+                    ui.h6("Response Style:"),
+                    ui.input_select(
+                        "response_style",
+                        None,
+                        choices={
+                            "executive": "Executive Summary",
+                            "analytical": "Analytical Explanation",
+                            "technical": "Technical Interpretation",
+                        },
+                        selected="analytical"
+                    ),
+                    ui.p("Choose how the AI explains results: concise, balanced, or more technical."),
+                    ui.br(),
+                    ui.panel_conditional("input.response_style === 'executive'", qc_executive.ui()),
+                    ui.panel_conditional("input.response_style === 'analytical'", qc_analytical.ui()),
+                    ui.panel_conditional("input.response_style === 'technical'", qc_technical.ui()),
                     ui.hr(),
                     ui.input_action_button("reset_ai_query", "Reset AI filters"),
-                    width=320,
+                    width=420,
                 ),
                 # -------------------------
                 # AI Explorer main content
@@ -415,7 +493,6 @@ def server(input, output, session):
         ui.update_checkbox_group("deadline_pressure", selected=deadline_choices)
 
         # Reset checkboxes
-        ui.update_checkbox("show_pred", value=True)
         ui.update_checkbox("show_debug", value=False)
 
     # -------------------------
@@ -424,37 +501,83 @@ def server(input, output, session):
     # Reactive expression for the filtered dataframe based on sidebar inputs
     @reactive.calc
     def filtered_df():
-        return apply_dashboard_filters(
-            df=df,
-            job_role=input.job_role(),
-            ai_band=input.ai_band(),
-            experience=input.experience(),
-            ai_usage=input.ai_usage(),
-            manual_hours=input.manual_hours(),
-            tasks_automated=input.tasks_automated(),
-            deadline_pressure=input.deadline_pressure(),
-        )
+
+        expr = table
+
+        if input.job_role() and "All" not in input.job_role():
+            expr = expr.filter(_.job_role.isin(input.job_role()))
+
+        if input.ai_band() and "All" not in input.ai_band():
+            expr = expr.filter(_.ai_band.isin(input.ai_band()))
+
+        lo, hi = input.experience()
+        expr = expr.filter(_.experience_years.between(lo, hi))
+
+        lo, hi = input.ai_usage()
+        expr = expr.filter(_.ai_tool_usage_hours_per_week.between(lo, hi))
+
+        lo, hi = input.manual_hours()
+        expr = expr.filter(_.manual_work_hours_per_week.between(lo, hi))
+
+        lo, hi = input.tasks_automated()
+        expr = expr.filter(_.tasks_automated_percent.between(lo, hi))
+
+        if input.deadline_pressure():
+            expr = expr.filter(_.deadline_pressure_level.isin(input.deadline_pressure()))
+
+        return expr.execute()
 
     # -------------------------
     # QueryChat server values for AI Explorer
     # -------------------------
-    qc_vals = qc.server()
+    qc_executive_vals = qc_executive.server()
+    qc_analytical_vals = qc_analytical.server()
+    qc_technical_vals = qc_technical.server()
 
+    # -------------------------
+    # QueryChat response style reactive
+    # -------------------------
+    @reactive.calc
+    def current_qc_vals():
+        style = input.response_style()
+
+        if style == "executive":
+            return qc_executive_vals
+        elif style == "technical":
+            return qc_technical_vals
+        else:
+            return qc_analytical_vals
+    
+    
     # ai filtered df returned by QueryChat
     @reactive.calc
     def ai_filtered_df():
+        qc_vals = current_qc_vals()
+        current_sql = qc_vals.sql()
         result = qc_vals.df()
-        return normalize_querychat_result(result=result, fallback_df=df)
+
+        # No AI query has been run yet -> show preview only
+        if not current_sql:
+            return default_ai_preview_df
+
+        # Valid AI query returned a dataframe -> show all matched rows
+        if isinstance(result, pd.DataFrame):
+            return result
+
+        # Fallback if something unexpected happens
+        return default_ai_preview_df
 
     # title output
     @render.text
     def ai_title():
-        return qc_vals.title() or "Preview of AI-filtered data"
+        qc_vals = current_qc_vals()
+        return qc_vals.title() if qc_vals.sql() else "Preview of first 100 rows"
 
     # reset button for AI filters
     @reactive.effect
     @reactive.event(input.reset_ai_query)
     def _reset_ai_query():
+        qc_vals = current_qc_vals()
         qc_vals.sql("")
         qc_vals.title(None)
 
@@ -471,6 +594,7 @@ def server(input, output, session):
             title="Median Productivity",
             baseline=BASELINE_MEDIAN_PRODUCTIVITY,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
         
     # percentage of employees in the filtered set that are at high risk of burnout,
@@ -481,6 +605,7 @@ def server(input, output, session):
             filtered_df(),
             baseline_high_burnout=BASELINE_HIGH_BURNOUT,
             title="High Burnout %",
+            subtitle="Compared to company-wide high-burnout rate across all employees.",
         )
 
     # Median work-life balance score for the filtered employees,
@@ -493,6 +618,7 @@ def server(input, output, session):
             title="Median Burnout Risk Score",
             baseline=BASELINE_MEDIAN_BURNOUT,
             higher_is_better=False,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Median work-life balance score for the filtered employees,
@@ -505,6 +631,7 @@ def server(input, output, session):
             title="Median Work-Life Balance Score",
             baseline=BASELINE_MEDIAN_WLB,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # -------------------------
@@ -515,11 +642,17 @@ def server(input, output, session):
     # (i.e. the number of rows in the dataframe)
     @render.ui
     def ai_count_box():
+        qc_vals = current_qc_vals()
+        subtitle = (
+            "Rows returned by AI query"
+            if qc_vals.sql()
+            else "Rows shown in default preview"
+        )
         return count_card(
             ai_filtered_df(),
             title="Employees Found",
-            subtitle="Rows returned by AI query",
-        )
+            subtitle=subtitle,
+            )
 
     # Median burnout risk score for the AI-filtered subset,
     # compared to the company-wide baseline median.
@@ -531,6 +664,7 @@ def server(input, output, session):
             title="Median Burnout Risk Score",
             baseline=BASELINE_MEDIAN_BURNOUT,
             higher_is_better=False,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Median productivity score for the AI-filtered subset,
@@ -543,6 +677,7 @@ def server(input, output, session):
             title="Median Productivity",
             baseline=BASELINE_MEDIAN_PRODUCTIVITY,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Percentage of employees in the AI-filtered subset that are at high burnout risk,
@@ -553,6 +688,7 @@ def server(input, output, session):
             ai_filtered_df(),
             baseline_high_burnout=BASELINE_HIGH_BURNOUT,
             title="High Burnout %",
+            subtitle="Compared to company-wide high-burnout rate across all employees.",
         )
 
     # -------------------------
@@ -618,7 +754,6 @@ def server(input, output, session):
             manual_hours=input.manual_hours(),
             tasks_automated=input.tasks_automated(),
             deadline_pressure=input.deadline_pressure(),
-            show_pred=input.show_pred(),
             filtered_df=filtered_df(),
         )
 

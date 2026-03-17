@@ -8,7 +8,7 @@ import pandas as pd
 from shiny import ui
 
 
-def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
+def kpi_card(title: str, value: str, sub: str = "", sub_class: str = "", subtitle: str = ""):
     """
     Build a KPI card UI element.
 
@@ -22,7 +22,9 @@ def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
         Supporting subtitle text shown below the main value.
     sub_class : str, default=""
         Optional CSS modifier class for the subtitle (for example, "up" or "down").
-
+    subtitle : str, default=""
+        Small explanatory note shown between the title and main value.
+    
     Returns
     -------
     shiny.ui.TagChild
@@ -30,6 +32,7 @@ def kpi_card(title: str, value: str, sub: str = "", sub_class: str = ""):
     """
     return ui.div(
         ui.div(title, class_="kpi-title"),
+        ui.div(subtitle, class_="kpi-note") if subtitle else None,
         ui.div(value, class_="kpi-value"),
         ui.div(sub, class_=f"kpi-sub {sub_class}"),
         class_="kpi-card",
@@ -69,12 +72,12 @@ def safe_median(series: pd.Series) -> float | None:
     float | None
         Median value, or None if the series is empty or median is missing.
     """
-    if series.empty:
+    clean = series.dropna()
+
+    if clean.empty:
         return None
 
-    val = series.median()
-    if pd.isna(val):
-        return None
+    val = clean.median()
 
     return float(val)
 
@@ -153,6 +156,7 @@ def median_metric_card(
     baseline: float,
     *,
     higher_is_better: bool,
+    subtitle: str = "",
 ):
     """
     Build a KPI card for a median-based metric.
@@ -177,7 +181,7 @@ def median_metric_card(
     """
     val = safe_median(df[column])
     if val is None:
-        return kpi_card(title, "—")
+        return kpi_card(title, "—", subtitle=subtitle)
 
     diff = percent_diff(val, baseline)
     arrow = trend_arrow(diff)
@@ -188,6 +192,7 @@ def median_metric_card(
         f"{val:.1f}",
         f"{arrow} {abs(diff) * 100:.0f}% vs baseline",
         sub_class,
+        subtitle=subtitle,
     )
 
 
@@ -196,6 +201,7 @@ def high_burnout_pct_card(
     baseline_high_burnout: float,
     *,
     title: str = "High Burnout %",
+    subtitle: str="",
 ):
     """
     Build a KPI card for the percentage of employees with high burnout.
@@ -215,7 +221,7 @@ def high_burnout_pct_card(
         KPI card UI element.
     """
     if df.empty:
-        return kpi_card(title, "—")
+        return kpi_card(title, "—", subtitle=subtitle)
 
     pct = float((df["burnout_risk_level"] == "High").mean())
     diff = percent_diff(pct, baseline_high_burnout)
@@ -227,6 +233,7 @@ def high_burnout_pct_card(
         f"{pct * 100:.1f}%",
         f"{arrow} {abs(diff) * 100:.0f}% vs baseline",
         sub_class,
+        subtitle=subtitle,
     )
 
 
@@ -259,6 +266,5 @@ def count_card(
     return kpi_card(
         title,
         f"{len(df):,}",
-        subtitle,
-        "",
+        subtitle=subtitle,
     )

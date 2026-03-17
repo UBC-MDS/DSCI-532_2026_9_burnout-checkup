@@ -123,6 +123,82 @@ Before submitting a pull request:
 
 ------------------------------------------------------------------------
 
+## Milestone Retrospectives and Collaboration Norms
+
+### Milestone 3 Retrospective
+
+Based on instructor feedback and a review of the team's GitHub activity, several patterns were observed during Milestone 3 that we aim to improve moving forward.
+
+- All pull requests during M3 were merged without external review.
+- Several large pull requests contained substantial changes, which made review difficult.
+- Some branches contained unrelated commits, suggesting branches were not scoped to a single concern.
+- Contribution balance across the team was uneven.
+
+To address this, the team agreed to introduce clearer collaboration norms in Milestone 4 to improve transparency, review practices, and workload distribution.
+
+------------------------------------------------------------------------
+
+### Milestone 4 Collaboration Norms
+
+For Milestone 4, the team agreed on a clearer task distribution, stronger communication practices, and more structured pull request workflows.
+
+#### Task Distribution
+
+Each team member is responsible for the following components:
+
+**Mara**
+
+- Update `CONTRIBUTING.md`
+- Experiment with `querychat` using `on_tool_request`
+- Integrate full `querychat` controls
+- Update the M4 specifications document
+- Prepare the `v0.4.0` changelog and reflection
+- Address one instructor feedback item
+- Posit Connect Cloud deployment
+
+**Ruth**
+
+- Experiment with `querychat` user-facing controls
+- Implement unit testing
+- Update the M4 specifications document
+- Address one instructor feedback item
+
+**Gloria**
+
+- Implement the `querychat` system prompt
+- Integrate Parquet + DuckDB
+- Update the M4 specifications document
+- Address one instructor feedback item
+
+------------------------------------------------------------------------
+
+#### Communication and Check-ins
+
+To improve coordination during the milestone:
+
+- The team will **check in daily via Slack** to identify blockers or provide support if needed.
+- All issues have been created and assigned on GitHub.
+
+------------------------------------------------------------------------
+
+#### Milestone Checkpoint
+
+By **Thursday (March 12th, 2026) at 12 PM**, each team member will provide a status update on their experimentation notebook so the team can consolidate results and share progress with the instructor later that afternoon.
+
+By **Sunday (March 15th, 2026) at 6pm**, each team member will provide a status update on their progress with their respective milestone issues. After this checkpoint we can provide additional help if needed.
+
+------------------------------------------------------------------------
+
+#### Pull Request Expectations
+
+To improve review quality and maintain clarity:
+
+- Branches should remain **scoped to a single task or issue**
+- Pull requests should be **small and focused**
+- At least **one teammate must leave a comment or review before merging**
+
+These norms are intended to ensure better collaboration, clearer review processes, and a more balanced workload distribution across the team.
+
 ## Code of Conduct
 
 By contributing to this project, you agree to adhere to the team's [Code

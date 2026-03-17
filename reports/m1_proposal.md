@@ -90,7 +90,7 @@ This finding supports the need for comparative filters in the dashboard. By allo
 
 This dashboard examines the relationship between AI tool usage, workload, productivity, and employee burnout using a workplace productivity dataset. The landing view displays four summary metrics (average burnout risk, productivity score, work-life balance, and deviation from the company median) that update based on selected filters.
 
-Users can filter employees by job role, experience, AI usage, manual work hours, task automation, and deadline pressure. The main visualizations include a scatter plot of AI usage versus burnout, a grouped bar chart comparing burnout across roles (with optional predicted overlays), a breakdown of weekly work hours, and a productivity-versus-burnout quadrant view. These components allow HR managers to compare employee segments and assess whether AI adoption is associated with sustainable productivity or elevated burnout risk.
+Users can filter employees by job role, experience, AI usage, manual work hours, task automation, and deadline pressure. The main visualizations include a scatter plot of AI usage versus burnout, a grouped bar chart comparing burnout across job roles, a breakdown of weekly work hours, and a productivity-versus-burnout quadrant view. These components allow HR managers to compare employee segments and assess whether AI adoption is associated with sustainable productivity or elevated burnout risk.
 
 ## References
 
