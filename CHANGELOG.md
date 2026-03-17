@@ -9,35 +9,34 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - QueryChat system prompt customization to provide more HR and managers-focused insights.
-- Prompt experiment notebook evaluating different system prompt designs.
+- Prompt experiment notebook evaluating different system prompt designs (#119).
 - `on_tool_request` experimentation notebook evaluating different validation/transformation features to implement in our QueryChat.
-- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes (#120)
+- QueryChat response-style experiment notebook evaluating Executive, Analytical, and Technical response modes (#120).
 - Structured evaluation framework for LLM responses including scoring criteria (relevance, clarity, actionability, audience fit, faithfulness)
 - Detailed and compact summary tables comparing response style performance
 - Documentation of experiment narrative, discussion, and final decision for QueryChat customization
-- Playwright test verifying that Reset Filters restores dashboard inputs to default values. (#125)
+- Playwright test verifying that Reset Filters restores dashboard inputs to default values (#125).
 - Playwright test verifying that the debug panel correctly displays current filter state and filtered row counts.
 - Playwright test verifying that the AI Explorer tab renders and remains functional when accessed.
 - Playwright edge-case test verifying that Reset AI filters clears AI Explorer query state and restores default results.
 - Documented test behavior descriptions and README instructions for running tests.
-- Subtitles in KPI cards to clarify the baseline comparison with median/mean values across the company.
+- Subtitles in KPI cards to clarify the baseline comparison with median/mean values across the company (#128).
 
 ### Changed
 
-- Updated CONTRIBUTING.md to include Milestone 3 retrospective and Milestone 4 collaboration norms (#115).
-- Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases.
+- Updated QueryChat prompt in `app.py` to align with dashboard user stories and analytics use cases (#119).
 - Updated app specification to document the AI Explorer component and prompt design.
-- Updated `app.py` to include all member's experimentation results combined into a customized QueryChat.
+- Updated `app.py` to include all member's experimentation results combined into a customized QueryChat (#124).
 - Specification document updated to include QueryChat Response Style control and design rationale
 - AI Explorer design documentation expanded to describe response style behavior and default configuration
 - Updated `safe_median()` to drop missing values before computing the median, improving handling of empty or all-NaN inputs.
 - Updated AI Explorer reset tests to match the current default reset state and preview behavior.
-- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control. (#127)
+- Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control (#127).
 - Updated the **app specification document** to reflect the removal of the planned predicted overlay feature.
 - Updated the project proposal (**Section 5: App Description**) to remove references to predicted overlays in the burnout-by-role chart.
 - Increased AI Explorer sidebar width to improve readability and prevent layout compression of chat responses and tool outputs.
 - Refactored `app.py` to remove code smells and improve overall structure, readability, and maintainability.
-- Updated the scatter plots including "How AI Usage Relates to Burnout Risk Across Employees" and "Relationship Between Productivity and Burnout Risk" to resolve overplotting issue.
+- Updated the scatter plots including "How AI Usage Relates to Burnout Risk Across Employees" and "Relationship Between Productivity and Burnout Risk" to resolve overplotting issue. (#130)
 
 ### Fixed
 
@@ -62,28 +61,53 @@ This release introduces a configurable response-style control (Executive, Analyt
 
 This feature was selected as the release highlight because it directly enhances the core value of the dashboard: supporting HR decision-making through interpretable, context-aware AI insights, while addressing risks of misleading or overly generic responses.
 
+### Collaboration
+
+- Updated CONTRIBUTING.md to include Milestone 3 retrospective and Milestone 4 collaboration norms (#115).
+- Incorporated team-wide experimentation results into a unified QueryChat implementation, integrating prompt design, response-style controls, and tool interception.
+- Established clearer division of responsibilities across:
+  - AI experimentation and evaluation
+  - dashboard testing and validation
+  - documentation and specification updates
+- Improved coordination through issue-based task tracking and milestone prioritization (e.g., #103, #104).
+- Applied lessons from Milestone 3 to:
+  - reduce duplication in app logic
+  - standardize testing practices
+  - improve documentation consistency
+
 ### Reflection
 
-1. We prioritized issues that affected the interpretability and functionality of the dashboard. In particular, we treated unclear KPI baselines, scatterplot overplotting, and the non-functional overlay toggle as critical issues because they could mislead users or create confusion during analysis. Improvements related to UI organization, color palette accessibility, and additional explanatory context were considered non-critical since they improve usability but do not affect the correctness of the insights. Trade-offs were made to focus development time on improving analytical clarity and ensuring that the AI Explorer feature produced actionable visual outputs.
+We prioritized issues that directly affected the interpretability, correctness, and usability of the dashboard. In particular, unclear KPI baselines, scatterplot overplotting, and the presence of a non-functional overlay toggle were treated as critical because they could mislead users or reduce trust in the insights. In contrast, improvements related to UI layout, styling, and additional explanatory context were considered lower priority since they enhance usability but do not affect analytical outcomes.
 
-2. Scatter plots update
-Based on peer feedback regarding overplotting and interpretability, we refined the two scatterplots while preserving their analytical intent.
+A key strength of the dashboard is the integration of interactive filtering with AI-assisted exploration, allowing users to analyze burnout patterns through both structured visualizations and natural language queries. The addition of response-style controls further improves interpretability for different user audiences.
 
-**AI Usage vs Burnout**
-The original scatterplot was replaced with a binned/density-based visualization to address heavy point overlap and improve readability. Since burnout risk is already encoded on the y-axis, we removed the additional color encoding for deadline pressure and retained it as a filter instead. This change simplifies the visual encoding and makes it easier for users to identify overall patterns between AI usage and burnout risk.
-This update supports **Job Story 1**, allowing users to more clearly compare burnout levels across AI usage under controlled conditions.
+However, limitations remain. The AI Explorer depends on external LLM responses, which may introduce variability, and certain filter combinations can result in sparse datasets that reduce interpretability. Additionally, the current tool interception logic prevents overly broad queries but does not yet support adaptive query refinement.
 
-**Productivity vs Burnout**
-For this chart, we preserved the original design and analytical goal of examining the relationship between productivity, burnout risk, and AI usage bands (including the quadrant structure defined by company medians). Instead of changing the chart type, we reduced overplotting by lowering point opacity and adding jitter.
-These adjustments improve visual clarity while maintaining the ability to interpret the four quadrants (e.g., this design is helpful for observing how is the burnout risk score when high productivity is combined with high AI usage, which would be represented in the top right quadrant), which directly supports **Job Story 3** in evaluating whether productivity gains are associated with elevated burnout risk when evaluating the impact of AI usage.
-
----
+Trade-offs were made to prioritize analytical correctness, test coverage, and reliable user interactions. As a result, some advanced features (such as predictive overlays) were intentionally removed to avoid exposing incomplete or misleading functionality. Overall, this milestone reflects a shift toward robustness, clarity, and user trust over feature breadth.
 
 #### Tests
 
-To improve reliability and document expected behavior, we added automated tests covering both user-facing interactions and core dashboard logic. The Playwright tests verify key interface behaviors, including resetting dashboard filters, displaying the debug panel state, rendering the AI Explorer view, and clearing AI query state when reset is triggered. These tests help catch regressions that would directly affect how users interact with the dashboard.
+To improve reliability and document expected behavior, we added automated tests covering both user-facing interactions and core dashboard logic. The Playwright tests verify key interface behaviors, including resetting dashboard filters, displaying the debug panel state, rendering the AI Explorer view, and clearing AI query state when reset is triggered. These tests help catch regressions that would directly affect user interaction, such as broken navigation or inconsistent UI states.
 
-For unit testing, we added a broader suite of pytest tests covering core data and dashboard logic, including filtering behavior, KPI calculations, chart preparation, debug output, and helper functions used throughout the app. Rather than targeting implementation details, these tests validate that the main data transformations and summary computations produce expected outputs under representative conditions. If these behaviors change unexpectedly, the app could show incorrect filtered subsets, misleading KPI values, malformed chart inputs, or inconsistent debug information, so the unit tests act as an early warning for logic regressions.
+For unit testing, we added a broader suite of pytest tests covering core data and dashboard logic, including filtering behavior, KPI calculations, chart preparation, debug output, and helper functions used throughout the app. Rather than targeting implementation details, these tests validate that key data transformations and summary computations produce expected outputs under representative conditions. If these behaviors change unexpectedly, the app could display incorrect filtered subsets, misleading KPI values, invalid chart inputs, or inconsistent debug outputs, so the unit tests act as an early warning for logic regressions.
+
+#### Charts
+
+**Scatter plot updates:**
+
+Based on peer feedback regarding overplotting and interpretability, we refined both scatterplots while preserving their analytical intent.
+
+**AI Usage vs Burnout:**  
+The original scatterplot was replaced with a binned/density-based visualization to reduce heavy point overlap and improve readability. Since burnout risk is already encoded on the y-axis, we removed the additional color encoding for deadline pressure and retained it as a filter instead. This simplifies the visual encoding and makes overall patterns easier to interpret.  
+This update supports **Job Story 1**, enabling clearer comparison of burnout levels across AI usage under controlled conditions.
+
+**Productivity vs Burnout**  
+We preserved the original structure, including the quadrant layout defined by company medians, to maintain its analytical purpose. Instead of changing the chart type, we reduced overplotting by lowering point opacity and adding jitter.  
+These adjustments improve clarity while preserving interpretability of the quadrants (e.g., identifying high productivity–high burnout scenarios in the top-right quadrant), directly supporting **Job Story 3** in assessing whether productivity gains are associated with increased burnout risk.
+
+#### Future Directions
+
+Looking ahead, future work would focus on extending the AI Explorer with more robust query handling, including adaptive query refinement rather than simple blocking of broad requests. We would also explore reintroducing predictive features, such as a validated burnout risk overlay, once a reliable modeling approach is established. Additional improvements could include better handling of sparse filter results, enhanced visual summaries for edge cases, and deeper evaluation of AI response quality across different user scenarios. These directions aim to expand functionality while maintaining the clarity and reliability established in this milestone.
 
 ## [0.3.0] - Milestone 3
 
