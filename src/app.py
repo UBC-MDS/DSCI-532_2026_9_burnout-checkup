@@ -327,9 +327,6 @@ app_ui = ui.page_fluid(
                         inline=True,
                     ),
                     ui.hr(),
-                    ui.input_checkbox(
-                        "show_pred", "Show Predicted Risk Overlay", value=True
-                    ),
                     ui.input_checkbox("show_debug", "Show debug panel", value=False),
                     ui.br(),
                     ui.input_action_button("reset_btn", "Reset Filters"),
@@ -491,7 +488,6 @@ def server(input, output, session):
         ui.update_checkbox_group("deadline_pressure", selected=deadline_choices)
 
         # Reset checkboxes
-        ui.update_checkbox("show_pred", value=True)
         ui.update_checkbox("show_debug", value=False)
 
     # -------------------------
@@ -746,7 +742,6 @@ def server(input, output, session):
             manual_hours=input.manual_hours(),
             tasks_automated=input.tasks_automated(),
             deadline_pressure=input.deadline_pressure(),
-            show_pred=input.show_pred(),
             filtered_df=filtered_df(),
         )
 
