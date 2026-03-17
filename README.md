@@ -135,7 +135,7 @@ Ensure that the project environment is activated.
 Run all non-E2E tests with:
 
 ```bash
-pytest -k "not e2e"
+python -m pytest -k "not e2e"
 ```
 
 To run a specific test file (e.g.: `test_data.py`):

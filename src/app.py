@@ -382,7 +382,7 @@ app_ui = ui.page_fluid(
                             output_widget("plot_hours_breakdown"),
                         ),
                         ui.card(
-                            ui.card_header("Relationship Between Productivity and Burnout Risk"),
+                            ui.card_header("Relationship Between Productivity, AI usage and Burnout Risk"),
                             output_widget("plot_prod_vs_burnout"),
                         ),
                         col_widths=(6, 6),
