@@ -222,7 +222,14 @@ app_ui = ui.page_fluid(
             color: {COLORS["dark_brown"]};
             margin-bottom: 6px;
         }}
-
+        
+        .kpi-note {{
+            font-size: 12px;
+            color: {COLORS["medium_brown"]};
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }}
+        
         .kpi-value {{
             font-size: 56px;
             line-height: 1;
