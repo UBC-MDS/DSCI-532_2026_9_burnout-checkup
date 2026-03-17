@@ -37,6 +37,7 @@ def make_ai_vs_burnout_chart(
     baseline_median_burnout: float,
     height: int = 260,
 ) -> alt.Chart:
+    
     """
     Build the AI usage vs burnout scatter plot.
 
@@ -54,52 +55,49 @@ def make_ai_vs_burnout_chart(
     alt.Chart
         Scatter plot with a reference median burnout line.
     """
+    
     if d.empty:
         return empty_chart("No data for current filters.", height=height)
 
+    # 2D binned heatmap
     chart = (
         alt.Chart(d)
-        .mark_circle(opacity=0.7)
+        .mark_rect()
         .encode(
             x=alt.X(
                 "ai_tool_usage_hours_per_week:Q",
+                bin=alt.Bin(maxbins=30),
                 title="AI tool usage (hrs/week)",
             ),
-            y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
+            y=alt.Y(
+                "burnout_risk_score:Q",
+                bin=alt.Bin(maxbins=30),
+                title="Burnout risk score",
+            ),
             color=alt.Color(
-                "deadline_pressure_level:N",
-                title="Deadline pressure",
-                scale=deadline_scale(),
+                "count():Q",
+                title="Employee count",
+                scale=alt.Scale(scheme="oranges"),
             ),
             tooltip=[
-                "job_role:N",
-                "experience_years:Q",
-                "ai_tool_usage_hours_per_week:Q",
-                "manual_work_hours_per_week:Q",
-                "burnout_risk_score:Q",
+                alt.Tooltip("count():Q", title="Employees"),
             ],
         )
         .properties(height=height)
     )
 
+    # median line
     median_line = (
         alt.Chart(
             pd.DataFrame(
                 {"y": [baseline_median_burnout], "line": ["Company Median Burnout"]}
             )
         )
-        .mark_rule(strokeDash=[6, 4])
-        .encode(
-            y="y:Q",
-            color=alt.Color(
-                "line:N",
-                scale=alt.Scale(range=[COLORS["alert_red"]]),
-                legend=alt.Legend(title=None),
-            ),
-        )
+        .mark_rule(strokeDash=[6, 4], color=COLORS["alert_red"])
+        .encode(y="y:Q")
     )
 
-    return (chart + median_line).resolve_scale(color="independent")
+    return chart + median_line
 
 
 def make_burnout_by_role_chart(
