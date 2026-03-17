@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Removed the non-functional "**Predicted Risk Overlay**" checkbox from the dashboard sidebar to eliminate a misleading control.
 - Updated the **app specification document** to reflect the removal of the planned predicted overlay feature.
 - Updated the project proposal (**Section 5: App Description**) to remove references to predicted overlays in the burnout-by-role chart.
+- Updated the scatter plots including "How AI Usage Relates to Burnout Risk Across Employees" and "Relationship Between Productivity and Burnout Risk" to resolve overplotting issue.
 
 ### Fixed
 
