@@ -368,7 +368,6 @@ app_ui = ui.page_fluid(
                         ),
                         ui.card(
                             ui.card_header("Burnout Risk by Job Role"),
-                            # ui.p(ui.em("Observed values are shown; prediction overlay is planned for a later milestone.")),
                             output_widget("plot_burnout_by_role"),
                         ),
                         col_widths=(6, 6),
@@ -389,7 +388,7 @@ app_ui = ui.page_fluid(
                         col_widths=(6, 6),
                     ),
                     ui.br(),
-                    # Optional debug panel
+                    # Debug panel
                     ui.panel_conditional(
                         "input.show_debug",
                         ui.card(
@@ -413,7 +412,6 @@ app_ui = ui.page_fluid(
                 # -------------------------
                 ui.sidebar(
                     ui.h3("AI Explorer"),
-                    # ui.p("Use natural language to explore the filtered dataset."),
                     ui.h6("Response Style:"),
                     ui.input_select(
                         "response_style",
@@ -432,7 +430,7 @@ app_ui = ui.page_fluid(
                     ui.panel_conditional("input.response_style === 'technical'", qc_technical.ui()),
                     ui.hr(),
                     ui.input_action_button("reset_ai_query", "Reset AI filters"),
-                    width=320,
+                    width=420,
                 ),
                 # -------------------------
                 # AI Explorer main content
