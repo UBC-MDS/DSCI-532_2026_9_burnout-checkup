@@ -222,7 +222,14 @@ app_ui = ui.page_fluid(
             color: {COLORS["dark_brown"]};
             margin-bottom: 6px;
         }}
-
+        
+        .kpi-note {{
+            font-size: 12px;
+            color: {COLORS["medium_brown"]};
+            line-height: 1.3;
+            margin-bottom: 8px;
+        }}
+        
         .kpi-value {{
             font-size: 56px;
             line-height: 1;
@@ -356,7 +363,7 @@ app_ui = ui.page_fluid(
                     # -------------------------
                     ui.layout_columns(
                         ui.card(
-                            ui.card_header("AI Usage vs Burnout"),
+                            ui.card_header("How AI Usage Relates to Burnout Risk Across Employees"),
                             output_widget("plot_ai_vs_burnout"),
                         ),
                         ui.card(
@@ -376,7 +383,7 @@ app_ui = ui.page_fluid(
                             output_widget("plot_hours_breakdown"),
                         ),
                         ui.card(
-                            ui.card_header("Productivity vs Burnout Risk Score"),
+                            ui.card_header("Relationship Between Productivity and Burnout Risk"),
                             output_widget("plot_prod_vs_burnout"),
                         ),
                         col_widths=(6, 6),
@@ -589,6 +596,7 @@ def server(input, output, session):
             title="Median Productivity",
             baseline=BASELINE_MEDIAN_PRODUCTIVITY,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
         
     # percentage of employees in the filtered set that are at high risk of burnout,
@@ -599,6 +607,7 @@ def server(input, output, session):
             filtered_df(),
             baseline_high_burnout=BASELINE_HIGH_BURNOUT,
             title="High Burnout %",
+            subtitle="Compared to company-wide high-burnout rate across all employees.",
         )
 
     # Median work-life balance score for the filtered employees,
@@ -611,6 +620,7 @@ def server(input, output, session):
             title="Median Burnout Risk Score",
             baseline=BASELINE_MEDIAN_BURNOUT,
             higher_is_better=False,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Median work-life balance score for the filtered employees,
@@ -623,6 +633,7 @@ def server(input, output, session):
             title="Median Work-Life Balance Score",
             baseline=BASELINE_MEDIAN_WLB,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # -------------------------
@@ -655,6 +666,7 @@ def server(input, output, session):
             title="Median Burnout Risk Score",
             baseline=BASELINE_MEDIAN_BURNOUT,
             higher_is_better=False,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Median productivity score for the AI-filtered subset,
@@ -667,6 +679,7 @@ def server(input, output, session):
             title="Median Productivity",
             baseline=BASELINE_MEDIAN_PRODUCTIVITY,
             higher_is_better=True,
+            subtitle="Compared to company-wide median across all employees.",
         )
 
     # Percentage of employees in the AI-filtered subset that are at high burnout risk,
@@ -677,6 +690,7 @@ def server(input, output, session):
             ai_filtered_df(),
             baseline_high_burnout=BASELINE_HIGH_BURNOUT,
             title="High Burnout %",
+            subtitle="Compared to company-wide high-burnout rate across all employees.",
         )
 
     # -------------------------

@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Playwright test verifying that the AI Explorer tab renders and remains functional when accessed.
 - Playwright edge-case test verifying that Reset AI filters clears AI Explorer query state and restores default results.
 - Documented test behavior descriptions and README instructions for running tests.
+- Subtitles in KPI cards to clarify the baseline comparison with median/mean values across the company.
 
 ### Changed
 
@@ -41,6 +42,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Resolved feedback regarding the presence of a non-functional dashboard control that could confuse users.
 
 ### Reflection
+
+We prioritized issues that affected the interpretability and functionality of the dashboard. In particular, we treated unclear KPI baselines, scatterplot overplotting, and the non-functional overlay toggle as critical issues because they could mislead users or create confusion during analysis. Improvements related to UI organization, color palette accessibility, and additional explanatory context were considered non-critical since they improve usability but do not affect the correctness of the insights. Trade-offs were made to focus development time on improving analytical clarity and ensuring that the AI Explorer feature produced actionable visual outputs.
 
 #### Tests
 
