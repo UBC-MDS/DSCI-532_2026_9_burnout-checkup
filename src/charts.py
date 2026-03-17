@@ -249,7 +249,12 @@ def make_productivity_vs_burnout_chart(
 
     chart = (
         alt.Chart(d)
-        .mark_circle(opacity=0.7)
+        .transform_calculate(
+            # jitter: small random noise
+            jitter_x="datum.productivity_score + (random() - 0.5) * 2",
+            jitter_y="datum.burnout_risk_score + (random() - 0.5) * 0.5",
+        )
+        .mark_circle(opacity=0.25, size=40)
         .encode(
             x=alt.X("productivity_score:Q", title="Productivity score"),
             y=alt.Y("burnout_risk_score:Q", title="Burnout risk score"),
@@ -267,6 +272,7 @@ def make_productivity_vs_burnout_chart(
         )
         .properties(height=height)
     )
+    
 
     vline = (
         alt.Chart(
