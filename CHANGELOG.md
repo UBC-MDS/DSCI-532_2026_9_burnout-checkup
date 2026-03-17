@@ -42,6 +42,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Eliminated runtime warnings from median calculations on empty or all-missing series in KPI helpers.
 - Fixed failing reset-related end-to-end tests by aligning test expectations with the current AI Explorer reset title and default preview state.
+
+### Known Issues
+
 - Playwright end-to-end tests require the Shiny app to be running locally on `http://localhost:8000`; tests will fail with connection errors if the app is not started before running `pytest`.
 - AI Explorer responses depend on external LLM availability and API configuration, which may lead to variability in response quality or delays.
 - Certain filter combinations may produce sparse datasets, which can reduce interpretability of charts and KPI summaries.
