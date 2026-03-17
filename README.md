@@ -51,9 +51,9 @@ Below is a short demonstration of the dashboard:
 
 ---
 
-# For Users
+## For Users
 
-## What problem does this dashboard solve?
+### What problem does this dashboard solve?
 
 Organizations adopting AI tools often measure productivity improvements but may overlook hidden burnout risks.
 
@@ -63,7 +63,7 @@ This dashboard helps answer:
 - Is burnout primarily driven by deadline pressure?
 - Are productivity gains sustainable?
 
-## How to use the dashboard
+### How to use the dashboard
 
 1. Use the sidebar filters to select employee segments.
 2. Observe KPI changes at the top.
@@ -72,12 +72,12 @@ This dashboard helps answer:
 
 ---
 
-# For Contributors
+## For Contributors
 
 We welcome contributions in the form of code improvements, feature additions,
 documentation updates, or bug reports.
 
-## Development Setup
+### Development Setup
 
 1. Clone the repository:
 
@@ -122,21 +122,60 @@ or
  shiny run --reload src/app.py
 ```
 
-## Running tests
+### Running tests
 
-This project uses `pytest` for unit testing.
+This project uses:
 
-1. Activate the project environment.
-2. Run all tests with:
+- **pytest** for unit testing
+- **Playwright** for end-to-end dashboard testing
+Ensure that the project environment is activated.
+
+#### Unit Tests
+
+Run all non-E2E tests with:
 
 ```bash
-python -m pytest
+pytest -k "not e2e"
 ```
 
 To run a specific test file (e.g.: `test_data.py`):
 
 ```bash
 python -m pytest tests/test_data.py
+```
+
+#### End-to-end tests
+
+The Playwright tests expect the Shiny app to be running locally on port 8000 (`http://localhost:8000`). If Playwright browsers are not installed yet, run:
+
+```bash
+playwright install
+```
+
+If not started yet, start the app in one terminal:
+
+```bash
+python -m shiny run --reload --port 8000 src/app.py
+```
+
+Then run the end-to-end tests in another terminal:
+
+```bash
+pytest tests/e2e
+```
+
+#### Run the full test suite
+
+With the app running on port 8000, run:
+
+```bash
+pytest
+```
+
+or
+
+```bash
+python -m pytest
 ```
 
 ### Contribution Guidelines

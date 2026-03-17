@@ -69,12 +69,12 @@ def safe_median(series: pd.Series) -> float | None:
     float | None
         Median value, or None if the series is empty or median is missing.
     """
-    if series.empty:
+    clean = series.dropna()
+
+    if clean.empty:
         return None
 
-    val = series.median()
-    if pd.isna(val):
-        return None
+    val = clean.median()
 
     return float(val)
 

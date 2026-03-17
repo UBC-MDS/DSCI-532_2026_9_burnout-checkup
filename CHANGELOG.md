@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Structured evaluation framework for LLM responses including scoring criteria (relevance, clarity, actionability, audience fit, faithfulness)
 - Detailed and compact summary tables comparing response style performance
 - Documentation of experiment narrative, discussion, and final decision for QueryChat customization
+- Playwright test verifying that Reset Filters restores dashboard inputs to default values.
+- Playwright test verifying that the debug panel correctly displays current filter state and filtered row counts.
+- Playwright test verifying that the AI Explorer tab renders and remains functional when accessed.
+- Playwright edge-case test verifying that Reset AI filters clears AI Explorer query state and restores default results.
+- Documented test behavior descriptions and README instructions for running tests.
 
 ### Changed
 
@@ -23,6 +28,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Updated `app.py` to include all member's experimentation results combined into a customized QueryChat.
 - Specification document updated to include QueryChat Response Style control and design rationale
 - AI Explorer design documentation expanded to describe response style behavior and default configuration
+- Updated `safe_median()` to drop missing values before computing the median, improving handling of empty or all-NaN inputs.
+- Updated AI Explorer reset tests to match the current default reset state and preview behavior.
+
+### Fixed
+
+- Eliminated runtime warnings from median calculations on empty or all-missing series in KPI helpers.
+- Fixed failing reset-related end-to-end tests by aligning test expectations with the current AI Explorer reset title and default preview state.
+
+### Reflection
+
+#### Tests
+
+To improve reliability and document expected behavior, we added automated tests covering both user-facing interactions and core dashboard logic. The Playwright tests verify key interface behaviors, including resetting dashboard filters, displaying the debug panel state, rendering the AI Explorer view, and clearing AI query state when reset is triggered. These tests help catch regressions that would directly affect how users interact with the dashboard.
+
+For unit testing, we added a broader suite of pytest tests covering core data and dashboard logic, including filtering behavior, KPI calculations, chart preparation, debug output, and helper functions used throughout the app. Rather than targeting implementation details, these tests validate that the main data transformations and summary computations produce expected outputs under representative conditions. If these behaviors change unexpectedly, the app could show incorrect filtered subsets, misleading KPI values, malformed chart inputs, or inconsistent debug information, so the unit tests act as an early warning for logic regressions.
 
 ## [0.3.0] - Milestone 3
 
